@@ -163,6 +163,7 @@ const PerfilUsuario: React.FC = () => {
     }, [user]);
 
 
+    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
 
     // Cargar datos premium y trofeos del usuario mostrado
     useEffect(() => {
@@ -579,7 +580,6 @@ const PerfilUsuario: React.FC = () => {
             </div>
         );
     }
-    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
 
     const isPremium = displayedUser ? (premiumData && premiumData.activo) : false;
     return (
