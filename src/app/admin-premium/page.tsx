@@ -357,8 +357,8 @@ export default function AdminPremium() {
                                         <div key={solicitud.id} className="bg-white border border-gray-200 rounded-lg p-4">
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="flex-1">
-                                                    <h4 className="font-bold text-lg text-gray-800">{solicitud.user.nick}</h4>
-                                                    <p className="text-sm text-gray-600">{solicitud.user.email}</p>
+                                                    <h4 className="font-bold text-lg text-gray-800">{solicitud.nick}</h4>
+                                                    <p className="text-sm text-gray-600">{solicitud.email}</p>
                                                     <p className="text-xs text-gray-500 mt-1">
                                                         📅 {new Date(solicitud.createdAt).toLocaleString()}
                                                     </p>
