@@ -360,7 +360,7 @@ export default function AdminPremium() {
                                                     <h4 className="font-bold text-lg text-gray-800">{solicitud.nick}</h4>
                                                     <p className="text-sm text-gray-600">{solicitud.email}</p>
                                                     <p className="text-xs text-gray-500 mt-1">
-                                                        📅 {new Date(solicitud.createdAt).toLocaleString()}
+                                                        📅 {new Date(solicitud.fechaSolicitud).toLocaleString()}
                                                     </p>
                                                 </div>
                                                 <div className="text-right">
