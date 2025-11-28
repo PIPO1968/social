@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { year, month, centro, posicion, titulo } = body;
+        const { year, month, centro, posicion, titulo, userId } = body;
 
         const premio = await prisma.premioMensual.create({
             data: {
@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
                 month: parseInt(month),
                 centro,
                 posicion,
-                titulo
+                titulo,
+                userId
             }
         });
 
