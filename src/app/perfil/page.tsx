@@ -100,7 +100,7 @@ const PerfilUsuario: React.FC = () => {
     const [selectedUserData, setSelectedUserData] = useState<any>(null);
     // Estados para datos de base de datos
     const [premiumData, setPremiumData] = useState<any>(null);
-    const [userTrofeos, setUserTrofeos] = useState({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
+    const [userTrofeos, setUserTrofeos] = useState<{ trofeosDesbloqueados: number[]; trofeosBloqueados: number[] }>({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
     const [concursos, setConcursos] = useState<any[]>([]);
     // Estados para preguntas
     const [cursoSeleccionado, setCursoSeleccionado] = useState<string>("1primaria");
