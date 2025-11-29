@@ -27,4 +27,4 @@ RUN npm run build:next
 EXPOSE 3000
 
 # Comando para ejecutar (con migraciones)
-CMD ["sh", "-c", "npx prisma migrate deploy && node seed-database.js && npm start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
