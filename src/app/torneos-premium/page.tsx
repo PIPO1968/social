@@ -72,11 +72,9 @@ const TorneosPremiumPage: React.FC = () => {
                         setIsPremium(true);
                         await cargarTorneos();
                     } else {
-                        alert('Tu suscripción Premium ha expirado. Renueva para acceder a los Torneos Premium.');
                         router.push('/premium-nuevo');
                     }
                 } else {
-                    alert('Los Torneos Premium son exclusivos para usuarios Premium.');
                     router.push('/premium-nuevo');
                 }
             } catch (error) {
@@ -209,11 +207,9 @@ const TorneosPremiumPage: React.FC = () => {
         const torneosActualizados = torneos.map(torneo => {
             if (torneo.id === torneoId) {
                 if (torneo.participantes.includes(usuarioActual.nick)) {
-                    alert('Ya estás registrado en este torneo.');
                     return torneo;
                 }
                 if (torneo.participantes.length >= torneo.maxParticipantes) {
-                    alert('Este torneo ya está completo.');
                     return torneo;
                 }
                 return {
@@ -235,7 +231,6 @@ const TorneosPremiumPage: React.FC = () => {
             })
         });
 
-        alert('¡Te has registrado exitosamente en el torneo!');
     };
 
     const iniciarTorneo = async (torneo: Torneo) => {

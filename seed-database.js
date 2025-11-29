@@ -55,32 +55,25 @@ async function seedDatabase() {
                     where: { id: trofeo.id },
                     update: trofeo,
                     create: trofeo
-                });
-            }
-            console.log(`✅ ${trofeos.length} trofeos insertados`);
-        }
 
         // 2. Poblar preguntas desde archivos JSON
         console.log('❓ Poblando preguntas...');
-        const questionsDir = path.join(__dirname, 'src/questions');
-        if (fs.existsSync(questionsDir)) {
-            const files = fs.readdirSync(questionsDir);
-            let totalPreguntas = 0;
+                    const questionsDir = path.join(__dirname, 'src/questions');
+                    if(fs.existsSync(questionsDir)) {
+                    const files = fs.readdirSync(questionsDir);
+                    let totalPreguntas = 0;
 
-            for (const file of files) {
-                if (file.endsWith('.json')) {
-                    const filePath = path.join(questionsDir, file);
-                    const preguntas = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                    for (const file of files) {
 
-                    // Extraer curso y asignatura del nombre del archivo
-                    const match = file.match(/^([^-]+)-(.+)\.json$/);
-                    if (match) {
-                        const asignatura = match[1];
-                        const curso = match[2];
+                        // Extraer curso y asignatura del nombre del archivo
+                        const match = file.match(/^([^-]+)-(.+)\.json$/);
+                        if (match) {
+                            const asignatura = match[1];
+                            const curso = match[2];
 
-                        for (const pregunta of preguntas) {
-                            await prisma.pregunta.create({
-                                data: {
+                            for (const pregunta of preguntas) {
+                                await prisma.pregunta.create({
+                                    // Eliminado código y datos de prueba
                                     pregunta: pregunta.pregunta,
                                     respuesta: pregunta.respuesta,
                                     categoria: pregunta.categoria || asignatura,

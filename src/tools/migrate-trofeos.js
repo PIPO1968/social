@@ -22,7 +22,6 @@ async function migrateTrofeos() {
             });
         }
 
-        console.log('Trofeos migrados');
     } catch (error) {
         console.error('Error en migración de trofeos:', error);
     } finally {

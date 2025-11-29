@@ -143,11 +143,9 @@ const PremiumPage: React.FC = () => {
 
             setIsPremium(true);
 
-            alert(`🎉 ¡Bienvenido a StoryUp Premium, ${usuario.nick}!\n\nTu experiencia de aprendizaje acaba de mejorar significativamente. ¡Disfruta de todos los beneficios Premium por un año completo!`);
 
         } catch (error) {
             console.error('Error al activar Premium:', error);
-            alert('Error al procesar el pago. Por favor, inténtalo de nuevo.');
         } finally {
             setProcesandoPago(false);
         }

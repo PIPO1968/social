@@ -50,13 +50,11 @@ const RegisterLoginForm: React.FC = () => {
                         });
                         const data = await response.json();
                         if (data.error) {
-                            alert(data.error);
                         } else {
                             // Usuario registrado y logueado automáticamente (cookie set)
                             window.location.href = '/perfil';
                         }
                     } catch (error) {
-                        alert('Error en el registro');
                     }
                 }}>
                     <input type="text" name="nombre" placeholder="Nombre real" className="w-full mb-2 p-2 border rounded" required />
@@ -98,13 +96,11 @@ const RegisterLoginForm: React.FC = () => {
                         });
                         const data = await response.json();
                         if (data.error) {
-                            alert(data.error);
                         } else {
                             // Usuario logueado (cookie set)
                             window.location.href = '/perfil';
                         }
                     } catch (error) {
-                        alert('Error en el login');
                     }
                 }}>
                     <input type="email" name="email" placeholder="Email" className="w-full mb-2 p-2 border rounded" required />

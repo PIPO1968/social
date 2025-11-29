@@ -60,7 +60,6 @@ export default function Home() {
     victory: boolean;
     userSchool: string;
   }) => {
-    console.log("Resultados del cuestionario:", results);
     // Aquí puedes actualizar el estado global o enviar los resultados a un servidor
   };
 

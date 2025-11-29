@@ -7,38 +7,20 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
     try {
-        console.log('Login attempt');
         const body = await request.json();
-        console.log('Body:', body);
         const { email, password } = body;
-
-        console.log('Email:', email, 'Password provided:', !!password);
 
         if (!email || !password) {
             return NextResponse.json({ error: 'Email y contraseña requeridos' }, { status: 400 });
         }
 
-        // Buscar usuario
+        // Buscar usuario por email
         const user = await prisma.user.findUnique({
-            where: { email },
+            where: { email: email },
             select: {
                 id: true,
                 nick: true,
-                nombre: true,
                 email: true,
-                centro: true,
-                curso: true,
-                tipo: true,
-                fechaInscripcion: true,
-                likes: true,
-                respuestasAcertadas: true,
-                competicionesSuperadas: true,
-                concursosGanados: true,
-                comentariosRecibidos: true,
-                historiasCreadas: true,
-                anosEnStoryUp: true,
-                premium: true,
-                language: true,
                 password: true
             }
         });

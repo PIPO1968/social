@@ -65,7 +65,6 @@ const PerfilUsuario: React.FC = () => {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ nick: usuario.nick, ...updated })
                     });
-                    alert(`¡Felicitaciones! Has desbloqueado un nuevo trofeo: ${premioCentro.titulo}`);
                 }
             }
         } catch (e) {
@@ -182,7 +181,6 @@ const PerfilUsuario: React.FC = () => {
 
     const handlePalabraProhibidaSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        alert(`Palabra prohibida seleccionada: ${palabraProhibida}`);
         setPalabraProhibida("");
     };
     const handleApagarBullying = () => {
@@ -213,13 +211,11 @@ const PerfilUsuario: React.FC = () => {
                 setFechaInicio("");
                 setFechaFin("");
                 setUsuarioGanador("");
-                alert("Concurso creado");
                 // Refrescar concursos
                 fetch('/api/concursos').then(r => r.json()).then(setConcursos);
             })
             .catch(error => {
                 console.error('Error creando concurso:', error);
-                alert("Error creando concurso");
             });
     };
     const handleSeleccionarGanador = () => {
@@ -231,19 +227,15 @@ const PerfilUsuario: React.FC = () => {
             })
                 .then(() => {
                     updateLikes(usuarioGanador, 1);
-                    alert(`Ganador seleccionado: ${usuarioGanador}`);
                 })
                 .catch(error => {
                     console.error('Error seleccionando ganador:', error);
-                    alert("Error seleccionando ganador");
                 });
         } else {
-            alert("Selecciona un usuario ganador");
         }
     };
     const handleAsignarGanador = () => {
         if (!concursoSeleccionado || !ganadorSeleccionado) {
-            alert("Selecciona un concurso y un ganador");
             return;
         }
         fetch('/api/concursos', {
@@ -255,13 +247,11 @@ const PerfilUsuario: React.FC = () => {
                 updateLikes(ganadorSeleccionado, 10);
                 setConcursoSeleccionado("");
                 setGanadorSeleccionado("");
-                alert(`Ganador asignado a concurso ${concursoSeleccionado}: ${ganadorSeleccionado}`);
                 // Refrescar concursos
                 fetch('/api/concursos').then(r => r.json()).then(setConcursos);
             })
             .catch(error => {
                 console.error('Error asignando ganador:', error);
-                alert("Error asignando ganador");
             });
     };
     const handleNoticiaSubmit = (e: React.FormEvent) => {
@@ -280,18 +270,15 @@ const PerfilUsuario: React.FC = () => {
                 setNoticiaTitulo("");
                 setNoticiaTexto("");
                 setNoticiaImagen("");
-                alert("Noticia publicada");
             })
             .catch(error => {
                 console.error('Error creando noticia:', error);
-                alert("Error creando noticia");
             });
     };
 
     // Función para enviar pregunta
     const enviarPregunta = async () => {
         if (!pregunta.trim() || !respuesta.trim()) {
-            alert("Por favor, completa la pregunta y la respuesta");
             return;
         }
 
@@ -312,16 +299,13 @@ const PerfilUsuario: React.FC = () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert(`Pregunta agregada exitosamente a ${asignaturaSeleccionada}-${cursoSeleccionado}.json\n\nPregunta: ${pregunta}\nRespuesta: ${respuesta}`);
                 // Limpiar campos
                 setPregunta("");
                 setRespuesta("");
             } else {
-                alert(`Error: ${data.error}`);
             }
         } catch (error) {
             console.error('Error al enviar pregunta:', error);
-            alert('Error al enviar la pregunta. Inténtalo de nuevo.');
         }
     };
 
@@ -358,11 +342,9 @@ const PerfilUsuario: React.FC = () => {
         })
             .then(() => {
                 setUserTrofeos(updated);
-                alert(`Trofeo #${trofeoIdx + 1} bloqueado para ${selectedUser}`);
             })
             .catch(error => {
                 console.error('Error locking trofeo:', error);
-                alert("Error bloqueando trofeo");
             });
     };    // Lista de trofeos normales (24)
     const TROFEOS = [
@@ -871,7 +853,6 @@ const PerfilUsuario: React.FC = () => {
                                                             })
                                                             .catch(error => {
                                                                 console.error('Error sending message:', error);
-                                                                alert("Error enviando mensaje");
                                                             });
                                                     }
                                                 }}

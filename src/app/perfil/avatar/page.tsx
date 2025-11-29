@@ -82,7 +82,6 @@ const AvatarSelector: React.FC = () => {
         // Verificar si el avatar seleccionado es premium y el usuario no es premium
         const isSelectedPremium = premiumAvatars.includes(selectedAvatar);
         if (isSelectedPremium && !isPremium) {
-            alert('Este avatar es exclusivo para usuarios Premium. ¡Hazte Premium para usarlo!');
             return;
         }
 
@@ -97,15 +96,12 @@ const AvatarSelector: React.FC = () => {
             });
 
             if (response.ok) {
-                alert("Avatar actualizado correctamente");
                 router.push("/perfil");
             } else {
                 const error = await response.json();
-                alert(`Error al actualizar avatar: ${error.error || 'Error desconocido'}`);
             }
         } catch (error) {
             console.error('Error saving avatar:', error);
-            alert('Error al guardar el avatar. Inténtalo de nuevo.');
         } finally {
             setSaving(false);
         }

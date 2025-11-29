@@ -36,7 +36,5 @@ archivos.forEach(archivo => {
         return p;
     });
     fs.writeFileSync(ruta, JSON.stringify(preguntas, null, 2), 'utf8');
-    console.log(`Etiquetado: ${archivo}`);
 });
 
-console.log('¡Etiquetado automático completado!');

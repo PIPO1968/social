@@ -43,12 +43,9 @@ const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
             });
             if (response.ok) {
                 setEsAmigo(true);
-                alert(`Solicitud enviada a ${perfilNick}`);
             } else {
-                alert('Error al enviar solicitud');
             }
         } catch (error) {
-            alert('Error al enviar solicitud');
         }
     };
 
@@ -63,12 +60,9 @@ const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
             });
             if (response.ok) {
                 setEsAmigo(false);
-                alert(`Amistad finalizada con ${perfilNick}`);
             } else {
-                alert('Error al finalizar amistad');
             }
         } catch (error) {
-            alert('Error al finalizar amistad');
         }
     };
 

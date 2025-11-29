@@ -35,10 +35,8 @@ async function migrateQuestions() {
                 });
             }
 
-            console.log(`Migradas preguntas de ${file}`);
         }
 
-        console.log('Migración completada');
     } catch (error) {
         console.error('Error en migración:', error);
     } finally {
