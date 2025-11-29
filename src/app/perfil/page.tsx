@@ -109,6 +109,9 @@ const PerfilUsuario: React.FC = () => {
 
     const { t } = useTranslation();
 
+
+    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
+
     // Inicialización y sincronización de usuario y rankings SOLO una vez
     useEffect(() => {
         // Obtener usuario actual
@@ -176,9 +179,6 @@ const PerfilUsuario: React.FC = () => {
                 });
         }
     }, [displayedUser]);
-
-
-    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
 
     // Cargar mensajes del chat solo cuando cambia el usuario
     useEffect(() => {
