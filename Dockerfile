@@ -2,7 +2,7 @@
 FROM node:20-alpine
 
 # Instalar dependencias del sistema
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 
 # Crear directorio de la aplicación
 WORKDIR /app
