@@ -979,7 +979,6 @@ const PerfilUsuario: React.FC = () => {
                                     className="border rounded px-3 py-2 text-sm"
                                     value={concursoSeleccionado}
                                     onChange={e => setConcursoSeleccionado(e.target.value)}
-                                    key={`concurso-select-${refreshKey}`}
                                 >
                                     <option value="">{t('seleccionarConcurso')}</option>
                                     {(() => {
