@@ -1193,9 +1193,9 @@ const PerfilUsuario: React.FC = () => {
                                         disabled={!selectedUser || trofeoSeleccionado === ""}
                                         onClick={() => {
                                             if (trofeoSeleccionado.startsWith("normal-")) {
-                                                handleUnlockTrofeo(Number(trofeoSeleccionado.replace("normal-", "")) - 1);
+                                                handleLockTrofeo(Number(trofeoSeleccionado.replace("normal-", "")) - 1);
                                             } else if (trofeoSeleccionado.startsWith("premium-")) {
-                                                handleUnlockTrofeo(24 + Number(trofeoSeleccionado.replace("premium-", "")) - 1);
+                                                handleLockTrofeo(24 + Number(trofeoSeleccionado.replace("premium-", "")) - 1);
                                             }
                                         }}
                                     >
