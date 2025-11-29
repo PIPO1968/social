@@ -9,7 +9,6 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "seed": "node seed-database.js"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",

@@ -23,7 +23,7 @@ interface Usuario {
     historiasCreadas: number;
     anosEnStoryUp: number;
     trofeos: any[];
-}
+};
 
 const PerfilUsuario: React.FC = () => {
     const router = useRouter();
@@ -113,27 +113,22 @@ const PerfilUsuario: React.FC = () => {
     useEffect(() => {
         // Obtener usuario actual
         fetch('/api/auth/me')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    router.push('/');
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.user) {
+                if (data && data.user) {
                     setUser(data.user);
-                } else {
-                    // No está logueado, redirigir
+                } else if (data && !data.user) {
                     router.push('/');
                 }
             })
-            .catch(() => {
-                router.push('/');
-            });
-
-        // Obtener lista de usuarios
-        fetch('/api/users')
-            .then(response => response.json())
-            .then(users => {
-                setUsuarios(users);
-            })
             .catch(error => {
-                console.warn('No se pudo cargar la lista de usuarios:', error);
+                console.warn('Error comprobando sesión:', error);
             });
 
         // Obtener concursos
@@ -146,6 +141,44 @@ const PerfilUsuario: React.FC = () => {
                 console.warn('No se pudo cargar la lista de concursos:', error);
             });
     }, []);
+
+    // Manejo seguro de datos premium y trofeos
+    useEffect(() => {
+        if (displayedUser && displayedUser.nick) {
+            fetch('/api/premium/data?nick=' + displayedUser.nick)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && !data.error) {
+                        setPremiumData(data);
+                    } else {
+                        setPremiumData(null);
+                        console.warn('No hay datos premium para este usuario.');
+                    }
+                })
+                .catch(error => {
+                    setPremiumData(null);
+                    console.warn('No se pudo cargar datos premium:', error);
+                });
+
+            fetch('/api/trofeos/user-trofeos?nick=' + displayedUser.nick)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && !data.error) {
+                        setUserTrofeos(data);
+                    } else {
+                        setUserTrofeos({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
+                        console.warn('No hay trofeos para este usuario.');
+                    }
+                })
+                .catch(error => {
+                    setUserTrofeos({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
+                    console.warn('No se pudo cargar trofeos:', error);
+                });
+        }
+    }, [displayedUser]);
+
+
+    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
 
     // Cargar mensajes del chat solo cuando cambia el usuario
     useEffect(() => {
@@ -160,24 +193,6 @@ const PerfilUsuario: React.FC = () => {
                 });
         }
     }, [user]);
-
-
-    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
-
-    // Cargar datos premium y trofeos del usuario mostrado
-    useEffect(() => {
-        if (displayedUser && displayedUser.nick) {
-            fetch('/api/premium/data?nick=' + displayedUser.nick)
-                .then(response => response.json())
-                .then(data => setPremiumData(data))
-                .catch(error => console.warn('No se pudo cargar datos premium:', error));
-
-            fetch('/api/trofeos/user-trofeos?nick=' + displayedUser.nick)
-                .then(response => response.json())
-                .then(data => setUserTrofeos(data))
-                .catch(error => console.warn('No se pudo cargar trofeos:', error));
-        }
-    }, [displayedUser]);
 
     const handlePalabraProhibidaSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -218,6 +233,26 @@ const PerfilUsuario: React.FC = () => {
                 console.error('Error creando concurso:', error);
             });
     };
+    // Función general para sumar o restar likes a cualquier usuario
+    const updateLikes = (nick: string, cantidad: number) => {
+        if (!nick) return;
+        const currentLikes = usuarios.find((u: any) => u.nick === nick)?.likes || 0;
+        fetch('/api/users/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nick, likes: currentLikes + cantidad })
+        })
+            .then(response => response.json())
+            .then(updatedUser => {
+                const updatedUsers = usuarios.map((u: any) => u.nick === nick ? updatedUser : u);
+                setUsuarios(updatedUsers);
+                if (user && user.nick === nick) {
+                    setUser(updatedUser);
+                }
+            })
+            .catch(error => console.error('Error updating likes:', error));
+    };
+
     const handleSeleccionarGanador = () => {
         if (usuarioGanador) {
             fetch('/api/concursos', {
@@ -231,28 +266,26 @@ const PerfilUsuario: React.FC = () => {
                 .catch(error => {
                     console.error('Error seleccionando ganador:', error);
                 });
-        } else {
         }
     };
-    const handleAsignarGanador = () => {
+    const handleAsignarGanador = async () => {
         if (!concursoSeleccionado || !ganadorSeleccionado) {
             return;
         }
-        fetch('/api/concursos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: parseInt(concursoSeleccionado), ganador: ganadorSeleccionado })
-        })
-            .then(() => {
-                updateLikes(ganadorSeleccionado, 10);
-                setConcursoSeleccionado("");
-                setGanadorSeleccionado("");
-                // Refrescar concursos
-                fetch('/api/concursos').then(r => r.json()).then(setConcursos);
-            })
-            .catch(error => {
-                console.error('Error asignando ganador:', error);
+        try {
+            await fetch('/api/concursos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: concursoSeleccionado, ganador: ganadorSeleccionado })
             });
+            updateLikes(ganadorSeleccionado, 10);
+            setConcursoSeleccionado("");
+            setGanadorSeleccionado("");
+            // Refrescar concursos
+            fetch('/api/concursos').then(r => r.json()).then(setConcursos);
+        } catch (error) {
+            console.error('Error asignando ganador:', error);
+        }
     };
     const handleNoticiaSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -281,7 +314,6 @@ const PerfilUsuario: React.FC = () => {
         if (!pregunta.trim() || !respuesta.trim()) {
             return;
         }
-
         try {
             const response = await fetch('/api/add-question', {
                 method: 'POST',
@@ -295,38 +327,33 @@ const PerfilUsuario: React.FC = () => {
                     respuesta: respuesta.trim(),
                 }),
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                // Limpiar campos
                 setPregunta("");
                 setRespuesta("");
-            } else {
             }
         } catch (error) {
             console.error('Error al enviar pregunta:', error);
         }
-    };
-
-    // Función general para sumar o restar likes a cualquier usuario
-    const updateLikes = (nick: string, cantidad: number) => {
-        if (!nick) return;
-        const currentLikes = usuarios.find(u => u.nick === nick)?.likes || 0;
-        fetch('/api/users/update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nick, likes: currentLikes + cantidad })
-        })
-            .then(response => response.json())
-            .then(updatedUser => {
-                const updatedUsers = usuarios.map(u => u.nick === nick ? updatedUser : u);
-                setUsuarios(updatedUsers);
-                if (user && user.nick === nick) {
-                    setUser(updatedUser);
-                }
+        // Función general para sumar o restar likes a cualquier usuario
+        const updateLikes = (nick: string, cantidad: number) => {
+            if (!nick) return;
+            const currentLikes = usuarios.find((u: any) => u.nick === nick)?.likes || 0;
+            fetch('/api/users/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nick, likes: currentLikes + cantidad })
             })
-            .catch(error => console.error('Error updating likes:', error));
+                .then(response => response.json())
+                .then(updatedUser => {
+                    const updatedUsers = usuarios.map((u: any) => u.nick === nick ? updatedUser : u);
+                    setUsuarios(updatedUsers);
+                    if (user && user.nick === nick) {
+                        setUser(updatedUser);
+                    }
+                })
+                .catch(error => console.error('Error updating likes:', error));
+        };
     };
     // Función para bloquear trofeo específico
     const handleLockTrofeo = (trofeoIdx: number) => {
@@ -565,308 +592,83 @@ const PerfilUsuario: React.FC = () => {
 
     const isPremium = displayedUser ? (premiumData && premiumData.activo) : false;
     return (
-        <>
-            <div className="min-h-screen bg-green-100 flex flex-col pt-4">
-                <div className="flex items-center justify-center mt-2 mb-4">
-                    {mensajeRecibido && (
-                        <button
-                            className="bg-yellow-400 text-white px-2 py-1 rounded font-bold mr-4 animate-bounce"
-                            onClick={() => {
-                                setMensajeRecibido(false);
-                            }}
-                        >Mensaje recibido</button>
-                    )}
-                    <h2 className="text-3xl font-bold text-center">Perfil de {renderNick(displayedUser.nick)}</h2>
+        <div className="min-h-screen bg-green-100 flex flex-col pt-4">
+            {/* ...existing code... */}
+            {/* BLOQUES EXTRA SOLO PARA DOCENTES */}
+            {user.tipo && user.tipo.toLowerCase() === "docente" && (
+                <div className="w-full max-w-6xl mx-auto mt-16 grid grid-cols-2 gap-12">
+                    {/* Bloque: Crear noticia */}
+                    <form onSubmit={handleNoticiaSubmit} className="bg-white shadow rounded p-6 mb-8 flex flex-col gap-4">
+                        <h3 className="text-lg font-bold mb-2">Crear noticia</h3>
+                        <input type="text" value={noticiaTitulo} onChange={e => setNoticiaTitulo(e.target.value)} placeholder="Título" className="border p-2 rounded" />
+                        <textarea value={noticiaTexto} onChange={e => setNoticiaTexto(e.target.value)} placeholder="Contenido" className="border p-2 rounded" />
+                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Publicar noticia</button>
+                    </form>
 
-                    {/* Indicador Premium Animado */}
-                    {isPremium && (
-                        <div className="flex justify-center mt-2">
-                            <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-yellow-500/50 animate-pulse flex items-center gap-2">
-                                <span className="animate-bounce">👑</span>
-                                <span>PREMIUM ACTIVO</span>
-                                <span className="animate-bounce">✨</span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <div className="flex flex-row w-full">
-                    {/* Datos personales */}
-                    <div className={`max-w-md w-full bg-white shadow rounded p-6 ml-8 transition-all duration-500 ${isPremium
-                        ? 'border-4 border-yellow-400 shadow-2xl shadow-yellow-400/50 animate-pulse relative overflow-hidden'
-                        : ''
-                        }`}>
-                        {/* Efecto de partículas para premium */}
-                        {isPremium && (
-                            <div className="absolute inset-0 pointer-events-none">
-                                <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-ping opacity-75"></div>
-                                <div className="absolute top-4 left-4 w-1 h-1 bg-yellow-300 rounded-full animate-bounce opacity-60"></div>
-                                <div className="absolute bottom-4 right-6 w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse opacity-80"></div>
-                            </div>
+                    {/* Bloque: Crear concurso */}
+                    <form onSubmit={handleConcursoSubmit} className="bg-white shadow rounded p-6 mb-8 flex flex-col gap-4">
+                        <h3 className="text-lg font-bold mb-2">Crear concurso</h3>
+                        <input type="text" value={concursoTitulo} onChange={e => setConcursoTitulo(e.target.value)} placeholder="Título" className="border p-2 rounded" />
+                        <textarea value={concursoTexto} onChange={e => setConcursoTexto(e.target.value)} placeholder="Descripción" className="border p-2 rounded" />
+                        <input type="date" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} className="border p-2 rounded" />
+                        <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} className="border p-2 rounded" />
+                        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">Crear concurso</button>
+                    </form>
+
+                    {/* Gestión de Concursos Finalizados */}
+                    <div className="bg-white shadow rounded p-6 mb-8 flex flex-col gap-4">
+                        <h3 className="text-lg font-bold mb-2">Gestión de concursos finalizados</h3>
+                        <select value={concursoSeleccionado} onChange={e => setConcursoSeleccionado(e.target.value)} className="border p-2 rounded">
+                            <option value="">Selecciona concurso</option>
+                            {concursos.map(c => (
+                                <option key={c.id} value={c.id}>{c.titulo}</option>
+                            ))}
+                        </select>
+                        <input type="text" value={ganadorSeleccionado} onChange={e => setGanadorSeleccionado(e.target.value)} placeholder="Nick del ganador" className="border p-2 rounded" />
+                        <button type="button" onClick={handleAsignarGanador} className="bg-yellow-500 text-white px-4 py-2 rounded">Asignar ganador</button>
+                    </div>
+
+                    {/* Bloque: Agregar Pregunta - Aprende con Pipo */}
+                    <form onSubmit={e => { e.preventDefault(); enviarPregunta(); }} className="bg-white shadow rounded p-6 mb-8 flex flex-col gap-4">
+                        <h3 className="text-lg font-bold mb-2">Agregar pregunta (Aprende con Pipo)</h3>
+                        <select value={cursoSeleccionado} onChange={e => setCursoSeleccionado(e.target.value)} className="border p-2 rounded">
+                            <option value="1primaria">1º Primaria</option>
+                            <option value="2primaria">2º Primaria</option>
+                            <option value="3primaria">3º Primaria</option>
+                            <option value="4primaria">4º Primaria</option>
+                            <option value="5primaria">5º Primaria</option>
+                            <option value="6primaria">6º Primaria</option>
+                        </select>
+                        <select value={asignaturaSeleccionada} onChange={e => setAsignaturaSeleccionada(e.target.value)} className="border p-2 rounded">
+                            <option value="matematicas">Matemáticas</option>
+                            <option value="lenguaje">Lenguaje</option>
+                            <option value="ciencias">Ciencias</option>
+                            <option value="ingles">Inglés</option>
+                            <option value="historia">Historia</option>
+                            <option value="geografia">Geografía</option>
+                            <option value="literatura">Literatura</option>
+                        </select>
+                        <input type="text" value={pregunta} onChange={e => setPregunta(e.target.value)} placeholder="Pregunta" className="border p-2 rounded" />
+                        <input type="text" value={respuesta} onChange={e => setRespuesta(e.target.value)} placeholder="Respuesta" className="border p-2 rounded" />
+                        <button type="submit" className="bg-purple-500 text-white px-4 py-2 rounded">Agregar pregunta</button>
+                    </form>
+
+                    {/* Panel de administración y antibullying */}
+                    <div className="bg-white shadow rounded p-6 mb-8 flex flex-col gap-4">
+                        <h3 className="text-lg font-bold mb-2">Panel de administración y antibullying</h3>
+                        <form onSubmit={handlePalabraProhibidaSubmit} className="flex gap-2 mb-2">
+                            <input type="text" value={palabraProhibida} onChange={e => setPalabraProhibida(e.target.value)} placeholder="Palabra prohibida" className="border p-2 rounded" />
+                            <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">Agregar palabra</button>
+                        </form>
+                        <button type="button" onClick={handleApagarBullying} className="bg-gray-500 text-white px-4 py-2 rounded">Desactivar antibullying</button>
+                        {bullyingActivo && (
+                            <div className="text-red-600 font-bold">Antibullying activo para: {usuarioBullying}</div>
                         )}
-
-                        <div className="flex justify-between items-center mb-4 relative">
-                            <h3 className={`text-xl font-bold text-center w-full transition-all duration-300 ${isPremium ? 'text-yellow-600' : ''
-                                }`}>
-                                {t('informacionPersonal')}
-                                {isPremium && (
-                                    <span className="ml-2 animate-spin">👑</span>
-                                )}
-                            </h3>
-                        </div>                        <div className="flex flex-col items-center mb-4">
-                            <div className={`relative ${isPremium ? '' : ''}`}>
-                                <img
-                                    src={displayedUser.avatar || "/avatars/default.png"}
-                                    alt="Avatar"
-                                    className={`w-20 h-20 rounded-full mb-2 transition-all duration-300 ${isPremium
-                                        ? 'ring-4 ring-yellow-400 ring-opacity-70 shadow-lg shadow-yellow-400/50 hover:scale-110'
-                                        : ''
-                                        }`}
-                                />
-                                {isPremium && (
-                                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-xs animate-bounce">
-                                        ✨
-                                    </div>
-                                )}
-                            </div>
-
-                            <button className={`px-4 py-2 rounded font-semibold transition-all duration-300 ${isPremium
-                                ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-600 hover:to-yellow-700 shadow-lg hover:shadow-yellow-500/50 hover:scale-105'
-                                : 'bg-blue-500 text-white hover:bg-blue-600'
-                                }`} onClick={() => router.push('/perfil/avatar')}>
-                                Cambiar avatar
-                            </button>
-                        </div>
-                        <div className="mb-2"><strong>{t('nombre')}:</strong> {displayedUser.nombre}</div>
-                        <div className="mb-2"><strong>Nick:</strong> {renderNick(displayedUser.nick)}</div>
-                        <div className="mb-2"><strong>{t('email')}:</strong> {displayedUser.email}</div>
-                        <div className="mb-2"><strong>{t('centroEducativo')}:</strong> {displayedUser.centro}</div>
-                        <div className="mb-2"><strong>{t('curso')}:</strong> {displayedUser.curso}</div>
-                        <div className="mb-2"><strong>{t('tipoUsuario')}:</strong> {user.tipo}</div>
-                        <div className="mb-2"><strong>{t('fechaInscripcion')}:</strong> {user.fechaInscripcion ? new Date(user.fechaInscripcion).toLocaleDateString('es-ES') : ''}</div>
-                        <div className="mb-2 flex items-center">
-                            {/* Datos personales en filas de dos en dos, con bloques redondos */}
-                            <div className="flex flex-col mt-2 gap-y-4">
-                                <div className="flex flex-row gap-x-12">
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">👍</span>
-                                        <strong>Likes:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-300 text-green-900 font-bold text-sm">{displayedUser.likes || 0}</span>
-                                    </div>
-                                    <div className="flex items-center ml-8">
-                                        <span className="mr-2 text-lg">👥</span>
-                                        <strong>{t('totalAmigos')}:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-300 text-blue-900 font-bold text-sm">{displayedUser.amigos ? displayedUser.amigos.length : 0}</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row gap-x-12">
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">📖</span>
-                                        <strong>{t('totalHistorias')}:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-200 text-purple-900 font-bold text-sm">{displayedUser.historias ? displayedUser.historias.length : 0}</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">💬</span>
-                                        <strong>{t('totalComentarios')}:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-200 text-yellow-900 font-bold text-sm">{displayedUser.comentariosRecibidos || 0}</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row gap-x-12">
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">🏆</span>
-                                        <strong>{t('trofeosDesbloqueados')}:</strong>
-                                        {(() => {
-                                            // Trofeos automáticos
-                                            const auto = getAutoTrofeos(displayedUser);
-                                            // Manuales
-                                            const manual = Array.isArray(displayedUser.trofeosDesbloqueados) ? displayedUser.trofeosDesbloqueados : [];
-                                            // Asignados (por competiciones, etc.)
-                                            const asignados = Array.isArray(displayedUser.trofeos) ? displayedUser.trofeos : [];
-                                            // Premium
-                                            const premiumCount = Array.isArray(manual) ? manual.filter((idx: number) => idx >= TROFEOS.length && idx < TROFEOS.length + TROFEOS_PREMIUM.length).length : 0;
-                                            // Unir todos y contar únicos
-                                            const total = new Set([...auto, ...manual, ...asignados]).size + premiumCount;
-                                            return (
-                                                <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-200 text-pink-900 font-bold text-sm">{total}</span>
-                                            );
-                                        })()}
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">✅</span>
-                                        <strong>Respuestas acertadas:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-200 text-indigo-900 font-bold text-sm">{user.preguntasAcertadas || 0}</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row gap-x-12">
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">🥇</span>
-                                        <strong>Competiciones:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-200 text-teal-900 font-bold text-sm">{displayedUser.competicionesSuperadas || 0}</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2 text-lg">🎉</span>
-                                        <strong>Concursos:</strong>
-                                        <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-200 text-red-900 font-bold text-sm">{displayedUser.concursosGanados || 0}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col flex-1 ml-8">
-                        <div className="flex flex-row gap-4">
-                            {/* Trofeos */}
-                            <div className="max-w-md w-full bg-white shadow rounded p-6">
-                                <h3 className="text-xl font-bold mb-4 text-center">{t('trofeosDesbloqueados')}</h3>
-                                <div className="grid grid-cols-6 gap-2">
-                                    {TROFEOS.map((trofeo, idx) => {
-                                        const tieneTrofeo = isTrofeoUnlocked(user, idx);
-                                        return (
-                                            <div key={idx} className={`relative bg-white rounded-lg shadow flex items-center justify-center w-14 h-14 border border-gray-200 ${tieneTrofeo ? '' : 'opacity-40'}`}>
-                                                <img src={trofeo.src} alt={trofeo.texto} className="w-10 h-10 object-contain" />
-                                                {tieneTrofeo ? (
-                                                    <span className="absolute top-1 right-1 bg-yellow-200 text-xs font-bold rounded px-1 py-0.5">{idx + 1}</span>
-                                                ) : (
-                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                        <svg width="56" height="56" viewBox="0 0 56 56" className="absolute text-red-500" style={{ zIndex: 2, left: 0, top: 0 }}>
-                                                            <line x1="0" y1="0" x2="56" y2="56" stroke="currentColor" strokeWidth="6" />
-                                                            <line x1="56" y1="0" x2="0" y2="56" stroke="currentColor" strokeWidth="6" />
-                                                        </svg>
-                                                        <svg width="48" height="48" viewBox="0 0 20 20" fill="none" className="text-yellow-500">
-                                                            <rect x="2" y="7" width="16" height="10" rx="3" fill="currentColor" />
-                                                            <rect x="5" y="2" width="10" height="7" rx="5" stroke="currentColor" strokeWidth="2" fill="none" />
-                                                            <circle cx="10" cy="13" r="2" fill="#fff" />
-                                                        </svg>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                            {/* Trofeos Premium */}
-                            <div className={`max-w-md w-full bg-white shadow rounded p-6 transition-all duration-500 ${isPremium
-                                ? 'border-4 border-yellow-400 shadow-2xl shadow-yellow-400/50 animate-pulse relative overflow-hidden'
-                                : ''
-                                }`}>
-                                {/* Efectos premium para trofeos */}
-                                {isPremium && (
-                                    <div className="absolute inset-0 pointer-events-none">
-                                        <div className="absolute top-1 left-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping opacity-60"></div>
-                                        <div className="absolute bottom-2 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-bounce opacity-70"></div>
-                                    </div>
-                                )}
-
-                                <h3 className={`text-xl font-bold mb-4 text-center transition-all duration-300 ${isPremium ? 'text-yellow-600' : ''
-                                    }`}>
-                                    Trofeos Premium
-                                    {isPremium && <span className="ml-2 animate-spin">👑</span>}
-                                </h3>
-                                <div className="grid grid-cols-4 gap-4 w-full">
-                                    {TROFEOS_PREMIUM.map((trofeo, idx) => {
-                                        const tieneTrofeo = isTrofeoUnlocked(user, TROFEOS.length + idx);
-                                        return (
-                                            <div key={idx} className={`relative bg-white rounded-lg shadow flex items-center justify-center w-20 h-20 border-2 border-yellow-400 ${tieneTrofeo ? '' : 'opacity-40'}`}>
-                                                <img src={trofeo.src} alt={`Premium ${idx + 1}`} className="w-16 h-16 object-contain" />
-                                                {tieneTrofeo ? (
-                                                    <span className="absolute top-1 right-1 bg-yellow-300 text-sm font-bold rounded px-2 py-0.5">{idx + 1}</span>
-                                                ) : (
-                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                        <svg width="72" height="72" viewBox="0 0 72 72" className="absolute text-red-500" style={{ zIndex: 2, left: 0, top: 0 }}>
-                                                            <line x1="0" y1="0" x2="72" y2="72" stroke="currentColor" strokeWidth="8" />
-                                                            <line x1="72" y1="0" x2="0" y2="72" stroke="currentColor" strokeWidth="8" />
-                                                        </svg>
-                                                        <svg width="64" height="64" viewBox="0 0 20 20" fill="none" className="text-yellow-500">
-                                                            <rect x="2" y="7" width="16" height="10" rx="3" fill="currentColor" />
-                                                            <rect x="5" y="2" width="10" height="7" rx="5" stroke="currentColor" strokeWidth="2" fill="none" />
-                                                            <circle cx="10" cy="13" r="2" fill="#fff" />
-                                                        </svg>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                        {/* Chat justo debajo de los trofeos, con ancho limitado */}
-                        <div className="flex flex-row justify-start mt-16">
-                            <div className="bg-white shadow-lg rounded-lg p-6 flex flex-row items-start gap-6" style={{ width: 'calc(2 * 28rem + 1rem)' }}>
-                                {/* 2 bloques de trofeos de max-w-md (28rem) + gap-4 (1rem) */}
-                                <div className="w-64 flex flex-col items-start">
-                                    <label htmlFor="destinatario" className="font-medium mb-2 text-sm">Enviar a usuario:</label>
-                                    <select
-                                        id="destinatario"
-                                        className="px-2 py-2 rounded border border-blue-300 bg-white w-full text-sm"
-                                        value={selectedUser}
-                                        onChange={e => setSelectedUser(e.target.value)}
-                                    >
-                                        <option value="">{t('seleccionarUsuario')}</option>
-                                        {usuarios
-                                            .filter((u, i, arr) => arr.findIndex(x => x.nick === u.nick) === i)
-                                            .sort((a, b) => a.nick.localeCompare(b.nick))
-                                            .map((u: any) => (
-                                                <option key={u.nick} value={u.nick}>{u.nick}</option>
-                                            ))}
-                                    </select>
-                                </div>
-                                <div className="flex-1 flex flex-col items-center">
-                                    <div className="flex items-center mb-4">
-                                        <h3 className="text-xl font-bold text-center flex-1">Chat</h3>
-                                    </div>
-                                    <div className="w-full h-64 bg-gray-50 rounded-lg border border-gray-200 p-4 overflow-y-auto flex flex-col">
-                                        {chatMessages.length === 0 ? (
-                                            <div className="flex-1 flex items-center justify-center text-gray-400">El chat estará disponible aquí.</div>
-                                        ) : (
-                                            chatMessages.map((msg, idx) => (
-                                                <div key={idx} className="mb-2 text-sm flex justify-between items-center">
-                                                    <span>
-                                                        <strong>{msg.from === user.nick ? "Tú" : msg.from} → {msg.to === user.nick ? "Tú" : msg.to}:</strong> {msg.text}
-                                                    </span>
-                                                    {msg.fecha && (
-                                                        <span className="ml-2 text-xs text-gray-500">{msg.fecha}</span>
-                                                    )}
-                                                </div>
-                                            ))
-                                        )}
-                                        <div className="w-full mt-4 flex">
-                                            <input
-                                                type="text"
-                                                className="flex-1 border rounded-l px-3 py-2 focus:outline-none"
-                                                placeholder="Escribe un mensaje..."
-                                                value={chatInput}
-                                                onChange={e => setChatInput(e.target.value)}
-                                                disabled={!selectedUser}
-                                            />
-                                            <button
-                                                className={BUTTON_STYLES.successBold + " rounded-r"}
-                                                disabled={!selectedUser || !chatInput.trim()}
-                                                onClick={() => {
-                                                    if (selectedUser && chatInput.trim() && user && user.nick) {
-                                                        const mensaje = { from: user.nick, to: selectedUser, text: chatInput, fecha: new Date().toLocaleString('es-ES') };
-                                                        fetch('/api/chat', {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({ from: user.nick, to: selectedUser, text: chatInput })
-                                                        })
-                                                            .then(() => {
-                                                                setChatMessages([...chatMessages, mensaje]);
-                                                                setChatInput("");
-                                                            })
-                                                            .catch(error => {
-                                                                console.error('Error sending message:', error);
-                                                            });
-                                                    }
-                                                }}
-                                            >{t('enviar')}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>
-        </>
+            )}
+        </div>
     );
-};
 
+}
 export default PerfilUsuario;

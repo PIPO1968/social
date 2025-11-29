@@ -21,6 +21,22 @@
   },
   "dynamicRoutes": [
     {
+      "page": "/api/historias/[id]",
+      "regex": "^/api/historias/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/historias/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/historias/[id]/like",
+      "regex": "^/api/historias/([^/]+?)/like(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/historias/(?<nxtPid>[^/]+?)/like(?:/)?$"
+    },
+    {
       "page": "/api/users/[id]",
       "regex": "^/api/users/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -109,16 +125,100 @@
       "namedRegex": "^/api/auth/register(?:/)?$"
     },
     {
+      "page": "/api/championship/reset",
+      "regex": "^/api/championship/reset(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/championship/reset(?:/)?$"
+    },
+    {
+      "page": "/api/championship/results",
+      "regex": "^/api/championship/results(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/championship/results(?:/)?$"
+    },
+    {
+      "page": "/api/championship/seasons",
+      "regex": "^/api/championship/seasons(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/championship/seasons(?:/)?$"
+    },
+    {
+      "page": "/api/chat",
+      "regex": "^/api/chat(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/chat(?:/)?$"
+    },
+    {
+      "page": "/api/concursos",
+      "regex": "^/api/concursos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/concursos(?:/)?$"
+    },
+    {
       "page": "/api/friends",
       "regex": "^/api/friends(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/friends(?:/)?$"
     },
     {
+      "page": "/api/historias",
+      "regex": "^/api/historias(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/historias(?:/)?$"
+    },
+    {
+      "page": "/api/liga-premium",
+      "regex": "^/api/liga\\-premium(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/liga\\-premium(?:/)?$"
+    },
+    {
+      "page": "/api/noticias",
+      "regex": "^/api/noticias(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/noticias(?:/)?$"
+    },
+    {
+      "page": "/api/palabras-prohibidas",
+      "regex": "^/api/palabras\\-prohibidas(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/palabras\\-prohibidas(?:/)?$"
+    },
+    {
+      "page": "/api/premios/mensuales",
+      "regex": "^/api/premios/mensuales(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/premios/mensuales(?:/)?$"
+    },
+    {
       "page": "/api/premium",
       "regex": "^/api/premium(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/premium(?:/)?$"
+    },
+    {
+      "page": "/api/premium/competiciones",
+      "regex": "^/api/premium/competiciones(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/premium/competiciones(?:/)?$"
+    },
+    {
+      "page": "/api/premium/data",
+      "regex": "^/api/premium/data(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/premium/data(?:/)?$"
+    },
+    {
+      "page": "/api/premium/solicitudes",
+      "regex": "^/api/premium/solicitudes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/premium/solicitudes(?:/)?$"
+    },
+    {
+      "page": "/api/premium/torneos",
+      "regex": "^/api/premium/torneos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/premium/torneos(?:/)?$"
     },
     {
       "page": "/api/questions",
@@ -163,6 +263,12 @@
       "namedRegex": "^/api/torneos(?:/)?$"
     },
     {
+      "page": "/api/trofeos/user-trofeos",
+      "regex": "^/api/trofeos/user\\-trofeos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/trofeos/user\\-trofeos(?:/)?$"
+    },
+    {
       "page": "/api/user/increment-stat",
       "regex": "^/api/user/increment\\-stat(?:/)?$",
       "routeKeys": {},
@@ -173,6 +279,12 @@
       "regex": "^/api/user/premium\\-status(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/user/premium\\-status(?:/)?$"
+    },
+    {
+      "page": "/api/user/profile",
+      "regex": "^/api/user/profile(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/user/profile(?:/)?$"
     },
     {
       "page": "/api/user/update-avatar",
@@ -191,6 +303,12 @@
       "regex": "^/api/users(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/users(?:/)?$"
+    },
+    {
+      "page": "/api/users/update",
+      "regex": "^/api/users/update(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/users/update(?:/)?$"
     },
     {
       "page": "/aprende-con-pipo",
