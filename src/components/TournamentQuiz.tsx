@@ -170,7 +170,7 @@ const TournamentQuiz: React.FC<TournamentQuizProps> = ({ userGrade, onTournament
                                     type="text"
                                     value={respuestaUsuario}
                                     onChange={(e) => setRespuestaUsuario(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && verificarRespuesta()}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleVerificarRespuesta()}
                                     placeholder="Escribe tu respuesta aquí..."
                                     className="w-full p-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     disabled={bloqueado}
