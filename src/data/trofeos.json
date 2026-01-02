@@ -3,35 +3,35 @@
         "id": 1,
         "imagen": "/trofeo25.jpg",
         "titulo": "Trofeo 1",
-        "descripcion": "Bienvenid@ a StoryUp",
-        "criterio": "true"
+        "descripcion": "Tus primeros 10 likes",
+        "criterio": "user.likes >= 10"
     },
     {
         "id": 2,
         "imagen": "/trofeo7.jpg",
         "titulo": "Trofeo 2",
-        "descripcion": "1 año en StoryUp",
-        "criterio": "user.anosEnStoryUp >= 1"
+        "descripcion": "Tu primer amigo",
+        "criterio": "Array.isArray(user.amigos) && user.amigos.length >= 1"
     },
     {
         "id": 3,
         "imagen": "/trofeo12.jpg",
         "titulo": "Trofeo 3",
-        "descripcion": "Tu primer amigo",
-        "criterio": "Array.isArray(user.amigos) && user.amigos.length >= 1"
+        "descripcion": "Recibiste tu primer comentario",
+        "criterio": "user.comentariosRecibidos >= 1"
     },
     {
         "id": 4,
         "imagen": "/trofeo5.jpg",
         "titulo": "Trofeo 4",
-        "descripcion": "5 respuestas acertadas",
-        "criterio": "user.respuestasAcertadas >= 5"
+        "descripcion": "Tu primera historia creada",
+        "criterio": "user.historiasCreadas >= 1"
     },
     {
         "id": 5,
         "imagen": "/trofeo13.png",
         "titulo": "Trofeo 5",
-        "descripcion": "20 respuestas acertadas",
+        "descripcion": "Tus primeras 20 respuestas acertadas",
         "criterio": "user.respuestasAcertadas >= 20"
     },
     {
@@ -45,7 +45,7 @@
         "id": 7,
         "imagen": "/trofeo27.jpg",
         "titulo": "Trofeo 7",
-        "descripcion": "Aparecer en rankings",
+        "descripcion": "Vimos tu nombre en el ranking de estadisticas...¡Que grande!",
         "criterio": "user.respuestasAcertadas >= 1 || user.likes >= 1 || user.historiasCreadas >= 1"
     },
     {
@@ -59,113 +59,113 @@
         "id": 9,
         "imagen": "/trofeo23.jpg",
         "titulo": "Trofeo 9",
-        "descripcion": "10 likes conseguidos",
-        "criterio": "user.likes >= 10"
+        "descripcion": "100 Likes conseguidos...¡Enhorabuena!",
+        "criterio": "user.likes >= 100"
     },
     {
         "id": 10,
         "imagen": "/trofeo15.jpg",
         "titulo": "Trofeo 10",
-        "descripcion": "10 amigos en tu lista",
+        "descripcion": "Tus primeros 10 amigos,¡te estas haciendo popular!",
         "criterio": "Array.isArray(user.amigos) && user.amigos.length >= 10"
     },
     {
         "id": 11,
         "imagen": "/trofeo26.jpg",
         "titulo": "Trofeo 11",
-        "descripcion": "Tu primera historia creada",
-        "criterio": "user.historiasCreadas >= 1"
+        "descripcion": "Enhorabuena por tus 3 primeras historias creadas...¡Nos encantan!",
+        "criterio": "user.historiasCreadas >= 3"
     },
     {
         "id": 12,
         "imagen": "/trofeo1.jpg",
         "titulo": "Trofeo 12",
-        "descripcion": "Comentarios recibidos",
-        "criterio": "user.comentariosRecibidos >= 1"
+        "descripcion": "Tu historia a recibido +3 comentarios",
+        "criterio": "user.comentariosRecibidos >= 3"
     },
     {
         "id": 13,
         "imagen": "/trofeo22.jpg",
         "titulo": "Trofeo 13",
-        "descripcion": "Participar en competiciones",
+        "descripcion": "¡Que bueno verte en la tabla de competiciones!",
         "criterio": "user.competicionesSuperadas >= 1"
     },
     {
         "id": 14,
         "imagen": "/trofeo14.jpg",
         "titulo": "Trofeo 14",
-        "descripcion": "100 likes conseguidos",
-        "criterio": "user.likes >= 100"
+        "descripcion": "+500 likes conseguidos...¡Te superas cada dia!",
+        "criterio": "user.likes >= 500"
     },
     {
         "id": 15,
         "imagen": "/trofeo20.jpg",
         "titulo": "Trofeo 15",
-        "descripcion": "30 amigos en tu lista",
+        "descripcion": "+ 30 amigos en tu lista,bien merecen un trofeo.",
         "criterio": "Array.isArray(user.amigos) && user.amigos.length >= 30"
     },
     {
         "id": 16,
         "imagen": "/trofeo11.jpg",
         "titulo": "Trofeo 16",
-        "descripcion": "10 comentarios recibidos",
+        "descripcion": "En el barrio se rumorea que tu historia recibio + 10 comentarios.",
         "criterio": "user.comentariosRecibidos >= 10"
     },
     {
         "id": 17,
         "imagen": "/trofeo24.jpg",
         "titulo": "Trofeo 17",
-        "descripcion": "3 historias creadas",
-        "criterio": "user.historiasCreadas >= 3"
+        "descripcion": "+ 15 historias creadas,¡Que tiemblen los adeptos a Cervantes!",
+        "criterio": "user.historiasCreadas >= 15"
     },
     {
         "id": 18,
         "imagen": "/trofeo18.jpg",
         "titulo": "Trofeo 18",
-        "descripcion": "3 concursos ganados",
+        "descripcion": "Tu 3º concurso ganado,lo vimos en la pagina de estadisticas...",
         "criterio": "user.concursosGanados >= 3"
     },
     {
         "id": 19,
         "imagen": "/trofeo19.jpg",
         "titulo": "Trofeo 19",
-        "descripcion": "100 respuestas acertadas",
-        "criterio": "user.respuestasAcertadas >= 100"
+        "descripcion": "Tu centro escolar estara orgulloso de ti con esas + 1000 preguntas acertadas que llevas ya.",
+        "criterio": "user.respuestasAcertadas >= 1000"
     },
     {
         "id": 20,
         "imagen": "/trofeo15.jpg",
         "titulo": "Trofeo 20",
-        "descripcion": "Veterano (2 años)",
-        "criterio": "user.anosEnStoryUp >= 2"
+        "descripcion": "1 año con la familia StoryUp,gracias por tu fidelidad.",
+        "criterio": "user.anosEnStoryUp >= 1"
     },
     {
         "id": 21,
         "imagen": "/trofeo9.jpg",
         "titulo": "Trofeo 21",
-        "descripcion": "15 historias creadas",
-        "criterio": "user.historiasCreadas >= 15"
+        "descripcion": "+ 30 historias creadas,¡tu creatividad abruma al mismisimo Einstein!",
+        "criterio": "user.historiasCreadas >= 30"
     },
     {
         "id": 22,
         "imagen": "/trofeo8.jpg",
         "titulo": "Trofeo 22",
-        "descripcion": "500 likes conseguidos",
-        "criterio": "user.likes >= 500"
+        "descripcion": "¡Enhorabuena!,no todo/as consiguen +1000 likes",
+        "criterio": "user.likes >= 1000"
     },
     {
         "id": 23,
         "imagen": "/trofeo21.jpg",
         "titulo": "Trofeo 23",
-        "descripcion": "50 amigos en tu lista",
+        "descripcion": "...Y sigues escalando hacia la cima,tu generosidad atrajo a +50 amigos a tu perfil,¡Eres muy popular en StoryUp!",
         "criterio": "Array.isArray(user.amigos) && user.amigos.length >= 50"
     },
     {
         "id": 24,
         "imagen": "/trofeo16.jpg",
         "titulo": "Trofeo 24",
-        "descripcion": "Máster (500 respuestas)",
-        "criterio": "user.respuestasAcertadas >= 500"
+        "descripcion": "¡Que el mundo lo sepa!,StoryUp te premio´ por tu buenhacer en nuestra red social,consiguiendo los 24 trofeos.",
+        "criterio": "user.likes >= 500 && Array.isArray(user.amigos) && user.amigos.length >= 10 && user.historiasCreadas >= 5 && user.respuestasAcertadas >= 100"
     },
     {
         "id": 25,

@@ -25,11 +25,11 @@ const PremiumPage: React.FC = () => {
                     router.push('/');
                     return;
                 }
-                const user = await response.json();
-                setUsuario(user);
-
-                // Verificar si tiene premium activo usando el campo del usuario
-                setIsPremium(user.premium || false);
+                const data = await response.json();
+                // Soportar tanto { user: {...} } como el usuario directo
+                const userObj = data.user ? data.user : data;
+                setUsuario(userObj);
+                setIsPremium(userObj.premium || false);
             } catch (error) {
                 console.error('Error loading user:', error);
                 router.push('/');

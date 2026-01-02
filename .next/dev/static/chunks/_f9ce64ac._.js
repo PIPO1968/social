@@ -17,19 +17,13 @@ const UserLink = ({ nick, className })=>{
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "UserLink.useEffect": ()=>{
             const checkPremium = {
-                "UserLink.useEffect.checkPremium": ()=>{
-                    // Verificar si el usuario es Premium
-                    if (("TURBOPACK compile-time value", "object") !== "undefined" && nick) {
-                        const premiumInfo = localStorage.getItem(`premium_${nick}`);
-                        if (premiumInfo) {
-                            try {
-                                const premium = JSON.parse(premiumInfo);
-                                const isActive = new Date(premium.expiracion) > new Date();
-                                setIsPremium(isActive);
-                            } catch (error) {
-                                setIsPremium(false);
-                            }
-                        } else {
+                "UserLink.useEffect.checkPremium": async ()=>{
+                    if (nick) {
+                        try {
+                            const response = await fetch(`/api/user/premium-status?nick=${encodeURIComponent(nick)}`);
+                            const data = await response.json();
+                            setIsPremium(data.isPremium || false);
+                        } catch (error) {
                             setIsPremium(false);
                         }
                     }
@@ -37,30 +31,6 @@ const UserLink = ({ nick, className })=>{
             }["UserLink.useEffect.checkPremium"];
             // Verificar inicialmente
             checkPremium();
-            // Escuchar cambios en localStorage
-            const handleStorageChange = {
-                "UserLink.useEffect.handleStorageChange": (e)=>{
-                    if (e.key?.startsWith('premium_') || e.key === null) {
-                        checkPremium();
-                    }
-                }
-            }["UserLink.useEffect.handleStorageChange"];
-            // Escuchar eventos personalizados de premium
-            const handlePremiumUpdate = {
-                "UserLink.useEffect.handlePremiumUpdate": (e)=>{
-                    if (e.detail.nick === nick) {
-                        checkPremium();
-                    }
-                }
-            }["UserLink.useEffect.handlePremiumUpdate"];
-            window.addEventListener('storage', handleStorageChange);
-            window.addEventListener('premiumUpdate', handlePremiumUpdate);
-            return ({
-                "UserLink.useEffect": ()=>{
-                    window.removeEventListener('storage', handleStorageChange);
-                    window.removeEventListener('premiumUpdate', handlePremiumUpdate);
-                }
-            })["UserLink.useEffect"];
         }
     }["UserLink.useEffect"], [
         nick
@@ -72,7 +42,7 @@ const UserLink = ({ nick, className })=>{
             children: nick || "(sin nick)"
         }, void 0, false, {
             fileName: "[project]/src/components/UserLink.tsx",
-            lineNumber: 58,
+            lineNumber: 30,
             columnNumber: 16
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -90,18 +60,18 @@ const UserLink = ({ nick, className })=>{
                     children: "👑"
                 }, void 0, false, {
                     fileName: "[project]/src/components/UserLink.tsx",
-                    lineNumber: 70,
+                    lineNumber: 42,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/UserLink.tsx",
-                lineNumber: 69,
+                lineNumber: 41,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/UserLink.tsx",
-        lineNumber: 62,
+        lineNumber: 34,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -162,13 +132,21 @@ function DetalleConcurso() {
     const numero = params?.numero;
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "DetalleConcurso.useEffect": ()=>{
-            if (("TURBOPACK compile-time value", "object") !== "undefined" && numero) {
-                const concursosStr = localStorage.getItem("concursos");
-                const concursosArr = concursosStr ? JSON.parse(concursosStr) : [];
-                const encontrado = concursosArr.find({
-                    "DetalleConcurso.useEffect.encontrado": (c)=>String(c.numero) === String(numero)
-                }["DetalleConcurso.useEffect.encontrado"]);
-                setConcurso(encontrado || null);
+            if (numero) {
+                fetch('/api/concursos').then({
+                    "DetalleConcurso.useEffect": (response)=>response.json()
+                }["DetalleConcurso.useEffect"]).then({
+                    "DetalleConcurso.useEffect": (concursos)=>{
+                        const encontrado = concursos.find({
+                            "DetalleConcurso.useEffect.encontrado": (c)=>String(c.numero) === String(numero)
+                        }["DetalleConcurso.useEffect.encontrado"]);
+                        setConcurso(encontrado || null);
+                    }
+                }["DetalleConcurso.useEffect"]).catch({
+                    "DetalleConcurso.useEffect": (error)=>{
+                        console.error('Error cargando concursos:', error);
+                    }
+                }["DetalleConcurso.useEffect"]);
             }
         }
     }["DetalleConcurso.useEffect"], [
@@ -180,7 +158,7 @@ function DetalleConcurso() {
             children: "Concurso no encontrado"
         }, void 0, false, {
             fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-            lineNumber: 21,
+            lineNumber: 26,
             columnNumber: 16
         }, this);
     }
@@ -195,7 +173,7 @@ function DetalleConcurso() {
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                lineNumber: 26,
+                lineNumber: 31,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -207,7 +185,7 @@ function DetalleConcurso() {
                                 children: "Título:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                                lineNumber: 28,
+                                lineNumber: 33,
                                 columnNumber: 20
                             }, this),
                             " ",
@@ -215,7 +193,7 @@ function DetalleConcurso() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                        lineNumber: 28,
+                        lineNumber: 33,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -224,7 +202,7 @@ function DetalleConcurso() {
                                 children: "Detalle:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                                lineNumber: 29,
+                                lineNumber: 34,
                                 columnNumber: 20
                             }, this),
                             " ",
@@ -232,7 +210,7 @@ function DetalleConcurso() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                        lineNumber: 29,
+                        lineNumber: 34,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -241,7 +219,7 @@ function DetalleConcurso() {
                                 children: "Autor:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                                lineNumber: 30,
+                                lineNumber: 35,
                                 columnNumber: 20
                             }, this),
                             " ",
@@ -249,7 +227,7 @@ function DetalleConcurso() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                        lineNumber: 30,
+                        lineNumber: 35,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -258,7 +236,7 @@ function DetalleConcurso() {
                                 children: "Inicio:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                                lineNumber: 31,
+                                lineNumber: 36,
                                 columnNumber: 20
                             }, this),
                             " ",
@@ -266,7 +244,7 @@ function DetalleConcurso() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                        lineNumber: 31,
+                        lineNumber: 36,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -275,7 +253,7 @@ function DetalleConcurso() {
                                 children: "Fin:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                                lineNumber: 32,
+                                lineNumber: 37,
                                 columnNumber: 20
                             }, this),
                             " ",
@@ -283,7 +261,7 @@ function DetalleConcurso() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                        lineNumber: 32,
+                        lineNumber: 37,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -292,26 +270,26 @@ function DetalleConcurso() {
                                 children: "Premio en likes:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                                lineNumber: 33,
+                                lineNumber: 38,
                                 columnNumber: 20
                             }, this),
                             " 10"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                        lineNumber: 33,
+                        lineNumber: 38,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-                lineNumber: 27,
+                lineNumber: 32,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/concurso/[numero]/page.tsx",
-        lineNumber: 25,
+        lineNumber: 30,
         columnNumber: 9
     }, this);
 }

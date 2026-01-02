@@ -41,7 +41,7 @@ const TournamentQuiz: React.FC<TournamentQuizProps> = ({ userGrade, onTournament
         }
     });
 
-    // Cargar preguntas de general según el curso
+    // Cargar preguntas de general según el curso (solo ese curso)
     let preguntas: any[] = [];
     try {
         preguntas = require(`../questions/general-${userGrade}primaria.json`);
@@ -49,6 +49,18 @@ const TournamentQuiz: React.FC<TournamentQuizProps> = ({ userGrade, onTournament
         preguntas = [];
     }
 
+    // Función para normalizar respuestas (más permisiva)
+    function normalizar(str: string) {
+        return str
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")
+            .replace(/[^a-z0-9áéíóúüñ]+/gi, "") // quita espacios, signos, etc
+            .replace(/^(el|la|los|las|un|una|unos|unas)/, "") // quita artículos
+            .replace(/s$/, "") // quita plural simple
+            .replace(/o$/, "a") // masculino/femenino simple
+            .trim();
+    }
     const handleGenerarPregunta = () => {
         if (preguntasUsadas.length >= 25) {
             // Torneo completado
@@ -67,7 +79,9 @@ const TournamentQuiz: React.FC<TournamentQuizProps> = ({ userGrade, onTournament
         const tiempoUsado = 300 - timeLeft;
         let puntosPregunta = 0;
 
-        if (respuestaUsuario.toLowerCase().trim() === respuestaCorrecta.toLowerCase().trim()) {
+        // Comparación flexible
+        const esCorrecta = normalizar(respuestaUsuario) === normalizar(respuestaCorrecta);
+        if (esCorrecta) {
             setAciertos(aciertos + 1);
             if (tiempoUsado <= 60) {
                 puntosPregunta = 10;
@@ -109,6 +123,12 @@ const TournamentQuiz: React.FC<TournamentQuizProps> = ({ userGrade, onTournament
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    React.useEffect(() => {
+        if (preguntasUsadas.length >= 25) {
+            onTournamentComplete(aciertos, puntuacionTotal);
+        }
+        // eslint-disable-next-line
+    }, [preguntasUsadas.length]);
     if (preguntasUsadas.length >= 25) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center p-8">
@@ -118,7 +138,7 @@ const TournamentQuiz: React.FC<TournamentQuizProps> = ({ userGrade, onTournament
                     <p className="text-lg mb-2">Aciertos: <strong>{aciertos}/25</strong></p>
                     <p className="text-lg mb-2">Puntuación total: <strong>{puntuacionTotal} puntos</strong></p>
                     <p className="text-lg">Promedio: <strong>{(puntuacionTotal / 25).toFixed(1)} pts/pregunta</strong></p>
-                    <p className="text-sm text-gray-600 mt-4">Los resultados se procesarán automáticamente...</p>
+                    <p className="text-sm text-gray-600 mt-4">Redirigiendo...</p>
                 </div>
             </div>
         );

@@ -16,6 +16,22 @@ var _s = __turbopack_context__.k.signature();
 ;
 const TorneosPremiumPage = ()=>{
     _s();
+    const [stats, setStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({
+        victorias: 0,
+        participaciones: 0,
+        puntuacionTotal: 0
+    });
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "TorneosPremiumPage.useEffect": ()=>{
+            fetch('/api/premium/competiciones').then({
+                "TorneosPremiumPage.useEffect": (res)=>res.ok ? res.json() : {
+                        victorias: 0,
+                        participaciones: 0,
+                        puntuacionTotal: 0
+                    }
+            }["TorneosPremiumPage.useEffect"]).then(setStats);
+        }
+    }["TorneosPremiumPage.useEffect"], []);
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const [usuarioActual, setUsuarioActual] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isPremium, setIsPremium] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
@@ -25,57 +41,61 @@ const TorneosPremiumPage = ()=>{
     const [cursoUsuario, setCursoUsuario] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(1);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "TorneosPremiumPage.useEffect": ()=>{
-            if ("TURBOPACK compile-time truthy", 1) {
-                const userData = localStorage.getItem('currentUser') || localStorage.getItem('user');
-                if (userData) {
-                    const user = JSON.parse(userData);
-                    setUsuarioActual(user);
-                    // Determinar curso del usuario
-                    let cursoDetectado = 1; // Por defecto 1º Primaria
-                    // Si es docente, usar 6º curso por defecto
-                    const esDocente = user.esProfesor || user.tipo === "docente" || user.tipo === "Docente";
-                    if (esDocente) {
-                        cursoDetectado = 6;
-                    } else if (user.curso) {
-                        // Para estudiantes, usar su curso real
-                        if (typeof user.curso === "string") {
-                            const match = user.curso.match(/(\d)/);
-                            if (match) {
-                                const numero = parseInt(match[1]);
-                                cursoDetectado = numero;
-                            }
-                        } else if (typeof user.curso === "number") {
-                            cursoDetectado = user.curso;
+            const loadUser = {
+                "TorneosPremiumPage.useEffect.loadUser": async ()=>{
+                    try {
+                        const response = await fetch('/api/auth/me');
+                        if (!response.ok) {
+                            router.push('/');
+                            return;
                         }
-                    }
-                    // Asegurar que el curso esté entre 1 y 6
-                    if (cursoDetectado < 1) cursoDetectado = 1;
-                    if (cursoDetectado > 6) cursoDetectado = 6;
-                    setCursoUsuario(cursoDetectado);
-                    // Verificar si es premium
-                    const premiumInfo = localStorage.getItem(`premium_${user.nick}`);
-                    if (premiumInfo) {
-                        const premium = JSON.parse(premiumInfo);
-                        if (new Date(premium.expiracion) > new Date()) {
-                            setIsPremium(true);
-                            cargarTorneos();
+                        const data = await response.json();
+                        const userObj = data.user ? data.user : data;
+                        setUsuarioActual(userObj);
+                        let cursoDetectado = 1;
+                        const esDocente = userObj.esProfesor || userObj.tipo === "docente" || userObj.tipo === "Docente";
+                        if (esDocente) {
+                            cursoDetectado = 6;
+                        } else if (userObj.curso) {
+                            if (typeof userObj.curso === "string") {
+                                const match = userObj.curso.match(/(\d)/);
+                                if (match) {
+                                    const numero = parseInt(match[1]);
+                                    cursoDetectado = numero;
+                                }
+                            } else if (typeof userObj.curso === "number") {
+                                cursoDetectado = userObj.curso;
+                            }
+                        }
+                        if (cursoDetectado < 1) cursoDetectado = 1;
+                        if (cursoDetectado > 6) cursoDetectado = 6;
+                        setCursoUsuario(cursoDetectado);
+                        const premiumResponse = await fetch('/api/premium/data');
+                        if (premiumResponse.ok) {
+                            const premium = await premiumResponse.json();
+                            if (premium.activo && premium.fechaExpiracion && new Date(premium.fechaExpiracion) > new Date()) {
+                                setIsPremium(true);
+                                await cargarTorneos();
+                                if (window && window.location && window.location.search.includes('reloadTorneos=1')) {
+                                    await cargarTorneos();
+                                }
+                            } else {
+                                router.push('/premium-nuevo');
+                            }
                         } else {
-                            alert('Tu suscripción Premium ha expirado. Renueva para acceder a los Torneos Premium.');
                             router.push('/premium-nuevo');
                         }
-                    } else {
-                        alert('Los Torneos Premium son exclusivos para usuarios Premium.');
-                        router.push('/premium-nuevo');
+                    } catch (error) {
+                        console.error('Error loading user:', error);
+                        router.push('/');
                     }
-                } else {
-                    router.push('/');
+                    setLoading(false);
                 }
-                setLoading(false);
-            }
+            }["TorneosPremiumPage.useEffect.loadUser"];
+            loadUser();
         }
     }["TorneosPremiumPage.useEffect"], []);
     const esTorneoDisponibleParaUsuario = (torneoId)=>{
-        // Extraer el número de curso del ID del torneo (torneo-mensual-1primaria -> 1)
         const match = torneoId.match(/torneo-mensual-(\d)primaria/);
         if (match) {
             const cursoTorneo = parseInt(match[1]);
@@ -83,11 +103,51 @@ const TorneosPremiumPage = ()=>{
         }
         return false;
     };
-    const cargarTorneos = ()=>{
-        // FORZAR recreación de torneos nuevos - limpiar datos antiguos
-        localStorage.removeItem('torneos_premium');
-        localStorage.removeItem('torneos_premium_last_reset');
-        // Crear torneos mensuales por defecto
+    const cargarTorneos = async ()=>{
+        try {
+            const response = await fetch('/api/premium/torneos');
+            if (response.ok) {
+                const torneoData = await response.json();
+                if (torneoData.torneos) {
+                    let torneosParsed = torneoData.torneos;
+                    if (typeof torneosParsed === 'string') {
+                        try {
+                            torneosParsed = JSON.parse(torneosParsed);
+                        } catch  {
+                            torneosParsed = [];
+                        }
+                    }
+                    // Forzar comparación robusta de nick
+                    const normalizar = (str)=>(str || '').toLowerCase().replace(/\s+/g, '');
+                    torneosParsed = torneosParsed.map((t)=>{
+                        if (t.resultados && t.resultados.some((r)=>normalizar(r.nick) === normalizar(usuarioActual?.nick))) {
+                            t._usuarioYaParticipado = true;
+                        } else {
+                            t._usuarioYaParticipado = false;
+                        }
+                        return t;
+                    });
+                    setTorneos(torneosParsed);
+                    // ACTUALIZAR COMPETICIONES (Liga Premium) tras cargar torneos
+                    await fetch('/api/premium/competiciones', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    });
+                    // Recargar datos de la Liga Premium
+                    fetch('/api/premium/competiciones').then((res)=>res.ok ? res.json() : {
+                            victorias: 0,
+                            participaciones: 0,
+                            puntuacionTotal: 0
+                        }).then(setStats);
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading torneos:', error);
+        }
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
         const torneosDefault = [
@@ -165,19 +225,25 @@ const TorneosPremiumPage = ()=>{
             }
         ];
         setTorneos(torneosDefault);
-        localStorage.setItem('torneos_premium', JSON.stringify(torneosDefault));
-        localStorage.setItem('torneos_premium_last_reset', new Date().toISOString());
+        await fetch('/api/premium/torneos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                torneos: torneosDefault,
+                lastReset: new Date().toISOString()
+            })
+        });
     };
-    const registrarseTorneo = (torneoId)=>{
+    const registrarseTorneo = async (torneoId)=>{
         if (!usuarioActual) return;
         const torneosActualizados = torneos.map((torneo)=>{
             if (torneo.id === torneoId) {
                 if (torneo.participantes.includes(usuarioActual.nick)) {
-                    alert('Ya estás registrado en este torneo.');
                     return torneo;
                 }
                 if (torneo.participantes.length >= torneo.maxParticipantes) {
-                    alert('Este torneo ya está completo.');
                     return torneo;
                 }
                 return {
@@ -191,18 +257,36 @@ const TorneosPremiumPage = ()=>{
             return torneo;
         });
         setTorneos(torneosActualizados);
-        localStorage.setItem('torneos_premium', JSON.stringify(torneosActualizados));
-        alert('¡Te has registrado exitosamente en el torneo!');
+        await fetch('/api/premium/torneos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                torneos: JSON.stringify(torneosActualizados)
+            })
+        });
     };
-    const iniciarTorneo = (torneo)=>{
-        // Guardar información del torneo activo en localStorage
-        localStorage.setItem('torneo_activo_premium', JSON.stringify({
-            torneoId: torneo.id,
-            curso: torneo.id.split('-')[2],
-            startTime: new Date().toISOString()
-        }));
-        // Redirigir al modo torneo en Aprende con Pipo
-        router.push('/aprende-con-pipo?modo=torneo');
+    const iniciarTorneo = async (torneo)=>{
+        await fetch('/api/premium/torneos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                torneoActivo: {
+                    torneoId: torneo.id,
+                    curso: torneo.id.split('-')[2],
+                    startTime: new Date().toISOString()
+                }
+            })
+        });
+        // Esperar a que el usuario termine el torneo y guarde resultado
+        // Después de volver de /aprende-con-pipo, recargar torneos
+        setTimeout(()=>{
+            cargarTorneos();
+        }, 2000);
+        router.push('/aprende-con-pipo?torneo=1');
     };
     if (loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -212,12 +296,12 @@ const TorneosPremiumPage = ()=>{
                 children: "Cargando Torneos Premium..."
             }, void 0, false, {
                 fileName: "[project]/src/app/torneos-premium/page.tsx",
-                lineNumber: 223,
+                lineNumber: 286,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/src/app/torneos-premium/page.tsx",
-            lineNumber: 222,
+            lineNumber: 285,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -237,7 +321,7 @@ const TorneosPremiumPage = ()=>{
                             children: "🎯 Torneos Premium"
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 237,
+                            lineNumber: 299,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -245,16 +329,16 @@ const TorneosPremiumPage = ()=>{
                             children: "Compite en torneos exclusivos y gana premios especiales"
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 238,
+                            lineNumber: 300,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                    lineNumber: 236,
+                    lineNumber: 298,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
-                torneoActivo ? /* Pantalla de torneo activo */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                torneoActivo ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "bg-white rounded-lg shadow-xl p-8 text-center",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -262,7 +346,7 @@ const TorneosPremiumPage = ()=>{
                             children: torneoActivo.nombre
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 244,
+                            lineNumber: 305,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -270,7 +354,7 @@ const TorneosPremiumPage = ()=>{
                             children: "🎯"
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 245,
+                            lineNumber: 306,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -278,7 +362,7 @@ const TorneosPremiumPage = ()=>{
                             children: "Torneo en progreso..."
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 246,
+                            lineNumber: 307,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -286,7 +370,7 @@ const TorneosPremiumPage = ()=>{
                             children: "⏳"
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 247,
+                            lineNumber: 308,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -294,15 +378,15 @@ const TorneosPremiumPage = ()=>{
                             children: "Calculando resultados..."
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 248,
+                            lineNumber: 309,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                    lineNumber: 243,
+                    lineNumber: 304,
                     columnNumber: 21
-                }, ("TURBOPACK compile-time value", void 0)) : /* Lista de torneos */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
                     children: torneos.map((torneo)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "bg-white rounded-lg shadow-xl overflow-hidden",
@@ -314,12 +398,12 @@ const TorneosPremiumPage = ()=>{
                                         children: torneo.nombre
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                        lineNumber: 256,
+                                        lineNumber: 316,
                                         columnNumber: 37
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                    lineNumber: 255,
+                                    lineNumber: 315,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -330,7 +414,7 @@ const TorneosPremiumPage = ()=>{
                                             children: torneo.descripcion
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 260,
+                                            lineNumber: 320,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -344,7 +428,7 @@ const TorneosPremiumPage = ()=>{
                                                             children: "Categoría:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 264,
+                                                            lineNumber: 324,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -352,13 +436,13 @@ const TorneosPremiumPage = ()=>{
                                                             children: torneo.categoria
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 265,
+                                                            lineNumber: 325,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 263,
+                                                    lineNumber: 323,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -369,7 +453,7 @@ const TorneosPremiumPage = ()=>{
                                                             children: "Participantes:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 268,
+                                                            lineNumber: 328,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -381,13 +465,13 @@ const TorneosPremiumPage = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 269,
+                                                            lineNumber: 329,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 267,
+                                                    lineNumber: 327,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -398,7 +482,7 @@ const TorneosPremiumPage = ()=>{
                                                             children: "Estado:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 272,
+                                                            lineNumber: 332,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -406,19 +490,19 @@ const TorneosPremiumPage = ()=>{
                                                             children: torneo.estado === 'registro' ? 'Abierto' : torneo.estado === 'finalizado' ? 'Finalizado' : 'Disponible'
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 273,
+                                                            lineNumber: 333,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 271,
+                                                    lineNumber: 331,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 262,
+                                            lineNumber: 322,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -429,7 +513,7 @@ const TorneosPremiumPage = ()=>{
                                                     children: "🏆 Premio:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 283,
+                                                    lineNumber: 343,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -437,138 +521,222 @@ const TorneosPremiumPage = ()=>{
                                                     children: torneo.premio
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 284,
+                                                    lineNumber: 344,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 282,
+                                            lineNumber: 342,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
-                                        torneo.estado === 'finalizado' && torneo.ganador && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        torneo.estado === 'finalizado' && torneo.resultados && torneo.resultados.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "bg-green-50 p-3 rounded mb-4",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-sm font-semibold text-green-800",
-                                                    children: "🥇 Ganador:"
+                                                    children: "🏆 Clasificación General:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 289,
+                                                    lineNumber: 350,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0)),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-sm text-green-700",
-                                                    children: torneo.ganador
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 290,
-                                                    columnNumber: 45
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                torneo.resultados && torneo.resultados.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "mt-2",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
+                                                    className: "w-full text-xs mt-2",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-xs text-green-600",
-                                                            children: "Top 3:"
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                                className: "bg-green-100",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                        className: "px-2 py-1",
+                                                                        children: "#"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                        lineNumber: 354,
+                                                                        columnNumber: 57
+                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                        className: "px-2 py-1",
+                                                                        children: "Nick"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                        lineNumber: 355,
+                                                                        columnNumber: 57
+                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                        className: "px-2 py-1",
+                                                                        children: "Aciertos"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                        lineNumber: 356,
+                                                                        columnNumber: 57
+                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                        className: "px-2 py-1",
+                                                                        children: "Puntuación"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                        lineNumber: 357,
+                                                                        columnNumber: 57
+                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                lineNumber: 353,
+                                                                columnNumber: 53
+                                                            }, ("TURBOPACK compile-time value", void 0))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                            lineNumber: 293,
-                                                            columnNumber: 53
+                                                            lineNumber: 352,
+                                                            columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0)),
-                                                        torneo.resultados.slice(0, 3).map((resultado, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-xs",
-                                                                children: [
-                                                                    idx + 1,
-                                                                    ". ",
-                                                                    resultado.nick,
-                                                                    " - ",
-                                                                    resultado.aciertos,
-                                                                    "/25 (",
-                                                                    resultado.puntuacion,
-                                                                    "pts)"
-                                                                ]
-                                                            }, idx, true, {
-                                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                                lineNumber: 295,
-                                                                columnNumber: 57
-                                                            }, ("TURBOPACK compile-time value", void 0)))
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
+                                                            children: (()=>{
+                                                                const normalizar = (str)=>(str || '').toLowerCase().replace(/\s+/g, '');
+                                                                const mejoresPorUsuario = {};
+                                                                torneo.resultados.forEach((r)=>{
+                                                                    const nickNorm = normalizar(r.nick);
+                                                                    if (!mejoresPorUsuario[nickNorm] || r.puntuacion > mejoresPorUsuario[nickNorm].puntuacion) {
+                                                                        mejoresPorUsuario[nickNorm] = r;
+                                                                    }
+                                                                });
+                                                                return Object.values(mejoresPorUsuario).sort((a, b)=>b.puntuacion - a.puntuacion).map((resultado, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                                        className: normalizar(resultado.nick) === normalizar(usuarioActual?.nick) ? "font-bold text-purple-700 bg-purple-50" : "",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                                className: "px-2 py-1",
+                                                                                children: idx + 1
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                                lineNumber: 375,
+                                                                                columnNumber: 69
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                                className: "px-2 py-1",
+                                                                                children: resultado.nick
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                                lineNumber: 376,
+                                                                                columnNumber: 69
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                                className: "px-2 py-1",
+                                                                                children: [
+                                                                                    resultado.aciertos,
+                                                                                    "/25"
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                                lineNumber: 377,
+                                                                                columnNumber: 69
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                                className: "px-2 py-1",
+                                                                                children: [
+                                                                                    resultado.puntuacion,
+                                                                                    " pts"
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                                lineNumber: 378,
+                                                                                columnNumber: 69
+                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                        ]
+                                                                    }, resultado.nick + '-' + idx, true, {
+                                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                                        lineNumber: 374,
+                                                                        columnNumber: 65
+                                                                    }, ("TURBOPACK compile-time value", void 0)));
+                                                            })()
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                            lineNumber: 360,
+                                                            columnNumber: 49
+                                                        }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 292,
-                                                    columnNumber: 49
+                                                    lineNumber: 351,
+                                                    columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 288,
+                                            lineNumber: 349,
                                             columnNumber: 41
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "flex gap-2",
-                                            children: [
-                                                torneo.estado === 'registro' && !torneo.participantes.includes(usuarioActual.nick) && esTorneoDisponibleParaUsuario(torneo.id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>registrarseTorneo(torneo.id),
-                                                    disabled: torneo.participantes.length >= torneo.maxParticipantes,
-                                                    className: "flex-1 bg-purple-600 text-white px-4 py-2 rounded font-semibold hover:bg-purple-700 disabled:bg-gray-400 transition-colors",
-                                                    children: "Registrarse"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 306,
-                                                    columnNumber: 45
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                torneo.estado === 'registro' && !torneo.participantes.includes(usuarioActual.nick) && !esTorneoDisponibleParaUsuario(torneo.id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "flex-1 text-center bg-gray-100 text-gray-600 px-4 py-2 rounded font-semibold",
-                                                    children: [
-                                                        "Solo para ",
-                                                        torneo.nombre.split(' ')[2],
-                                                        " ",
-                                                        torneo.nombre.split(' ')[3]
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 316,
-                                                    columnNumber: 45
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                torneo.participantes.includes(usuarioActual.nick) && torneo.estado === 'registro' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "flex-1 text-center bg-green-100 text-green-800 px-4 py-2 rounded font-semibold",
-                                                    children: "✓ Registrado"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 322,
-                                                    columnNumber: 45
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                torneo.participantes.includes(usuarioActual.nick) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>iniciarTorneo(torneo),
-                                                    className: "flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition-colors",
-                                                    children: "Comenzar Torneo"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                                    lineNumber: 328,
-                                                    columnNumber: 45
-                                                }, ("TURBOPACK compile-time value", void 0))
-                                            ]
-                                        }, void 0, true, {
+                                            children: torneo._usuarioYaParticipado || torneo.resultados && torneo.resultados.filter((r)=>r.nick === usuarioActual.nick).length > 0 || torneo.participantes.filter((n)=>n === usuarioActual.nick).length > 1 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "flex-1 text-center bg-gray-200 text-gray-800 px-4 py-2 rounded font-semibold",
+                                                children: "Torneo finalizado"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 391,
+                                                columnNumber: 45
+                                            }, ("TURBOPACK compile-time value", void 0)) : torneo.estado === 'registro' ? !torneo.participantes.includes(usuarioActual.nick) ? esTorneoDisponibleParaUsuario(torneo.id) ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: ()=>registrarseTorneo(torneo.id),
+                                                disabled: torneo.participantes.length >= torneo.maxParticipantes,
+                                                className: "flex-1 bg-purple-600 text-white px-4 py-2 rounded font-semibold hover:bg-purple-700 disabled:bg-gray-400 transition-colors",
+                                                children: "Registrarse"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 397,
+                                                columnNumber: 53
+                                            }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "flex-1 text-center bg-gray-100 text-gray-600 px-4 py-2 rounded font-semibold",
+                                                children: [
+                                                    "Solo para ",
+                                                    torneo.nombre.split(' ')[2],
+                                                    " ",
+                                                    torneo.nombre.split(' ')[3]
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 405,
+                                                columnNumber: 53
+                                            }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "flex-1 text-center bg-green-100 text-green-800 px-4 py-2 rounded font-semibold",
+                                                        children: "✓ Registrado"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                        lineNumber: 411,
+                                                        columnNumber: 53
+                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                        onClick: ()=>iniciarTorneo(torneo),
+                                                        className: "flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition-colors",
+                                                        children: "Comenzar Torneo"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                        lineNumber: 414,
+                                                        columnNumber: 53
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                ]
+                                            }, void 0, true) : null
+                                        }, void 0, false, {
                                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 304,
+                                            lineNumber: 387,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                    lineNumber: 259,
+                                    lineNumber: 319,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, torneo.id, true, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 254,
+                            lineNumber: 314,
                             columnNumber: 29
                         }, ("TURBOPACK compile-time value", void 0)))
                 }, void 0, false, {
                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                    lineNumber: 252,
+                    lineNumber: 312,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -576,131 +744,90 @@ const TorneosPremiumPage = ()=>{
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                             className: "text-xl font-bold text-white mb-4",
-                            children: "📊 Tus Estadísticas en Torneos"
+                            children: "🏅 Clasificación Premium (Liga)"
                         }, void 0, false, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 344,
+                            lineNumber: 432,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "grid grid-cols-2 md:grid-cols-4 gap-4 text-center",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
+                            className: "w-full text-xs mt-2",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "bg-white/20 rounded p-4",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-2xl font-bold text-white",
-                                            children: JSON.parse(localStorage.getItem(`competiciones_premium_${usuarioActual.nick}`) || '{"victorias": 0}').victorias
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 347,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-purple-100",
-                                            children: "Victorias"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 350,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                        className: "bg-green-100",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "px-2 py-1",
+                                                children: "Nick"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 436,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "px-2 py-1",
+                                                children: "Puntos Totales"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 437,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                        lineNumber: 435,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                }, void 0, false, {
                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                    lineNumber: 346,
+                                    lineNumber: 434,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "bg-white/20 rounded p-4",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-2xl font-bold text-white",
-                                            children: JSON.parse(localStorage.getItem(`competiciones_premium_${usuarioActual.nick}`) || '{"participaciones": 0}').participaciones
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 353,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-purple-100",
-                                            children: "Participaciones"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 356,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                        className: usuarioActual ? "font-bold text-purple-700 bg-purple-50" : "",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                className: "px-2 py-1",
+                                                children: usuarioActual?.nick
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 442,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                className: "px-2 py-1",
+                                                children: [
+                                                    stats.puntuacionTotal,
+                                                    " pts"
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                                lineNumber: 443,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/torneos-premium/page.tsx",
+                                        lineNumber: 441,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                }, void 0, false, {
                                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                    lineNumber: 352,
-                                    columnNumber: 25
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "bg-white/20 rounded p-4",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-2xl font-bold text-white",
-                                            children: [
-                                                (()=>{
-                                                    const stats = JSON.parse(localStorage.getItem(`competiciones_premium_${usuarioActual.nick}`) || '{"victorias": 0, "participaciones": 0}');
-                                                    return stats.participaciones > 0 ? Math.round(stats.victorias / stats.participaciones * 100) : 0;
-                                                })(),
-                                                "%"
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 359,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-purple-100",
-                                            children: "Tasa de Victoria"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 365,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                    lineNumber: 358,
-                                    columnNumber: 25
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "bg-white/20 rounded p-4",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-2xl font-bold text-white",
-                                            children: JSON.parse(localStorage.getItem(`competiciones_premium_${usuarioActual.nick}`) || '{"puntuacionTotal": 0}').puntuacionTotal
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 368,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-purple-100",
-                                            children: "Puntuación Total"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                            lineNumber: 371,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/torneos-premium/page.tsx",
-                                    lineNumber: 367,
+                                    lineNumber: 440,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/torneos-premium/page.tsx",
-                            lineNumber: 345,
+                            lineNumber: 433,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                    lineNumber: 343,
+                    lineNumber: 431,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -711,27 +838,27 @@ const TorneosPremiumPage = ()=>{
                         children: "← Volver a Premium"
                     }, void 0, false, {
                         fileName: "[project]/src/app/torneos-premium/page.tsx",
-                        lineNumber: 378,
+                        lineNumber: 450,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 }, void 0, false, {
                     fileName: "[project]/src/app/torneos-premium/page.tsx",
-                    lineNumber: 377,
+                    lineNumber: 449,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/torneos-premium/page.tsx",
-            lineNumber: 234,
+            lineNumber: 297,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/app/torneos-premium/page.tsx",
-        lineNumber: 233,
+        lineNumber: 296,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(TorneosPremiumPage, "RF98odApoKJ4BZ4IsbAeBgPFyho=", false, function() {
+_s(TorneosPremiumPage, "7LE6UxiaUGMdjLCQkGzHO0nVrBg=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];

@@ -48,42 +48,52 @@ function CreaHistoria() {
             reader.readAsDataURL(file);
         }
     };
-    // Guardar historia (solo ejemplo, falta mostrar y persistir)
-    const handleEnviar = ()=>{
-        // Obtener usuario actual
-        let usuario = "";
-        let userObj = null;
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        if (!anonimo && !usuario) {
-            alert("No se puede enviar la historia: no se ha detectado usuario. Inicia sesión como docente o alumno.");
-            return;
+    // Guardar historia
+    const handleEnviar = async ()=>{
+        try {
+            // Obtener usuario actual
+            const response = await fetch('/api/auth/me');
+            const data = await response.json();
+            if (!data.user && !anonimo) {
+                alert("No se puede enviar la historia: no se ha detectado usuario. Inicia sesión como docente o alumno.");
+                return;
+            }
+            const usuario = data.user ? data.user.nick : null;
+            // Obtener palabras prohibidas
+            const palabrasResponse = await fetch('/api/palabras-prohibidas');
+            const palabrasData = await palabrasResponse.json();
+            const palabras = palabrasData.palabras || [];
+            // Comprobar palabras prohibidas
+            const contenidoLower = contenido.toLowerCase();
+            const palabrasDetectadas = palabras.filter((p)=>contenidoLower.includes(p) || contenidoLower.includes(p + "a") || contenidoLower.includes(p + "o"));
+            if (palabrasDetectadas.length > 0) {
+                setPalabrasDetectadas(palabrasDetectadas);
+                setShowProhibitedPopup(true);
+                setTimeout(()=>setShowProhibitedPopup(false), 30000);
+            // Nota: Penalización removida, manejar en backend si necesario
+            }
+            // Crear historia
+            await fetch('/api/historias', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    titulo,
+                    contenido,
+                    autorNick: anonimo ? "Anónimo" : usuario,
+                    imagen,
+                    concurso: esConcurso ? numConcurso : null
+                })
+            });
+            alert("Historia enviada!");
+            setTitulo("");
+            setContenido("");
+            setImagen(null);
+        } catch (error) {
+            console.error('Error creando historia:', error);
+            alert("Error enviando historia");
         }
-        // Comprobar palabras prohibidas
-        let contieneProhibida = false;
-        let palabrasDetectadas = [];
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        // Crear historia
-        const nuevaHistoria = {
-            id: Date.now(),
-            titulo,
-            contenido,
-            autor: anonimo ? "Anónimo" : usuario,
-            fecha: new Date().toLocaleString(),
-            imagen,
-            likes: 0,
-            comentarios: [],
-            concurso: esConcurso ? numConcurso : ""
-        };
-        // Guardar en localStorage
-        let historias = [];
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        alert("Historia enviada!");
-        setTitulo("");
-        setContenido("");
-        setImagen(null);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "min-h-screen bg-green-100 p-8",
@@ -93,7 +103,7 @@ function CreaHistoria() {
                 children: "Crea tu Historia"
             }, void 0, false, {
                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                lineNumber: 142,
+                lineNumber: 97,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -109,7 +119,7 @@ function CreaHistoria() {
                                         children: "Modo de historia:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 147,
+                                        lineNumber: 102,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -119,26 +129,26 @@ function CreaHistoria() {
                                                 children: "Real"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 149,
+                                                lineNumber: 104,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "Ficticia"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 150,
+                                                lineNumber: 105,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 148,
+                                        lineNumber: 103,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 146,
+                                lineNumber: 101,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -148,7 +158,7 @@ function CreaHistoria() {
                                         children: "Tipo de historia:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 154,
+                                        lineNumber: 109,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -158,61 +168,61 @@ function CreaHistoria() {
                                                 children: "Aventura"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 156,
+                                                lineNumber: 111,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "Corazón"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 157,
+                                                lineNumber: 112,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "Terror"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 158,
+                                                lineNumber: 113,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "Ficción"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 159,
+                                                lineNumber: 114,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "Educativa"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 160,
+                                                lineNumber: 115,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "My Live"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 161,
+                                                lineNumber: 116,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 children: "Concurso"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 162,
+                                                lineNumber: 117,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 155,
+                                        lineNumber: 110,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 153,
+                                lineNumber: 108,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -226,19 +236,19 @@ function CreaHistoria() {
                                             onChange: (e)=>setAnonimo(e.target.checked)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/crea-historia/page.tsx",
-                                            lineNumber: 167,
+                                            lineNumber: 122,
                                             columnNumber: 29
                                         }, this),
                                         "Escribir en modo Anónimo"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/crea-historia/page.tsx",
-                                    lineNumber: 166,
+                                    lineNumber: 121,
                                     columnNumber: 25
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 165,
+                                lineNumber: 120,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -253,14 +263,14 @@ function CreaHistoria() {
                                                 onChange: (e)=>setEsConcurso(e.target.checked)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 173,
+                                                lineNumber: 128,
                                                 columnNumber: 29
                                             }, this),
                                             "Escribir en modo Concurso"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 127,
                                         columnNumber: 25
                                     }, this),
                                     esConcurso && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -271,19 +281,19 @@ function CreaHistoria() {
                                         onChange: (e)=>setNumConcurso(e.target.value.replace(/[^0-9]/g, ""))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 177,
+                                        lineNumber: 132,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 171,
+                                lineNumber: 126,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                        lineNumber: 145,
+                        lineNumber: 100,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -300,7 +310,7 @@ function CreaHistoria() {
                                         onChange: (e)=>setTitulo(e.target.value)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 191,
+                                        lineNumber: 146,
                                         columnNumber: 25
                                     }, this),
                                     esConcurso && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -311,13 +321,13 @@ function CreaHistoria() {
                                         onChange: (e)=>setNumConcurso(e.target.value.replace(/[^0-9]/g, ""))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 199,
+                                        lineNumber: 154,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 190,
+                                lineNumber: 145,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -331,7 +341,7 @@ function CreaHistoria() {
                                         children: "B"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 210,
+                                        lineNumber: 165,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -342,7 +352,7 @@ function CreaHistoria() {
                                         children: "S"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 211,
+                                        lineNumber: 166,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -357,19 +367,19 @@ function CreaHistoria() {
                                                 onChange: handleImagen
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                                lineNumber: 214,
+                                                lineNumber: 169,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 212,
+                                        lineNumber: 167,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 209,
+                                lineNumber: 164,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -394,17 +404,17 @@ function CreaHistoria() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                                        lineNumber: 220,
+                                        lineNumber: 175,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/crea-historia/page.tsx",
-                                    lineNumber: 219,
+                                    lineNumber: 174,
                                     columnNumber: 25
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 218,
+                                lineNumber: 173,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -413,19 +423,19 @@ function CreaHistoria() {
                                 children: "Enviar"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                                lineNumber: 239,
+                                lineNumber: 194,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                        lineNumber: 188,
+                        lineNumber: 143,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                lineNumber: 143,
+                lineNumber: 98,
                 columnNumber: 13
             }, this),
             showProhibitedPopup && palabrasDetectadas.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -434,7 +444,7 @@ function CreaHistoria() {
                     "Palabra prohibida -10 likes de penalización",
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                         fileName: "[project]/src/app/crea-historia/page.tsx",
-                        lineNumber: 244,
+                        lineNumber: 199,
                         columnNumber: 64
                     }, this),
                     "Detectadas: ",
@@ -442,13 +452,13 @@ function CreaHistoria() {
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/crea-historia/page.tsx",
-                lineNumber: 243,
+                lineNumber: 198,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/crea-historia/page.tsx",
-        lineNumber: 141,
+        lineNumber: 96,
         columnNumber: 9
     }, this);
 }

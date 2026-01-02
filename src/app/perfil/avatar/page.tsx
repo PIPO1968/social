@@ -6,7 +6,6 @@ import { BUTTON_STYLES } from "../../../utils/styles";
 const AvatarSelector: React.FC = () => {
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
-    const [selectedAvatar, setSelectedAvatar] = useState("");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -72,36 +71,35 @@ const AvatarSelector: React.FC = () => {
     const allAvatars = [...simpleAvatars, ...premiumAvatars];
     const premiumAvatarIndices = simpleAvatars.length; // Índice donde empiezan los premium
 
-    const handleSelectAvatar = (avatar: string) => {
-        setSelectedAvatar(avatar);
-    };
-
-    const handleSave = async () => {
-        if (!selectedAvatar || saving) return;
+    const handleSelectAvatar = async (avatar: string) => {
+        if (saving) return;
 
         // Verificar si el avatar seleccionado es premium y el usuario no es premium
-        const isSelectedPremium = premiumAvatars.includes(selectedAvatar);
+        const isSelectedPremium = premiumAvatars.includes(avatar);
         if (isSelectedPremium && !isPremium) {
+            alert('Solo usuarios premium pueden seleccionar avatares premium.');
             return;
         }
 
         setSaving(true);
         try {
-            const response = await fetch('/api/user/update-avatar', {
+            const response = await fetch('/api/users/update', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ avatar: selectedAvatar }),
+                body: JSON.stringify({ nick: user.nick, avatar }),
             });
 
             if (response.ok) {
                 router.push("/perfil");
             } else {
                 const error = await response.json();
+                alert('Error al actualizar el avatar: ' + (error.error || 'Desconocido'));
             }
         } catch (error) {
             console.error('Error saving avatar:', error);
+            alert('Error al actualizar el avatar.');
         } finally {
             setSaving(false);
         }
@@ -123,6 +121,13 @@ const AvatarSelector: React.FC = () => {
                 </p>
             </div>
 
+            {saving && (
+                <div className="mb-4 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900 mx-auto mb-2"></div>
+                    <p>Guardando avatar...</p>
+                </div>
+            )}
+
             <div className="grid grid-cols-5 gap-4 mb-8">
                 {allAvatars.map((avatar, idx) => {
                     const isPremiumAvatar = idx >= premiumAvatarIndices;
@@ -135,9 +140,7 @@ const AvatarSelector: React.FC = () => {
                                 alt={`Avatar ${idx + 1}${isPremiumAvatar ? ' (Premium)' : ''}`}
                                 className={`w-16 h-16 rounded-full border-2 transition-all duration-200 ${!canSelect
                                     ? 'cursor-not-allowed opacity-60 grayscale'
-                                    : selectedAvatar === avatar
-                                        ? 'border-blue-500 cursor-pointer'
-                                        : 'border-gray-300 cursor-pointer hover:border-blue-400'
+                                    : 'cursor-pointer border-gray-300 hover:border-blue-400'
                                     } ${isPremiumAvatar ? 'ring-2 ring-yellow-400 ring-opacity-50' : ''}`}
                                 onClick={() => canSelect && handleSelectAvatar(avatar)}
                                 title={isPremiumAvatar && !isPremium ? 'Avatar Premium - Hazte Premium para usarlo' : `Avatar ${idx + 1}`}
@@ -152,13 +155,6 @@ const AvatarSelector: React.FC = () => {
                 })}
             </div>
             <div className="flex gap-4">
-                <button
-                    className={BUTTON_STYLES.successLarge}
-                    onClick={handleSave}
-                    disabled={!selectedAvatar || saving}
-                >
-                    {saving ? 'Guardando...' : 'Guardar Avatar'}
-                </button>
                 <button
                     className={BUTTON_STYLES.secondaryLarge}
                     onClick={() => router.push("/perfil")}

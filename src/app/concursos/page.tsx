@@ -13,7 +13,7 @@ export default function Concursos() {
             try {
                 const response = await fetch('/api/concursos');
                 const data = await response.json();
-                setConcursos(data.concursos || []);
+                setConcursos(data || []);
             } catch (error) {
                 console.error('Error cargando concursos:', error);
                 setConcursos([]);

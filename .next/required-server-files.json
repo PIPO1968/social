@@ -99,7 +99,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\user\\Desktop\\New",
+    "outputFileTracingRoot": "C:\\Users\\user\\Desktop\\social",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -290,11 +290,11 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
     "turbopack": {
-      "root": "C:\\Users\\user\\Desktop\\New"
+      "root": "C:\\Users\\user\\Desktop\\social"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "C:\\Users\\user\\Desktop\\New",
+  "appDir": "C:\\Users\\user\\Desktop\\social",
   "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",

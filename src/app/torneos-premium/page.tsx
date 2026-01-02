@@ -15,9 +15,16 @@ interface Torneo {
     estado: 'registro' | 'activo' | 'finalizado';
     ganador?: string;
     resultados?: any[];
+    _usuarioYaParticipado?: boolean;
 }
 
 const TorneosPremiumPage: React.FC = () => {
+    const [stats, setStats] = useState({ victorias: 0, participaciones: 0, puntuacionTotal: 0 });
+    useEffect(() => {
+        fetch('/api/premium/competiciones')
+            .then(res => res.ok ? res.json() : { victorias: 0, participaciones: 0, puntuacionTotal: 0 })
+            .then(setStats);
+    }, []);
     const router = useRouter();
     const [usuarioActual, setUsuarioActual] = useState<any>(null);
     const [isPremium, setIsPremium] = useState(false);
@@ -34,43 +41,38 @@ const TorneosPremiumPage: React.FC = () => {
                     router.push('/');
                     return;
                 }
-                const user = await response.json();
-                setUsuarioActual(user);
+                const data = await response.json();
+                const userObj = data.user ? data.user : data;
+                setUsuarioActual(userObj);
 
-                // Determinar curso del usuario
-                let cursoDetectado = 1; // Por defecto 1º Primaria
-
-                // Si es docente, usar 6º curso por defecto
-                const esDocente = user.esProfesor || user.tipo === "docente" || user.tipo === "Docente";
-
+                let cursoDetectado = 1;
+                const esDocente = userObj.esProfesor || userObj.tipo === "docente" || userObj.tipo === "Docente";
                 if (esDocente) {
                     cursoDetectado = 6;
-                } else if (user.curso) {
-                    // Para estudiantes, usar su curso real
-                    if (typeof user.curso === "string") {
-                        const match = user.curso.match(/(\d)/);
+                } else if (userObj.curso) {
+                    if (typeof userObj.curso === "string") {
+                        const match = userObj.curso.match(/(\d)/);
                         if (match) {
                             const numero = parseInt(match[1]);
                             cursoDetectado = numero;
                         }
-                    } else if (typeof user.curso === "number") {
-                        cursoDetectado = user.curso;
+                    } else if (typeof userObj.curso === "number") {
+                        cursoDetectado = userObj.curso;
                     }
                 }
-
-                // Asegurar que el curso esté entre 1 y 6
                 if (cursoDetectado < 1) cursoDetectado = 1;
                 if (cursoDetectado > 6) cursoDetectado = 6;
-
                 setCursoUsuario(cursoDetectado);
 
-                // Verificar si es premium
                 const premiumResponse = await fetch('/api/premium/data');
                 if (premiumResponse.ok) {
                     const premium = await premiumResponse.json();
                     if (premium.activo && premium.fechaExpiracion && new Date(premium.fechaExpiracion) > new Date()) {
                         setIsPremium(true);
                         await cargarTorneos();
+                        if (window && window.location && window.location.search.includes('reloadTorneos=1')) {
+                            await cargarTorneos();
+                        }
                     } else {
                         router.push('/premium-nuevo');
                     }
@@ -87,7 +89,6 @@ const TorneosPremiumPage: React.FC = () => {
     }, []);
 
     const esTorneoDisponibleParaUsuario = (torneoId: string) => {
-        // Extraer el número de curso del ID del torneo (torneo-mensual-1primaria -> 1)
         const match = torneoId.match(/torneo-mensual-(\d)primaria/);
         if (match) {
             const cursoTorneo = parseInt(match[1]);
@@ -98,12 +99,39 @@ const TorneosPremiumPage: React.FC = () => {
 
     const cargarTorneos = async () => {
         try {
-            // Cargar torneos desde la base de datos
             const response = await fetch('/api/premium/torneos');
             if (response.ok) {
                 const torneoData = await response.json();
                 if (torneoData.torneos) {
-                    setTorneos(torneoData.torneos);
+                    let torneosParsed = torneoData.torneos;
+                    if (typeof torneosParsed === 'string') {
+                        try {
+                            torneosParsed = JSON.parse(torneosParsed);
+                        } catch {
+                            torneosParsed = [];
+                        }
+                    }
+                    // Forzar comparación robusta de nick
+                    const normalizar = (str: string) => (str || '').toLowerCase().replace(/\s+/g, '');
+                    torneosParsed = torneosParsed.map((t: any) => {
+                        if (t.resultados && t.resultados.some((r: any) => normalizar(r.nick) === normalizar(usuarioActual?.nick))) {
+                            t._usuarioYaParticipado = true;
+                        } else {
+                            t._usuarioYaParticipado = false;
+                        }
+                        return t;
+                    });
+                    setTorneos(torneosParsed);
+                    // ACTUALIZAR COMPETICIONES (Liga Premium) tras cargar torneos
+                    await fetch('/api/premium/competiciones', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({})
+                    });
+                    // Recargar datos de la Liga Premium
+                    fetch('/api/premium/competiciones')
+                        .then(res => res.ok ? res.json() : { victorias: 0, participaciones: 0, puntuacionTotal: 0 })
+                        .then(setStats);
                     return;
                 }
             }
@@ -111,7 +139,6 @@ const TorneosPremiumPage: React.FC = () => {
             console.error('Error loading torneos:', error);
         }
 
-        // Si no hay datos, crear torneos por defecto
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
         const torneosDefault: Torneo[] = [
@@ -190,7 +217,6 @@ const TorneosPremiumPage: React.FC = () => {
         ];
         setTorneos(torneosDefault);
 
-        // Guardar en la base de datos
         await fetch('/api/premium/torneos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -222,33 +248,36 @@ const TorneosPremiumPage: React.FC = () => {
 
         setTorneos(torneosActualizados);
 
-        // Guardar en la base de datos
         await fetch('/api/premium/torneos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                torneos: torneosActualizados
+                torneos: JSON.stringify(torneosActualizados)
             })
         });
 
     };
 
     const iniciarTorneo = async (torneo: Torneo) => {
-        // Guardar información del torneo activo en la base de datos
         await fetch('/api/premium/torneos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 torneoActivo: {
                     torneoId: torneo.id,
-                    curso: torneo.id.split('-')[2], // Extraer el curso del ID (1primaria, 2primaria, etc.)
+                    curso: torneo.id.split('-')[2],
                     startTime: new Date().toISOString()
                 }
             })
         });
 
-        // Redirigir al modo torneo en Aprende con Pipo
-        router.push('/aprende-con-pipo?modo=torneo');
+        // Esperar a que el usuario termine el torneo y guarde resultado
+        // Después de volver de /aprende-con-pipo, recargar torneos
+        setTimeout(() => {
+            cargarTorneos();
+        }, 2000);
+
+        router.push('/aprende-con-pipo?torneo=1');
     };
 
     if (loading) {
@@ -266,14 +295,12 @@ const TorneosPremiumPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-8">
             <div className="max-w-6xl mx-auto">
-                {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-2">🎯 Torneos Premium</h1>
                     <p className="text-purple-100 text-lg">Compite en torneos exclusivos y gana premios especiales</p>
                 </div>
 
                 {torneoActivo ? (
-                    /* Pantalla de torneo activo */
                     <div className="bg-white rounded-lg shadow-xl p-8 text-center">
                         <h2 className="text-2xl font-bold mb-4">{torneoActivo.nombre}</h2>
                         <div className="text-6xl mb-4">🎯</div>
@@ -282,7 +309,6 @@ const TorneosPremiumPage: React.FC = () => {
                         <p className="text-sm text-gray-500 mt-4">Calculando resultados...</p>
                     </div>
                 ) : (
-                    /* Lista de torneos */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {torneos.map((torneo) => (
                             <div key={torneo.id} className="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -318,54 +344,82 @@ const TorneosPremiumPage: React.FC = () => {
                                         <p className="text-sm text-yellow-700">{torneo.premio}</p>
                                     </div>
 
-                                    {torneo.estado === 'finalizado' && torneo.ganador && (
+                                    {/* Clasificación general del torneo */}
+                                    {torneo.estado === 'finalizado' && torneo.resultados && torneo.resultados.length > 0 && (
                                         <div className="bg-green-50 p-3 rounded mb-4">
-                                            <p className="text-sm font-semibold text-green-800">🥇 Ganador:</p>
-                                            <p className="text-sm text-green-700">{torneo.ganador}</p>
-                                            {torneo.resultados && torneo.resultados.length > 0 && (
-                                                <div className="mt-2">
-                                                    <p className="text-xs text-green-600">Top 3:</p>
-                                                    {torneo.resultados.slice(0, 3).map((resultado: any, idx: number) => (
-                                                        <p key={idx} className="text-xs">
-                                                            {idx + 1}. {resultado.nick} - {resultado.aciertos}/25 ({resultado.puntuacion}pts)
-                                                        </p>
-                                                    ))}
-                                                </div>
-                                            )}
+                                            <p className="text-sm font-semibold text-green-800">🏆 Clasificación General:</p>
+                                            <table className="w-full text-xs mt-2">
+                                                <thead>
+                                                    <tr className="bg-green-100">
+                                                        <th className="px-2 py-1">#</th>
+                                                        <th className="px-2 py-1">Nick</th>
+                                                        <th className="px-2 py-1">Aciertos</th>
+                                                        <th className="px-2 py-1">Puntuación</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {/* Mostrar solo el mejor resultado por usuario */}
+                                                    {(() => {
+                                                        const normalizar = (str: string) => (str || '').toLowerCase().replace(/\s+/g, '');
+                                                        const mejoresPorUsuario: { [nick: string]: any } = {};
+                                                        torneo.resultados.forEach((r: any) => {
+                                                            const nickNorm = normalizar(r.nick);
+                                                            if (!mejoresPorUsuario[nickNorm] || r.puntuacion > mejoresPorUsuario[nickNorm].puntuacion) {
+                                                                mejoresPorUsuario[nickNorm] = r;
+                                                            }
+                                                        });
+                                                        return Object.values(mejoresPorUsuario)
+                                                            .sort((a: any, b: any) => b.puntuacion - a.puntuacion)
+                                                            .map((resultado: any, idx: number) => (
+                                                                <tr key={resultado.nick + '-' + idx} className={normalizar(resultado.nick) === normalizar(usuarioActual?.nick) ? "font-bold text-purple-700 bg-purple-50" : ""}>
+                                                                    <td className="px-2 py-1">{idx + 1}</td>
+                                                                    <td className="px-2 py-1">{resultado.nick}</td>
+                                                                    <td className="px-2 py-1">{resultado.aciertos}/25</td>
+                                                                    <td className="px-2 py-1">{resultado.puntuacion} pts</td>
+                                                                </tr>
+                                                            ));
+                                                    })()}
+                                                </tbody>
+                                            </table>
                                         </div>
                                     )}
 
                                     <div className="flex gap-2">
-                                        {torneo.estado === 'registro' && !torneo.participantes.includes(usuarioActual.nick) && esTorneoDisponibleParaUsuario(torneo.id) && (
-                                            <button
-                                                onClick={() => registrarseTorneo(torneo.id)}
-                                                disabled={torneo.participantes.length >= torneo.maxParticipantes}
-                                                className="flex-1 bg-purple-600 text-white px-4 py-2 rounded font-semibold hover:bg-purple-700 disabled:bg-gray-400 transition-colors"
-                                            >
-                                                Registrarse
-                                            </button>
-                                        )}
-
-                                        {torneo.estado === 'registro' && !torneo.participantes.includes(usuarioActual.nick) && !esTorneoDisponibleParaUsuario(torneo.id) && (
-                                            <span className="flex-1 text-center bg-gray-100 text-gray-600 px-4 py-2 rounded font-semibold">
-                                                Solo para {torneo.nombre.split(' ')[2]} {torneo.nombre.split(' ')[3]}
+                                        {/* Lógica simplificada y robusta: */}
+                                        {/* Bloqueo extra: si el usuario tiene resultado o más de una participación, oculta el botón */}
+                                        {torneo._usuarioYaParticipado || (torneo.resultados && torneo.resultados.filter((r: any) => r.nick === usuarioActual.nick).length > 0) || (torneo.participantes.filter((n: string) => n === usuarioActual.nick).length > 1) ? (
+                                            <span className="flex-1 text-center bg-gray-200 text-gray-800 px-4 py-2 rounded font-semibold">
+                                                Torneo finalizado
                                             </span>
-                                        )}
-
-                                        {torneo.participantes.includes(usuarioActual.nick) && torneo.estado === 'registro' && (
-                                            <span className="flex-1 text-center bg-green-100 text-green-800 px-4 py-2 rounded font-semibold">
-                                                ✓ Registrado
-                                            </span>
-                                        )}
-
-                                        {torneo.participantes.includes(usuarioActual.nick) && (
-                                            <button
-                                                onClick={() => iniciarTorneo(torneo)}
-                                                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition-colors"
-                                            >
-                                                Comenzar Torneo
-                                            </button>
-                                        )}
+                                        ) : torneo.estado === 'registro' ? (
+                                            !torneo.participantes.includes(usuarioActual.nick) ? (
+                                                esTorneoDisponibleParaUsuario(torneo.id) ? (
+                                                    <button
+                                                        onClick={() => registrarseTorneo(torneo.id)}
+                                                        disabled={torneo.participantes.length >= torneo.maxParticipantes}
+                                                        className="flex-1 bg-purple-600 text-white px-4 py-2 rounded font-semibold hover:bg-purple-700 disabled:bg-gray-400 transition-colors"
+                                                    >
+                                                        Registrarse
+                                                    </button>
+                                                ) : (
+                                                    <span className="flex-1 text-center bg-gray-100 text-gray-600 px-4 py-2 rounded font-semibold">
+                                                        Solo para {torneo.nombre.split(' ')[2]} {torneo.nombre.split(' ')[3]}
+                                                    </span>
+                                                )
+                                            ) : (
+                                                <>
+                                                    <span className="flex-1 text-center bg-green-100 text-green-800 px-4 py-2 rounded font-semibold">
+                                                        ✓ Registrado
+                                                    </span>
+                                                    <button
+                                                        onClick={() => iniciarTorneo(torneo)}
+                                                        className="flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition-colors"
+                                                    >
+                                                        Comenzar Torneo
+                                                    </button>
+                                                </>
+                                            )
+                                        ) : null}
                                     </div>
                                 </div>
                             </div>
@@ -373,70 +427,25 @@ const TorneosPremiumPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Estadísticas personales */}
+                {/* Clasificación Liga Premium con puntos totales */}
                 <div className="mt-8 bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                    <h3 className="text-xl font-bold text-white mb-4">📊 Tus Estadísticas en Torneos</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        <div className="bg-white/20 rounded p-4">
-                            <div className="text-2xl font-bold text-white">
-                                {(() => {
-                                    const [stats, setStats] = useState({ victorias: 0, participaciones: 0, puntuacionTotal: 0 });
-                                    useEffect(() => {
-                                        fetch('/api/premium/competiciones')
-                                            .then(res => res.ok ? res.json() : { victorias: 0, participaciones: 0, puntuacionTotal: 0 })
-                                            .then(setStats);
-                                    }, []);
-                                    return stats.victorias;
-                                })()}
-                            </div>
-                            <div className="text-purple-100">Victorias</div>
-                        </div>
-                        <div className="bg-white/20 rounded p-4">
-                            <div className="text-2xl font-bold text-white">
-                                {(() => {
-                                    const [stats, setStats] = useState({ victorias: 0, participaciones: 0, puntuacionTotal: 0 });
-                                    useEffect(() => {
-                                        fetch('/api/premium/competiciones')
-                                            .then(res => res.ok ? res.json() : { victorias: 0, participaciones: 0, puntuacionTotal: 0 })
-                                            .then(setStats);
-                                    }, []);
-                                    return stats.participaciones;
-                                })()}
-                            </div>
-                            <div className="text-purple-100">Participaciones</div>
-                        </div>
-                        <div className="bg-white/20 rounded p-4">
-                            <div className="text-2xl font-bold text-white">
-                                {(() => {
-                                    const [stats, setStats] = useState({ victorias: 0, participaciones: 0, puntuacionTotal: 0 });
-                                    useEffect(() => {
-                                        fetch('/api/premium/competiciones')
-                                            .then(res => res.ok ? res.json() : { victorias: 0, participaciones: 0, puntuacionTotal: 0 })
-                                            .then(setStats);
-                                    }, []);
-                                    return stats.participaciones > 0 ? Math.round((stats.victorias / stats.participaciones) * 100) : 0;
-                                })()}%
-                            </div>
-                            <div className="text-purple-100">Tasa de Victoria</div>
-                        </div>
-                        <div className="bg-white/20 rounded p-4">
-                            <div className="text-2xl font-bold text-white">
-                                {(() => {
-                                    const [stats, setStats] = useState({ victorias: 0, participaciones: 0, puntuacionTotal: 0 });
-                                    useEffect(() => {
-                                        fetch('/api/premium/competiciones')
-                                            .then(res => res.ok ? res.json() : { victorias: 0, participaciones: 0, puntuacionTotal: 0 })
-                                            .then(setStats);
-                                    }, []);
-                                    return stats.puntuacionTotal;
-                                })()}
-                            </div>
-                            <div className="text-purple-100">Puntuación Total</div>
-                        </div>
-                    </div>
+                    <h3 className="text-xl font-bold text-white mb-4">🏅 Clasificación Premium (Liga)</h3>
+                    <table className="w-full text-xs mt-2">
+                        <thead>
+                            <tr className="bg-green-100">
+                                <th className="px-2 py-1">Nick</th>
+                                <th className="px-2 py-1">Puntos Totales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className={usuarioActual ? "font-bold text-purple-700 bg-purple-50" : ""}>
+                                <td className="px-2 py-1">{usuarioActual?.nick}</td>
+                                <td className="px-2 py-1">{stats.puntuacionTotal} pts</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                {/* Botón volver */}
                 <div className="text-center mt-8">
                     <button
                         onClick={() => router.push('/premium-nuevo')}

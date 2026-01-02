@@ -41,7 +41,36 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
         }
 
-        const { victorias, participaciones, puntuacionTotal } = await request.json();
+        let { victorias, participaciones, puntuacionTotal } = await request.json();
+
+        // Obtener puntos de torneos premium y sumarlos
+        let puntosTorneos = 0;
+        try {
+            const torneoData = await prisma.torneoPremium?.findUnique?.({ where: { userId: decoded.userId } });
+            let torneos = [];
+            if (torneoData && torneoData.torneos) {
+                if (typeof torneoData.torneos === 'string') {
+                    torneos = JSON.parse(torneoData.torneos);
+                } else {
+                    torneos = torneoData.torneos;
+                }
+            }
+            // Para cada torneo, sumar solo el mejor resultado del usuario
+            torneos.forEach((torneo: any) => {
+                if (torneo.resultados && Array.isArray(torneo.resultados)) {
+                    // Filtrar resultados del usuario actual
+                    const normalizar = (str: string) => (str || '').toLowerCase().replace(/\s+/g, '');
+                    const resultadosUsuario = torneo.resultados.filter((r: any) => r.nick && decoded.nick && normalizar(r.nick) === normalizar(decoded.nick));
+                    if (resultadosUsuario.length > 0) {
+                        // Tomar el mejor resultado (mayor puntuación)
+                        const mejor = resultadosUsuario.reduce((max: any, curr: any) => curr.puntuacion > max.puntuacion ? curr : max, resultadosUsuario[0]);
+                        puntosTorneos += mejor.puntuacion || 0;
+                    }
+                }
+            });
+        } catch { }
+        // Sumar los puntos de torneos premium a la puntuación total
+        puntuacionTotal = (puntuacionTotal || 0) + puntosTorneos;
 
         const competicionData = await prisma.competicionPremium?.upsert?.({
             where: { userId: decoded.userId },

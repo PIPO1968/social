@@ -132,7 +132,7 @@ const Header: React.FC = () => {
                     className="bg-red-500 text-white px-3 py-1 rounded"
                     onClick={async () => {
                         await fetch('/api/auth/logout', { method: 'POST' });
-                        window.location.reload();
+                        window.location.href = '/';
                     }}
                 >{t("cerrarSesion")}</button>
             </div>

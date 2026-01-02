@@ -38,34 +38,45 @@ const LigaPremiumPage = ()=>{
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const [usuariosPremium, setUsuariosPremium] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
+        // Obtener usuario actual
+        fetch('/api/auth/me').then((response)=>response.json()).then((data)=>{
+            if (data.user) {
+                setUsuarioActual(data.user);
+                // Verificar si es premium
+                fetch('/api/premium/data?nick=' + data.user.nick).then((response)=>response.json()).then((premiumData)=>{
+                    // LOG TEMPORAL PARA DEPURAR
+                    const fechaExp = premiumData.fechaExpiracion || premiumData.expiracion;
+                    let fechaValida = false;
+                    if (fechaExp) {
+                        const fecha = typeof fechaExp === 'string' ? new Date(fechaExp) : fechaExp;
+                        fechaValida = fecha.getTime() > Date.now();
+                    }
+                    if (premiumData.activo && fechaValida) {
+                        setIsPremium(true);
+                        cargarLigaPremium();
+                    } else {
+                        alert('Tu suscripción Premium ha expirado. Renueva para acceder a la Liga Premium.');
+                        router.push('/premium-nuevo');
+                    }
+                }).catch(()=>{
+                    alert('Esta función es exclusiva para usuarios Premium.');
+                    router.push('/premium-nuevo');
+                });
+            } else {
+                router.push('/');
+            }
+            setLoading(false);
+        }).catch(()=>{
+            router.push('/');
+            setLoading(false);
+        });
     }, []);
     const cargarLigaPremium = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return;
-        //TURBOPACK unreachable
-        ;
-        const usersStr = undefined;
-        const users = undefined;
-        const premiumUsers = undefined;
-    };
-    const calcularPuntosUsuario = (user)=>{
-        let puntos = 0;
-        // Puntos por historias creadas (10 puntos cada una)
-        puntos += (user.historiasCreadas || 0) * 10;
-        // Puntos por preguntas acertadas (5 puntos cada una)
-        puntos += (user.preguntasAcertadas || 0) * 5;
-        // Puntos por amigos (20 puntos cada amigo)
-        puntos += (user.amigos?.length || 0) * 20;
-        // Puntos por medallas (50 puntos cada medalla)
-        puntos += (user.medallas?.length || 0) * 50;
-        // Puntos por participación en competiciones premium
-        const competicionesPremium = localStorage.getItem(`competiciones_premium_${user.nick}`);
-        if (competicionesPremium) {
-            const comps = JSON.parse(competicionesPremium);
-            puntos += comps.puntuacionTotal || 0; // Puntuación total de torneos
-        }
-        return puntos;
+        fetch('/api/liga-premium').then((response)=>response.json()).then((data)=>{
+            setUsuariosPremium(data);
+        }).catch((error)=>{
+            console.error('Error cargando liga premium:', error);
+        });
     };
     if (loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -75,12 +86,12 @@ const LigaPremiumPage = ()=>{
                 children: "Cargando Liga Premium..."
             }, void 0, false, {
                 fileName: "[project]/src/app/liga-premium/page.tsx",
-                lineNumber: 113,
+                lineNumber: 77,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/src/app/liga-premium/page.tsx",
-            lineNumber: 112,
+            lineNumber: 76,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -101,7 +112,7 @@ const LigaPremiumPage = ()=>{
                             children: "🏆 Liga Premium Exclusiva"
                         }, void 0, false, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 129,
+                            lineNumber: 93,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -109,13 +120,13 @@ const LigaPremiumPage = ()=>{
                             children: "Compite con los mejores usuarios Premium"
                         }, void 0, false, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 130,
+                            lineNumber: 94,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                    lineNumber: 128,
+                    lineNumber: 92,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -126,7 +137,7 @@ const LigaPremiumPage = ()=>{
                             children: "Tu Posición"
                         }, void 0, false, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 135,
+                            lineNumber: 99,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -137,7 +148,7 @@ const LigaPremiumPage = ()=>{
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 136,
+                            lineNumber: 100,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -148,13 +159,13 @@ const LigaPremiumPage = ()=>{
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 137,
+                            lineNumber: 101,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                    lineNumber: 134,
+                    lineNumber: 98,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -167,12 +178,12 @@ const LigaPremiumPage = ()=>{
                                 children: "🏅 Clasificación Premium"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/liga-premium/page.tsx",
-                                lineNumber: 145,
+                                lineNumber: 109,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 144,
+                            lineNumber: 108,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -189,7 +200,7 @@ const LigaPremiumPage = ()=>{
                                                     children: "Posición"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 152,
+                                                    lineNumber: 116,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -197,7 +208,7 @@ const LigaPremiumPage = ()=>{
                                                     children: "Usuario"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 153,
+                                                    lineNumber: 117,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -205,7 +216,7 @@ const LigaPremiumPage = ()=>{
                                                     children: "Puntos"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 154,
+                                                    lineNumber: 118,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -213,7 +224,7 @@ const LigaPremiumPage = ()=>{
                                                     children: "Historias"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 155,
+                                                    lineNumber: 119,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -221,7 +232,7 @@ const LigaPremiumPage = ()=>{
                                                     children: "Aciertos"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 156,
+                                                    lineNumber: 120,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -229,7 +240,7 @@ const LigaPremiumPage = ()=>{
                                                     children: "Amigos"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 157,
+                                                    lineNumber: 121,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -237,18 +248,18 @@ const LigaPremiumPage = ()=>{
                                                     children: "Medallas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                    lineNumber: 158,
+                                                    lineNumber: 122,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 151,
+                                            lineNumber: 115,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 114,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -269,7 +280,7 @@ const LigaPremiumPage = ()=>{
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                    lineNumber: 166,
+                                                                    lineNumber: 130,
                                                                     columnNumber: 49
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 index < 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -277,18 +288,18 @@ const LigaPremiumPage = ()=>{
                                                                     children: index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                    lineNumber: 174,
+                                                                    lineNumber: 138,
                                                                     columnNumber: 53
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                            lineNumber: 165,
+                                                            lineNumber: 129,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 164,
+                                                        lineNumber: 128,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -304,12 +315,12 @@ const LigaPremiumPage = ()=>{
                                                                         alt: usuario.nick
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                        lineNumber: 183,
+                                                                        lineNumber: 147,
                                                                         columnNumber: 53
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                    lineNumber: 182,
+                                                                    lineNumber: 146,
                                                                     columnNumber: 49
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -323,29 +334,29 @@ const LigaPremiumPage = ()=>{
                                                                                 children: "(Tú)"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                                lineNumber: 193,
+                                                                                lineNumber: 157,
                                                                                 columnNumber: 61
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                        lineNumber: 190,
+                                                                        lineNumber: 154,
                                                                         columnNumber: 53
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                                    lineNumber: 189,
+                                                                    lineNumber: 153,
                                                                     columnNumber: 49
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                            lineNumber: 181,
+                                                            lineNumber: 145,
                                                             columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 180,
+                                                        lineNumber: 144,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -353,7 +364,7 @@ const LigaPremiumPage = ()=>{
                                                         children: usuario.puntos.toLocaleString()
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 199,
+                                                        lineNumber: 163,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -361,7 +372,7 @@ const LigaPremiumPage = ()=>{
                                                         children: usuario.historiasCreadas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 202,
+                                                        lineNumber: 166,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -369,7 +380,7 @@ const LigaPremiumPage = ()=>{
                                                         children: usuario.preguntasAcertadas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 205,
+                                                        lineNumber: 169,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -377,7 +388,7 @@ const LigaPremiumPage = ()=>{
                                                         children: usuario.amigos
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 208,
+                                                        lineNumber: 172,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -385,35 +396,35 @@ const LigaPremiumPage = ()=>{
                                                         children: usuario.medallas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                        lineNumber: 211,
+                                                        lineNumber: 175,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, usuario.nick, true, {
                                                 fileName: "[project]/src/app/liga-premium/page.tsx",
-                                                lineNumber: 163,
+                                                lineNumber: 127,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                                        lineNumber: 161,
+                                        lineNumber: 125,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/liga-premium/page.tsx",
-                                lineNumber: 149,
+                                lineNumber: 113,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 148,
+                            lineNumber: 112,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                    lineNumber: 143,
+                    lineNumber: 107,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -424,7 +435,7 @@ const LigaPremiumPage = ()=>{
                             children: "💡 Cómo ganar puntos en la Liga Premium"
                         }, void 0, false, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 223,
+                            lineNumber: 187,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -436,45 +447,45 @@ const LigaPremiumPage = ()=>{
                                             children: "📖 Historias creadas:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 226,
+                                            lineNumber: 190,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 10 puntos cada una",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 226,
+                                            lineNumber: 190,
                                             columnNumber: 86
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
                                             children: "✅ Preguntas acertadas:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 227,
+                                            lineNumber: 191,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 5 puntos cada una",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 227,
+                                            lineNumber: 191,
                                             columnNumber: 86
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
                                             children: "👥 Amigos:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 228,
+                                            lineNumber: 192,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 20 puntos cada amigo",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 228,
+                                            lineNumber: 192,
                                             columnNumber: 77
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                    lineNumber: 225,
+                                    lineNumber: 189,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -483,44 +494,44 @@ const LigaPremiumPage = ()=>{
                                             children: "🏅 Medallas:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 231,
+                                            lineNumber: 195,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 50 puntos cada medalla",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 231,
+                                            lineNumber: 195,
                                             columnNumber: 81
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
                                             children: "🎯 Torneos Premium:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 232,
+                                            lineNumber: 196,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Puntuación total de torneos",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                                            lineNumber: 232,
+                                            lineNumber: 196,
                                             columnNumber: 93
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                                    lineNumber: 230,
+                                    lineNumber: 194,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/liga-premium/page.tsx",
-                            lineNumber: 224,
+                            lineNumber: 188,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                    lineNumber: 222,
+                    lineNumber: 186,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -531,23 +542,23 @@ const LigaPremiumPage = ()=>{
                         children: "← Volver a Premium"
                     }, void 0, false, {
                         fileName: "[project]/src/app/liga-premium/page.tsx",
-                        lineNumber: 239,
+                        lineNumber: 203,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 }, void 0, false, {
                     fileName: "[project]/src/app/liga-premium/page.tsx",
-                    lineNumber: 238,
+                    lineNumber: 202,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/liga-premium/page.tsx",
-            lineNumber: 126,
+            lineNumber: 90,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/app/liga-premium/page.tsx",
-        lineNumber: 125,
+        lineNumber: 89,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };

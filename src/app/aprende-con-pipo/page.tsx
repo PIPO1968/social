@@ -67,6 +67,15 @@ export default function AprendeConPipo() {
     // Estado para modo torneo premium
     const [modoTorneo, setModoTorneo] = React.useState(false);
     const [torneoActivo, setTorneoActivo] = React.useState<any>(null);
+    // Detectar modo torneo por query param
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("torneo") === "1") {
+                setModoTorneoManual(true);
+            }
+        }
+    }, []);
     // Estado para curso seleccionado en ChampionshipQuiz
     const [cursoCompeticion, setCursoCompeticion] = React.useState(1);
     // Estado para centro escolar (puedes adaptar según tu lógica de usuario)
@@ -136,7 +145,7 @@ export default function AprendeConPipo() {
             await fetch('/api/user/update-likes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nick, likes: cantidad })
+                body: JSON.stringify({ likesDelta: cantidad })
             });
         } catch (error) {
             console.error('Error actualizando likes del perfil:', error);
@@ -192,7 +201,11 @@ export default function AprendeConPipo() {
                     setUsuarioActual(data.user);
 
                     // Check premium from DB
-                    fetch(`/api/premium?action=check&nick=${data.user.nick}`)
+                    fetch('/api/premium', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'check', nick: data.user.nick })
+                    })
                         .then(res => res.json())
                         .then(premiumData => {
                             setIsPremium(premiumData.premium);
@@ -348,7 +361,7 @@ export default function AprendeConPipo() {
                 fetch('/api/user/increment-stat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nick: usuarioActual.nick, stat: 'respuestasAcertadas', amount: 1 })
+                    body: JSON.stringify({ stat: 'respuestasAcertadas', amount: 1 })
                 }).catch(err => console.error('Error updating DB stats:', err));
 
                 // ✅ NUEVO: Guardar respuestas acertadas por asignatura específica
@@ -371,7 +384,7 @@ export default function AprendeConPipo() {
                 fetch('/api/user/increment-stat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nick: usuarioActual.nick, stat: 'preguntasFalladas', amount: 1 })
+                    body: JSON.stringify({ stat: 'preguntasFalladas', amount: 1 })
                 }).catch(err => console.error('Error updating DB stats falladas:', err));
             }
         }
@@ -380,10 +393,75 @@ export default function AprendeConPipo() {
                 await sumarLikesPerfil(usuarioActual.nick, likesDelta);
             }
         }
+        // Emitir evento para refrescar perfil
+        window.dispatchEvent(new Event('profileUpdate'));
     }
 
     if (modoTorneoManual) {
-        return <TournamentQuiz userGrade={parseInt(cursoUsuario) || 1} onTournamentComplete={() => { }} />;
+        // Solo mostrar el torneo, ocultar todo lo demás
+        const handleTournamentComplete = async (aciertos: number, puntuacionTotal: number) => {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const torneoId = params.get("torneoId") || "torneo-mensual-" + (cursoUsuario ? cursoUsuario[0] : "1") + "primaria";
+                const res = await fetch('/api/premium/torneos');
+                let torneoData = await res.json();
+                let torneos = torneoData.torneos || [];
+                if (typeof torneos === 'string') {
+                    try {
+                        torneos = JSON.parse(torneos);
+                    } catch {
+                        torneos = [];
+                    }
+                }
+                torneos = torneos.map((t: any) => {
+                    if (t.id === torneoId) {
+                        // Evitar duplicados en resultados
+                        let resultados = Array.isArray(t.resultados) ? [...t.resultados] : [];
+                        if (!resultados.some((r: any) => r.nick === usuarioActual?.nick)) {
+                            resultados.push({ nick: usuarioActual?.nick, aciertos, puntuacion: puntuacionTotal });
+                        }
+                        resultados.sort((a: any, b: any) => b.puntuacion - a.puntuacion);
+                        // Evitar duplicados en participantes
+                        let participantes = Array.isArray(t.participantes) ? [...t.participantes] : [];
+                        if (!participantes.includes(usuarioActual?.nick)) {
+                            participantes.push(usuarioActual?.nick);
+                        }
+                        // El estado global del torneo NO se marca como 'finalizado', solo el resultado del usuario
+                        return { ...t, resultados, participantes };
+                    }
+                    return t;
+                });
+                await fetch('/api/premium/torneos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ torneos: JSON.stringify(torneos) })
+                });
+                // Actualizar estadísticas globales del usuario
+                const statsRes = await fetch('/api/premium/competiciones');
+                let stats = await statsRes.json();
+                let participaciones = (stats.participaciones || 0) + 1;
+                let puntuacionTotalGlobal = (stats.puntuacionTotal || 0) + puntuacionTotal;
+                let victorias = stats.victorias || 0;
+                if (torneos.find(t => t.id === torneoId)?.resultados?.[0]?.nick === usuarioActual?.nick) {
+                    victorias += 1;
+                }
+                await fetch('/api/premium/competiciones', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ victorias, participaciones, puntuacionTotal: puntuacionTotalGlobal })
+                });
+                setTimeout(() => {
+                    window.location.href = '/torneos-premium';
+                }, 500);
+            } catch (err) {
+                window.location.href = '/torneos-premium';
+            }
+        };
+        return (
+            <div className="min-h-screen bg-green-100 flex flex-col items-center justify-center">
+                <TournamentQuiz userGrade={parseInt(cursoUsuario) || 1} onTournamentComplete={handleTournamentComplete} />
+            </div>
+        );
     }
 
     return (
@@ -532,11 +610,5 @@ export default function AprendeConPipo() {
         </div>
     );
 
-    // Función para manejar la finalización del torneo premium
-    const handleTournamentComplete = (aciertos: number, puntuacionTotal: number) => {
-        // Sin guardar en localStorage
-        alert(`¡Torneo completado!\n\nAciertos: ${aciertos}/25\nPuntuación total: ${puntuacionTotal} puntos\n\nLos resultados se han guardado. ¡Buen trabajo!`);
-        // Redirigir de vuelta a torneos premium
-        window.location.href = '/torneos-premium';
-    };
+    // ...existing code...
 }

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 52, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/user/Desktop/social/src/app/api/palabras-prohibidas/route.ts"],"sourcesContent":["import { NextRequest, NextResponse } from 'next/server';\r\nimport { PrismaClient } from '@prisma/client';\r\n\r\nconst prisma = new PrismaClient();\r\n\r\nexport async function GET() {\r\n    try {\r\n        const palabras = await prisma.palabraProhibida.findMany({\r\n            select: { palabra: true }\r\n        });\r\n        return NextResponse.json({ palabras: palabras.map(p => p.palabra) });\r\n    } catch (error) {\r\n        console.error('Error obteniendo palabras prohibidas:', error);\r\n        return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });\r\n    }\r\n}"],"names":[],"mappings":";;;;AAAA;AACA;;;AAEA,MAAM,SAAS,IAAI,6IAAY;AAExB,eAAe;IAClB,IAAI;QACA,MAAM,WAAW,MAAM,OAAO,gBAAgB,CAAC,QAAQ,CAAC;YACpD,QAAQ;gBAAE,SAAS;YAAK;QAC5B;QACA,OAAO,gJAAY,CAAC,IAAI,CAAC;YAAE,UAAU,SAAS,GAAG,CAAC,CAAA,IAAK,EAAE,OAAO;QAAE;IACtE,EAAE,OAAO,OAAO;QACZ,QAAQ,KAAK,CAAC,yCAAyC;QACvD,OAAO,gJAAY,CAAC,IAAI,CAAC;YAAE,OAAO;QAA6B,GAAG;YAAE,QAAQ;QAAI;IACpF;AACJ","debugId":null}}]
+}

@@ -123,7 +123,7 @@ function Trofeos() {
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 className: "text-xs text-gray-500 text-center",
-                                children: "Comentaste en una historia"
+                                children: "Recibiste tu primer comentario"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/trofeos/page.tsx",
                                 lineNumber: 34,
@@ -940,7 +940,7 @@ function Trofeos() {
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "text-xs text-amber-800 text-center font-medium",
-                                        children: "Tus primeras 35 historias."
+                                        children: "Al menos 35 historias creadas."
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/trofeos/page.tsx",
                                         lineNumber: 189,
@@ -998,7 +998,7 @@ function Trofeos() {
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "text-xs text-amber-800 text-center font-medium",
-                                        children: "1200 preguntas acertadas en Aprende con Pipo."
+                                        children: "1200 respuestas acertadas en Aprende con Pipo."
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/trofeos/page.tsx",
                                         lineNumber: 201,
@@ -1462,7 +1462,7 @@ function Trofeos() {
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "text-xs text-amber-800 text-center font-medium",
-                                        children: "2500+ preguntas acertadas en Aprende con Pipo."
+                                        children: "2500+ respuestas acertadas en Aprende con Pipo."
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/trofeos/page.tsx",
                                         lineNumber: 297,

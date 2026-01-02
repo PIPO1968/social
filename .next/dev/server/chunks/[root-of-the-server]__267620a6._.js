@@ -114,11 +114,25 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$jwt$2e$ts__$
 const prisma = new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
 async function POST(request) {
     try {
-        const { nick, password } = await request.json();
-        // Buscar usuario
+        const body = await request.json();
+        const { email, password } = body;
+        if (!email || !password) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'Email y contraseña requeridos'
+            }, {
+                status: 400
+            });
+        }
+        // Buscar usuario por email
         const user = await prisma.user.findUnique({
             where: {
-                nick
+                email: email
+            },
+            select: {
+                id: true,
+                nick: true,
+                email: true,
+                password: true
             }
         });
         if (!user || !user.password) {
@@ -151,8 +165,9 @@ async function POST(request) {
         response.cookies.set('auth-token', token, {
             httpOnly: true,
             secure: ("TURBOPACK compile-time value", "development") === 'production',
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7 // 7 días
+            sameSite: ("TURBOPACK compile-time falsy", 0) ? "TURBOPACK unreachable" : 'lax',
+            maxAge: 60 * 60 * 24 * 7,
+            domain: undefined
         });
         return response;
     } catch (error) {

@@ -7,6 +7,7 @@
   "/api/auth/logout/route": "/api/auth/logout",
   "/api/auth/me/route": "/api/auth/me",
   "/api/auth/register/route": "/api/auth/register",
+  "/api/centros/ranking/route": "/api/centros/ranking",
   "/api/championship/reset/route": "/api/championship/reset",
   "/api/championship/results/route": "/api/championship/results",
   "/api/championship/seasons/route": "/api/championship/seasons",

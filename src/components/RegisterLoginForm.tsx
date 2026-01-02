@@ -23,7 +23,7 @@ const RegisterLoginForm: React.FC = () => {
     }, []);
 
     return (
-        <div className="max-w-md mx-auto bg-white shadow rounded p-6 mt-8">
+        <div className="max-w-md mx-auto bg-sky-100 shadow rounded p-6 mt-8">
             <div className="flex justify-between mb-4">
                 <button onClick={() => setIsRegister(true)} className={isRegister ? 'font-bold' : ''}>Registro</button>
                 <button onClick={() => setIsRegister(false)} className={!isRegister ? 'font-bold' : ''}>Login</button>

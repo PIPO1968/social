@@ -4,6 +4,12 @@ import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 
+interface TournamentResult {
+    nick: string;
+    aciertos: number;
+    puntuacion: number;
+}
+
 export async function GET(request: NextRequest) {
     try {
         const cookieStore = await cookies();
@@ -70,7 +76,7 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json({ error: 'Torneo no encontrado' }, { status: 404 });
             }
 
-            const resultados = torneo.resultados as any[] || [];
+            const resultados: TournamentResult[] = torneo.resultados ? JSON.parse(torneo.resultados) : [];
             resultados.push({
                 nick: session.user.nick,
                 aciertos,
@@ -95,7 +101,7 @@ export async function POST(request: NextRequest) {
                 updatedTorneo = await prisma.torneo.update({
                     where: { id: torneoId },
                     data: {
-                        resultados,
+                        resultados: JSON.stringify(resultados),
                         estado: 'finalizado',
                         ganadorId: winner?.id
                     }
@@ -112,7 +118,7 @@ export async function POST(request: NextRequest) {
             } else {
                 updatedTorneo = await prisma.torneo.update({
                     where: { id: torneoId },
-                    data: { resultados }
+                    data: { resultados: JSON.stringify(resultados) }
                 });
             }
 

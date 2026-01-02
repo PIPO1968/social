@@ -131,6 +131,24 @@ async function GET(request) {
         const user = await prisma.user.findUnique({
             where: {
                 id: decoded.userId
+            },
+            include: {
+                historias: {
+                    select: {
+                        id: true,
+                        likes: true
+                    }
+                },
+                amigosComoUser: {
+                    select: {
+                        id: true
+                    }
+                },
+                amigosComoAmigo: {
+                    select: {
+                        id: true
+                    }
+                }
             }
         });
         if (!user) {
@@ -140,10 +158,39 @@ async function GET(request) {
                 status: 404
             });
         }
-        // Devolver usuario sin contraseña
-        const { password, ...userWithoutPassword } = user;
+        // Calcular estadísticas adicionales
+        const totalLikesHistorias = user.historias.reduce((sum, historia)=>sum + (historia.likes || 0), 0);
+        const totalAmigos = (user.amigosComoUser.length + user.amigosComoAmigo.length) / 2;
+        // Obtener likes de championship por separado
+        let totalLikesChampionship = 0;
+        try {
+            const championshipResults = await prisma.championshipResult.findMany({
+                where: {
+                    userId: decoded.userId
+                },
+                select: {
+                    likes: true
+                }
+            });
+            totalLikesChampionship = championshipResults.reduce((sum, result)=>sum + (result.likes || 0), 0);
+        } catch (error) {
+            console.error('Error obteniendo likes de championship:', error);
+        // Si falla, usar 0
+        }
+        const likesConcursos = (user.concursosGanados || 0) * 10;
+        const likesManuales = user.likes || 0;
+        const totalLikes = totalLikesHistorias + totalLikesChampionship + likesConcursos + likesManuales;
+        // Devolver usuario sin contraseña, con estadísticas calculadas
+        const { password, historias, amigosComoUser, amigosComoAmigo, ...userWithoutPassword } = user;
+        const userWithStats = {
+            ...userWithoutPassword,
+            likes: totalLikes,
+            amigos: totalAmigos,
+            historias: user.historias.length
+        };
+        console.log(`User ${user.nick} respuestasAcertadas:`, user.respuestasAcertadas);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            user: userWithoutPassword
+            user: userWithStats
         });
     } catch (error) {
         console.error('Error obteniendo usuario actual:', error);

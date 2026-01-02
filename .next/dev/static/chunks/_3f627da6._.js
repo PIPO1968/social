@@ -24,22 +24,27 @@ const PremiumPage = ()=>{
     // Cargar información del usuario
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "PremiumPage.useEffect": ()=>{
-            if ("TURBOPACK compile-time truthy", 1) {
-                const userData = localStorage.getItem('currentUser') || localStorage.getItem('user');
-                if (userData) {
-                    const user = JSON.parse(userData);
-                    setUsuario(user);
-                    // Verificar si tiene premium activo
-                    const premiumInfo = localStorage.getItem(`premium_${user.nick}`);
-                    if (premiumInfo) {
-                        const premium = JSON.parse(premiumInfo);
-                        if (new Date(premium.expiracion) > new Date()) {
-                            setIsPremium(true);
+            const loadUser = {
+                "PremiumPage.useEffect.loadUser": async ()=>{
+                    try {
+                        const response = await fetch('/api/auth/me');
+                        if (!response.ok) {
+                            router.push('/');
+                            return;
                         }
+                        const data = await response.json();
+                        // Soportar tanto { user: {...} } como el usuario directo
+                        const userObj = data.user ? data.user : data;
+                        setUsuario(userObj);
+                        setIsPremium(userObj.premium || false);
+                    } catch (error) {
+                        console.error('Error loading user:', error);
+                        router.push('/');
                     }
+                    setLoading(false);
                 }
-                setLoading(false);
-            }
+            }["PremiumPage.useEffect.loadUser"];
+            loadUser();
         }
     }["PremiumPage.useEffect"], []);
     const beneficiosPremium = {
@@ -127,12 +132,21 @@ const PremiumPage = ()=>{
                 precio: 12,
                 beneficios: beneficiosPremium
             };
-            localStorage.setItem(`premium_${usuario.nick}`, JSON.stringify(premiumData));
+            // Guardar en la base de datos
+            await fetch('/api/premium/data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fechaInicio: premiumData.fechaInicio,
+                    fechaExpiracion: premiumData.expiracion,
+                    activo: true
+                })
+            });
             setIsPremium(true);
-            alert(`🎉 ¡Bienvenido a StoryUp Premium, ${usuario.nick}!\n\nTu experiencia de aprendizaje acaba de mejorar significativamente. ¡Disfruta de todos los beneficios Premium por un año completo!`);
         } catch (error) {
             console.error('Error al activar Premium:', error);
-            alert('Error al procesar el pago. Por favor, inténtalo de nuevo.');
         } finally{
             setProcesandoPago(false);
         }
@@ -145,12 +159,12 @@ const PremiumPage = ()=>{
                 children: "Cargando..."
             }, void 0, false, {
                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                lineNumber: 147,
+                lineNumber: 157,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-            lineNumber: 146,
+            lineNumber: 156,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -162,12 +176,12 @@ const PremiumPage = ()=>{
                 children: "Debes iniciar sesión para acceder a Premium"
             }, void 0, false, {
                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                lineNumber: 155,
+                lineNumber: 165,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-            lineNumber: 154,
+            lineNumber: 164,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -185,7 +199,7 @@ const PremiumPage = ()=>{
                                 children: "👑 ¡Eres Premium! 👑"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 165,
+                                lineNumber: 175,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -197,13 +211,13 @@ const PremiumPage = ()=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 168,
+                                lineNumber: 178,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                        lineNumber: 164,
+                        lineNumber: 174,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -218,7 +232,7 @@ const PremiumPage = ()=>{
                                         children: "🏆"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 179,
+                                        lineNumber: 189,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -226,7 +240,7 @@ const PremiumPage = ()=>{
                                         children: "Liga Premium Exclusiva"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 180,
+                                        lineNumber: 190,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -234,13 +248,13 @@ const PremiumPage = ()=>{
                                         children: "Compite con otros Premium"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 181,
+                                        lineNumber: 191,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 175,
+                                lineNumber: 185,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -252,7 +266,7 @@ const PremiumPage = ()=>{
                                         children: "🎯"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 188,
+                                        lineNumber: 198,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -260,7 +274,7 @@ const PremiumPage = ()=>{
                                         children: "Torneos Premium"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 189,
+                                        lineNumber: 199,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -268,19 +282,19 @@ const PremiumPage = ()=>{
                                         children: "Gana premios especiales"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 190,
+                                        lineNumber: 200,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 184,
+                                lineNumber: 194,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                        lineNumber: 174,
+                        lineNumber: 184,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -294,7 +308,7 @@ const PremiumPage = ()=>{
                                         children: "🎨 Perfil Premium"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 197,
+                                        lineNumber: 207,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -307,7 +321,7 @@ const PremiumPage = ()=>{
                                                         children: beneficio.icon
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                        lineNumber: 203,
+                                                        lineNumber: 213,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -317,7 +331,7 @@ const PremiumPage = ()=>{
                                                                 children: beneficio.titulo
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                                lineNumber: 205,
+                                                                lineNumber: 215,
                                                                 columnNumber: 45
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -325,30 +339,30 @@ const PremiumPage = ()=>{
                                                                 children: beneficio.descripcion
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                                lineNumber: 206,
+                                                                lineNumber: 216,
                                                                 columnNumber: 45
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                        lineNumber: 204,
+                                                        lineNumber: 214,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, index, true, {
                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                lineNumber: 202,
+                                                lineNumber: 212,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 200,
+                                        lineNumber: 210,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 196,
+                                lineNumber: 206,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -359,7 +373,7 @@ const PremiumPage = ()=>{
                                         children: "🏆 Liga Premium Exclusiva"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 215,
+                                        lineNumber: 225,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -372,7 +386,7 @@ const PremiumPage = ()=>{
                                                         children: beneficio.icon
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                        lineNumber: 221,
+                                                        lineNumber: 231,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -382,7 +396,7 @@ const PremiumPage = ()=>{
                                                                 children: beneficio.titulo
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                                lineNumber: 223,
+                                                                lineNumber: 233,
                                                                 columnNumber: 45
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -390,36 +404,36 @@ const PremiumPage = ()=>{
                                                                 children: beneficio.descripcion
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                                lineNumber: 224,
+                                                                lineNumber: 234,
                                                                 columnNumber: 45
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                        lineNumber: 222,
+                                                        lineNumber: 232,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, index, true, {
                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                lineNumber: 220,
+                                                lineNumber: 230,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 218,
+                                        lineNumber: 228,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 214,
+                                lineNumber: 224,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                        lineNumber: 194,
+                        lineNumber: 204,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -430,23 +444,23 @@ const PremiumPage = ()=>{
                             children: "🚀 ¡Explorar Mi Perfil Premium!"
                         }, void 0, false, {
                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                            lineNumber: 234,
+                            lineNumber: 244,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                        lineNumber: 233,
+                        lineNumber: 243,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                lineNumber: 163,
+                lineNumber: 173,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-            lineNumber: 162,
+            lineNumber: 172,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -463,7 +477,7 @@ const PremiumPage = ()=>{
                             children: "✨ StoryUp Premium ✨"
                         }, void 0, false, {
                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                            lineNumber: 250,
+                            lineNumber: 260,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -471,7 +485,7 @@ const PremiumPage = ()=>{
                             children: "¡La mejor experiencia de aprendizaje por solo €12 al año!"
                         }, void 0, false, {
                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                            lineNumber: 253,
+                            lineNumber: 263,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -483,20 +497,20 @@ const PremiumPage = ()=>{
                                     children: usuario.nick
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                    lineNumber: 257,
+                                    lineNumber: 267,
                                     columnNumber: 30
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 ", ¿listo para sentirte como un verdadero ganador?"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                            lineNumber: 256,
+                            lineNumber: 266,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                    lineNumber: 249,
+                    lineNumber: 259,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -512,7 +526,7 @@ const PremiumPage = ()=>{
                                         children: "👑 Plan Premium Anual"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 266,
+                                        lineNumber: 276,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -520,7 +534,7 @@ const PremiumPage = ()=>{
                                         children: "€12"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 269,
+                                        lineNumber: 279,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -528,7 +542,7 @@ const PremiumPage = ()=>{
                                         children: "por todo el año"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 272,
+                                        lineNumber: 282,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -536,13 +550,13 @@ const PremiumPage = ()=>{
                                         children: "Solo €1 al mes"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 273,
+                                        lineNumber: 283,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 265,
+                                lineNumber: 275,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -556,7 +570,7 @@ const PremiumPage = ()=>{
                                                 children: "🎨 Tu Identidad Premium"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                lineNumber: 279,
+                                                lineNumber: 289,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             beneficiosPremium.perfil.map((beneficio, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -567,7 +581,7 @@ const PremiumPage = ()=>{
                                                             children: beneficio.icon
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                            lineNumber: 284,
+                                                            lineNumber: 294,
                                                             columnNumber: 41
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -575,19 +589,19 @@ const PremiumPage = ()=>{
                                                             children: beneficio.titulo
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                            lineNumber: 285,
+                                                            lineNumber: 295,
                                                             columnNumber: 41
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, index, true, {
                                                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                    lineNumber: 283,
+                                                    lineNumber: 293,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 278,
+                                        lineNumber: 288,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -598,7 +612,7 @@ const PremiumPage = ()=>{
                                                 children: "🏆 Liga Premium Exclusiva"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                lineNumber: 292,
+                                                lineNumber: 302,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             beneficiosPremium.competencia.map((beneficio, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -609,7 +623,7 @@ const PremiumPage = ()=>{
                                                             children: beneficio.icon
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                            lineNumber: 297,
+                                                            lineNumber: 307,
                                                             columnNumber: 41
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -617,25 +631,25 @@ const PremiumPage = ()=>{
                                                             children: beneficio.titulo
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                            lineNumber: 298,
+                                                            lineNumber: 308,
                                                             columnNumber: 41
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, index, true, {
                                                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                    lineNumber: 296,
+                                                    lineNumber: 306,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 291,
+                                        lineNumber: 301,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 276,
+                                lineNumber: 286,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -652,7 +666,7 @@ const PremiumPage = ()=>{
                                         }, void 0, false)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 306,
+                                        lineNumber: 316,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -660,7 +674,7 @@ const PremiumPage = ()=>{
                                         children: "Pago inmediato con Bizum • €0 comisiones"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 317,
+                                        lineNumber: 327,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -671,36 +685,36 @@ const PremiumPage = ()=>{
                                                 "✅ Premium es 100% justo: Solo mejoras visuales, diversión extra y Liga Premium separada.",
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                                    lineNumber: 323,
+                                                    lineNumber: 333,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 "Los usuarios Premium compiten entre sí sin afectar la liga normal."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 321,
+                                            lineNumber: 331,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                        lineNumber: 320,
+                                        lineNumber: 330,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                lineNumber: 305,
+                                lineNumber: 315,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                        lineNumber: 264,
+                        lineNumber: 274,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 }, void 0, false, {
                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                    lineNumber: 263,
+                    lineNumber: 273,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -711,7 +725,7 @@ const PremiumPage = ()=>{
                             children: "🤔 ¿Por qué ser Premium?"
                         }, void 0, false, {
                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                            lineNumber: 332,
+                            lineNumber: 342,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -724,7 +738,7 @@ const PremiumPage = ()=>{
                                             children: "💫"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 337,
+                                            lineNumber: 347,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -732,76 +746,12 @@ const PremiumPage = ()=>{
                                             children: "Destaca del Resto"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 338,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: "text-sm",
-                                            children: "Tu perfil será único y llamará la atención de todos"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 339,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                    lineNumber: 336,
-                                    columnNumber: 25
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "text-4xl",
-                                            children: "🎯"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 342,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                            className: "font-bold text-white",
-                                            children: "Liga Premium Exclusiva"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 343,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: "text-sm",
-                                            children: "Compite solo con otros Premium sin afectar la liga normal"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 344,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                    lineNumber: 341,
-                                    columnNumber: 25
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "text-4xl",
-                                            children: "🎉"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                                            lineNumber: 347,
-                                            columnNumber: 29
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                            className: "font-bold text-white",
-                                            children: "Diversión Premium"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
                                             lineNumber: 348,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-sm",
-                                            children: "Contenido exclusivo que hace el aprendizaje súper divertido"
+                                            children: "Tu perfil será único y llamará la atención de todos"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
                                             lineNumber: 349,
@@ -812,28 +762,92 @@ const PremiumPage = ()=>{
                                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
                                     lineNumber: 346,
                                     columnNumber: 25
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-4xl",
+                                            children: "🎯"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                            lineNumber: 352,
+                                            columnNumber: 29
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                            className: "font-bold text-white",
+                                            children: "Liga Premium Exclusiva"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                            lineNumber: 353,
+                                            columnNumber: 29
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-sm",
+                                            children: "Compite solo con otros Premium sin afectar la liga normal"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                            lineNumber: 354,
+                                            columnNumber: 29
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                    lineNumber: 351,
+                                    columnNumber: 25
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-4xl",
+                                            children: "🎉"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                            lineNumber: 357,
+                                            columnNumber: 29
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                            className: "font-bold text-white",
+                                            children: "Diversión Premium"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                            lineNumber: 358,
+                                            columnNumber: 29
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-sm",
+                                            children: "Contenido exclusivo que hace el aprendizaje súper divertido"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                            lineNumber: 359,
+                                            columnNumber: 29
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/premium-nuevo/page.tsx",
+                                    lineNumber: 356,
+                                    columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                            lineNumber: 335,
+                            lineNumber: 345,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/premium-nuevo/page.tsx",
-                    lineNumber: 331,
+                    lineNumber: 341,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/premium-nuevo/page.tsx",
-            lineNumber: 248,
+            lineNumber: 258,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/app/premium-nuevo/page.tsx",
-        lineNumber: 247,
+        lineNumber: 257,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };

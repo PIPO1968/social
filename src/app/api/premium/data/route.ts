@@ -72,6 +72,13 @@ export async function POST(request: NextRequest) {
             }
         });
 
+        // Sincronizar el campo premium en User
+        if (activo === true) {
+            await prisma.user.update({ where: { id: decoded.userId }, data: { premium: true } });
+        } else if (activo === false) {
+            await prisma.user.update({ where: { id: decoded.userId }, data: { premium: false } });
+        }
+
         return NextResponse.json(premiumData);
     } catch (error) {
         console.error('Error guardando datos premium:', error);

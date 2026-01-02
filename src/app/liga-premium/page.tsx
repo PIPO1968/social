@@ -30,7 +30,14 @@ const LigaPremiumPage: React.FC = () => {
                     fetch('/api/premium/data?nick=' + data.user.nick)
                         .then(response => response.json())
                         .then(premiumData => {
-                            if (premiumData.activo && new Date(premiumData.fechaExpiracion) > new Date()) {
+                            // LOG TEMPORAL PARA DEPURAR
+                            const fechaExp = premiumData.fechaExpiracion || premiumData.expiracion;
+                            let fechaValida = false;
+                            if (fechaExp) {
+                                const fecha = typeof fechaExp === 'string' ? new Date(fechaExp) : fechaExp;
+                                fechaValida = fecha.getTime() > Date.now();
+                            }
+                            if (premiumData.activo && fechaValida) {
                                 setIsPremium(true);
                                 cargarLigaPremium();
                             } else {

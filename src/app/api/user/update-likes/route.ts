@@ -16,15 +16,21 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
         }
 
-        const { nick, likes } = await request.json();
+        const { likesDelta } = await request.json();
 
-        // Actualizar likes del usuario
+        if (typeof likesDelta !== 'number') {
+            return NextResponse.json({ error: 'likesDelta requerido y debe ser número' }, { status: 400 });
+        }
+
+        // Actualizar likes del usuario autenticado
         const updatedUser = await prisma.user.update({
-            where: { nick },
-            data: { likes }
+            where: { id: decoded.userId },
+            data: { likes: { increment: likesDelta } }
         });
 
-        return NextResponse.json({ success: true, user: updatedUser });
+        console.log(`Updated user ${updatedUser.nick} likes by ${likesDelta}, new likes:`, updatedUser.likes);
+
+        return NextResponse.json(updatedUser);
     } catch (error) {
         console.error('Error actualizando likes:', error);
         return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });

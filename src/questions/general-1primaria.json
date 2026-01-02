@@ -78,5 +78,10 @@
     "pregunta": "¿Cómo se llama el continente donde vivimos?",
     "respuesta": "Europa",
     "categoria": "General"
+  },
+  {
+    "pregunta": "¿Como se llama el pais donde vivimos?",
+    "respuesta": "España",
+    "categoria": "General"
   }
 ]

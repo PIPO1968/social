@@ -13,31 +13,19 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 const UserLink = ({ nick, className })=>{
     const [isPremium, setIsPremium] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const checkPremium = ()=>{
-            // Verificar si el usuario es Premium
-            if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-            ;
+        const checkPremium = async ()=>{
+            if (nick) {
+                try {
+                    const response = await fetch(`/api/user/premium-status?nick=${encodeURIComponent(nick)}`);
+                    const data = await response.json();
+                    setIsPremium(data.isPremium || false);
+                } catch (error) {
+                    setIsPremium(false);
+                }
+            }
         };
         // Verificar inicialmente
         checkPremium();
-        // Escuchar cambios en localStorage
-        const handleStorageChange = (e)=>{
-            if (e.key?.startsWith('premium_') || e.key === null) {
-                checkPremium();
-            }
-        };
-        // Escuchar eventos personalizados de premium
-        const handlePremiumUpdate = (e)=>{
-            if (e.detail.nick === nick) {
-                checkPremium();
-            }
-        };
-        window.addEventListener('storage', handleStorageChange);
-        window.addEventListener('premiumUpdate', handlePremiumUpdate);
-        return ()=>{
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('premiumUpdate', handlePremiumUpdate);
-        };
     }, [
         nick
     ]);
@@ -48,7 +36,7 @@ const UserLink = ({ nick, className })=>{
             children: nick || "(sin nick)"
         }, void 0, false, {
             fileName: "[project]/src/components/UserLink.tsx",
-            lineNumber: 58,
+            lineNumber: 30,
             columnNumber: 16
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -66,18 +54,18 @@ const UserLink = ({ nick, className })=>{
                     children: "👑"
                 }, void 0, false, {
                     fileName: "[project]/src/components/UserLink.tsx",
-                    lineNumber: 70,
+                    lineNumber: 42,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/UserLink.tsx",
-                lineNumber: 69,
+                lineNumber: 41,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/UserLink.tsx",
-        lineNumber: 62,
+        lineNumber: 34,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -117,18 +105,26 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$renderNick$2
 "use client";
 ;
 // Obtener datos reales de docentes por temporada
-function getTablaDocentes(temporada) {
-    if ("TURBOPACK compile-time truthy", 1) return [];
-    //TURBOPACK unreachable
-    ;
-    // Extraer número de temporada
-    const num = undefined;
-    const key = undefined;
-    const tabla = undefined;
-    const usersStr = undefined;
-    const usersArr = undefined;
-    const docentes = undefined;
-    const resultado = undefined;
+async function getTablaDocentes(temporada) {
+    try {
+        const response = await fetch(`/api/championship/results?season=${temporada}&type=docentes`);
+        if (!response.ok) return [];
+        const data = await response.json();
+        const resultado = data.map((item)=>({
+                escudo: item.escudo || '👨‍🏫',
+                nombre: item.nick,
+                ganados: item.ganados ?? 0,
+                perdidos: item.perdidos ?? 0,
+                preguntasAcertadas: item.preguntasAcertadas ?? 0,
+                preguntasFalladas: item.preguntasFalladas ?? 0,
+                likes: item.likes ?? 0
+            }));
+        // Ordenar y limitar a los 25 mejores
+        return resultado.sort((a, b)=>b.likes - a.likes).slice(0, 25);
+    } catch (error) {
+        console.error('Error cargando docentes:', error);
+        return [];
+    }
 }
 ;
 ;
@@ -145,39 +141,52 @@ function Competiciones() {
         if ("TURBOPACK compile-time truthy", 1) return;
         //TURBOPACK unreachable
         ;
-        // Cargar usuario del localStorage
-        const userData = undefined;
         // Función para calcular la temporada actual basada en el año escolar
         const getTemporadaActual = undefined;
-        // Detectar todas las temporadas disponibles en localStorage
-        let temporadas; // remover duplicados
-        // Obtener la temporada actual
-        const temporadaActual = undefined;
-        // Reseteo automático de temporada cada 1 de octubre
-        const now = undefined;
-        const isFirstOctober = undefined; // Octubre es mes 9 (0-indexed)
-        const lastResetYear = undefined;
     }, []);
     // Función para cargar datos de centros por temporada
-    function getTablaCentros(temporada) {
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const key = undefined;
-        const tabla = undefined;
-        const resultado = undefined;
+    async function getTablaCentros(temporada) {
+        try {
+            const response = await fetch(`/api/championship/results?season=${temporada}&type=centros`);
+            if (!response.ok) return [];
+            const data = await response.json();
+            const resultado = data.map((item)=>({
+                    escudo: item.escudo || '🏫',
+                    nombre: item.centro,
+                    ganados: item.ganados ?? 0,
+                    perdidos: item.perdidos ?? 0,
+                    preguntasAcertadas: item.preguntasAcertadas ?? 0,
+                    preguntasFalladas: item.preguntasFalladas ?? 0,
+                    likes: item.likes ?? 0
+                }));
+            // Ordenar y limitar a los 25 mejores
+            return resultado.sort((a, b)=>b.likes - a.likes).slice(0, 25);
+        } catch (error) {
+            console.error('Error cargando centros:', error);
+            return [];
+        }
     }
     // Función para cargar datos de alumnos por temporada
-    function getTablaAlumnos(temporada) {
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const key = undefined;
-        const tabla = undefined;
-        const usersStr = undefined;
-        const usersArr = undefined;
-        const alumnos = undefined;
-        const resultado = undefined;
+    async function getTablaAlumnos(temporada) {
+        try {
+            const response = await fetch(`/api/championship/results?season=${temporada}&type=individual`);
+            if (!response.ok) return [];
+            const data = await response.json();
+            const resultado = data.map((item)=>({
+                    escudo: item.escudo || '👤',
+                    nombre: item.nick,
+                    ganados: item.ganados ?? 0,
+                    perdidos: item.perdidos ?? 0,
+                    preguntasAcertadas: item.preguntasAcertadas ?? 0,
+                    preguntasFalladas: item.preguntasFalladas ?? 0,
+                    likes: item.likes ?? 0
+                }));
+            // Ordenar y limitar a los 25 mejores
+            return resultado.sort((a, b)=>b.likes - a.likes).slice(0, 25);
+        } catch (error) {
+            console.error('Error cargando alumnos:', error);
+            return [];
+        }
     }
     // Solo cargar datos al cambiar la temporada
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].useEffect(()=>{
@@ -185,26 +194,16 @@ function Competiciones() {
         if ("TURBOPACK compile-time truthy", 1) return;
         //TURBOPACK unreachable
         ;
-        // Cargar datos de la temporada seleccionada
-        const centros = undefined;
-        const alumnos = undefined;
-        const docentes = undefined;
+        const loadData = undefined;
     }, [
         temporadaSeleccionada
     ]);
     // Handler para resetear datos solo al hacer clic en el nick (función de administrador)
-    function handleResetDatos() {
+    async function handleResetDatos() {
         if ("TURBOPACK compile-time truthy", 1) return;
         //TURBOPACK unreachable
         ;
         const confirmReset = undefined;
-        const keyCentros = undefined;
-        const keyIndividual = undefined;
-        const keyDocentes = undefined;
-        // Recargar datos (ahora serán tablas vacías)
-        const centros = undefined;
-        const alumnos = undefined;
-        const docentes = undefined;
     }
     // Función para obtener información de la temporada actual
     const getInfoTemporada = ()=>{
@@ -232,7 +231,7 @@ function Competiciones() {
             children: "Cargando competiciones..."
         }, void 0, false, {
             fileName: "[project]/src/app/competiciones/page.tsx",
-            lineNumber: 293,
+            lineNumber: 248,
             columnNumber: 16
         }, this);
     }
@@ -244,7 +243,7 @@ function Competiciones() {
                 children: "Competiciones StoryUp"
             }, void 0, false, {
                 fileName: "[project]/src/app/competiciones/page.tsx",
-                lineNumber: 297,
+                lineNumber: 252,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -260,7 +259,7 @@ function Competiciones() {
                                     children: "📅 Información de Temporada"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                    lineNumber: 303,
+                                    lineNumber: 258,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -271,7 +270,7 @@ function Competiciones() {
                                             children: "Ver temporada:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 305,
+                                            lineNumber: 260,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -283,24 +282,24 @@ function Competiciones() {
                                                     children: `Temporada ${t.replace('t', '')}${t === temporadasDisponibles[0] ? ' (Actual)' : ''}`
                                                 }, idx, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 312,
+                                                    lineNumber: 267,
                                                     columnNumber: 37
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 306,
+                                            lineNumber: 261,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                    lineNumber: 304,
+                                    lineNumber: 259,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/competiciones/page.tsx",
-                            lineNumber: 302,
+                            lineNumber: 257,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -314,7 +313,7 @@ function Competiciones() {
                                             children: "Temporada Actual:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 321,
+                                            lineNumber: 276,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -322,13 +321,13 @@ function Competiciones() {
                                             children: infoTemporada.temporadaActual
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 322,
+                                            lineNumber: 277,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                    lineNumber: 320,
+                                    lineNumber: 275,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -339,7 +338,7 @@ function Competiciones() {
                                             children: "Fin de Temporada:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 325,
+                                            lineNumber: 280,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -347,13 +346,13 @@ function Competiciones() {
                                             children: infoTemporada.finTemporada
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 326,
+                                            lineNumber: 281,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                    lineNumber: 324,
+                                    lineNumber: 279,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -364,7 +363,7 @@ function Competiciones() {
                                             children: "Días Restantes:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 329,
+                                            lineNumber: 284,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -375,19 +374,19 @@ function Competiciones() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 330,
+                                            lineNumber: 285,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                    lineNumber: 328,
+                                    lineNumber: 283,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/competiciones/page.tsx",
-                            lineNumber: 319,
+                            lineNumber: 274,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -398,7 +397,7 @@ function Competiciones() {
                                     children: "Sistema de Temporadas:"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                    lineNumber: 334,
+                                    lineNumber: 289,
                                     columnNumber: 28
                                 }, this),
                                 " Cada temporada termina el 30 de septiembre. Los datos se mantienen guardados y puedes consultar temporadas anteriores usando el selector de arriba.",
@@ -406,18 +405,18 @@ function Competiciones() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/competiciones/page.tsx",
-                            lineNumber: 333,
+                            lineNumber: 288,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/competiciones/page.tsx",
-                    lineNumber: 301,
+                    lineNumber: 256,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/competiciones/page.tsx",
-                lineNumber: 300,
+                lineNumber: 255,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -429,7 +428,7 @@ function Competiciones() {
                             children: "Importante:"
                         }, void 0, false, {
                             fileName: "[project]/src/app/competiciones/page.tsx",
-                            lineNumber: 344,
+                            lineNumber: 299,
                             columnNumber: 21
                         }, this),
                         " Solo se contabilizan en estas tablas los datos obtenidos en ",
@@ -438,25 +437,25 @@ function Competiciones() {
                             children: "modo competicion"
                         }, void 0, false, {
                             fileName: "[project]/src/app/competiciones/page.tsx",
-                            lineNumber: 344,
+                            lineNumber: 299,
                             columnNumber: 100
                         }, this),
                         ".",
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                             fileName: "[project]/src/app/competiciones/page.tsx",
-                            lineNumber: 344,
+                            lineNumber: 299,
                             columnNumber: 166
                         }, this),
                         "Las partidas en modo clásico no afectan los rankings ni las estadísticas de competición."
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/competiciones/page.tsx",
-                    lineNumber: 343,
+                    lineNumber: 298,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/competiciones/page.tsx",
-                lineNumber: 342,
+                lineNumber: 297,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -473,7 +472,7 @@ function Competiciones() {
                                         children: "Competición Centros"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 352,
+                                        lineNumber: 307,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -488,7 +487,7 @@ function Competiciones() {
                                                             children: "PG"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 356,
+                                                            lineNumber: 311,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -496,7 +495,7 @@ function Competiciones() {
                                                             children: "EC"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 357,
+                                                            lineNumber: 312,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -504,7 +503,7 @@ function Competiciones() {
                                                             children: "CE"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 358,
+                                                            lineNumber: 313,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -512,7 +511,7 @@ function Competiciones() {
                                                             children: "G"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 359,
+                                                            lineNumber: 314,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -520,7 +519,7 @@ function Competiciones() {
                                                             children: "P"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 360,
+                                                            lineNumber: 315,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -528,7 +527,7 @@ function Competiciones() {
                                                             children: "PA"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 361,
+                                                            lineNumber: 316,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -536,7 +535,7 @@ function Competiciones() {
                                                             children: "PF"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 362,
+                                                            lineNumber: 317,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -544,18 +543,18 @@ function Competiciones() {
                                                             children: "❤️"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 363,
+                                                            lineNumber: 318,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 355,
+                                                    lineNumber: 310,
                                                     columnNumber: 33
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 354,
+                                                lineNumber: 309,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -567,7 +566,7 @@ function Competiciones() {
                                                                 children: idx + 1
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 369,
+                                                                lineNumber: 324,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -577,12 +576,12 @@ function Competiciones() {
                                                                     children: centro.escudo
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                    lineNumber: 371,
+                                                                    lineNumber: 326,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 370,
+                                                                lineNumber: 325,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -594,12 +593,12 @@ function Competiciones() {
                                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$renderNick$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["renderNick"])(centro.nombre)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                    lineNumber: 374,
+                                                                    lineNumber: 329,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 373,
+                                                                lineNumber: 328,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -607,7 +606,7 @@ function Competiciones() {
                                                                 children: centro.ganados
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 376,
+                                                                lineNumber: 331,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -615,7 +614,7 @@ function Competiciones() {
                                                                 children: centro.perdidos
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 377,
+                                                                lineNumber: 332,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -623,7 +622,7 @@ function Competiciones() {
                                                                 children: centro.preguntasAcertadas
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 378,
+                                                                lineNumber: 333,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -631,7 +630,7 @@ function Competiciones() {
                                                                 children: centro.preguntasFalladas
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 379,
+                                                                lineNumber: 334,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -639,30 +638,30 @@ function Competiciones() {
                                                                 children: centro.likes
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 380,
+                                                                lineNumber: 335,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 368,
+                                                        lineNumber: 323,
                                                         columnNumber: 37
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 366,
+                                                lineNumber: 321,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 353,
+                                        lineNumber: 308,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                lineNumber: 351,
+                                lineNumber: 306,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -673,7 +672,7 @@ function Competiciones() {
                                         children: "Competición Individual"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 388,
+                                        lineNumber: 343,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -688,7 +687,7 @@ function Competiciones() {
                                                             children: "PG"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 392,
+                                                            lineNumber: 347,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -696,7 +695,7 @@ function Competiciones() {
                                                             children: "EC"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 393,
+                                                            lineNumber: 348,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -704,7 +703,7 @@ function Competiciones() {
                                                             children: "A"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 394,
+                                                            lineNumber: 349,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -712,7 +711,7 @@ function Competiciones() {
                                                             children: "G"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 395,
+                                                            lineNumber: 350,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -720,7 +719,7 @@ function Competiciones() {
                                                             children: "P"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 396,
+                                                            lineNumber: 351,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -728,7 +727,7 @@ function Competiciones() {
                                                             children: "PA"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 397,
+                                                            lineNumber: 352,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -736,7 +735,7 @@ function Competiciones() {
                                                             children: "PF"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 398,
+                                                            lineNumber: 353,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -744,18 +743,18 @@ function Competiciones() {
                                                             children: "❤️"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 399,
+                                                            lineNumber: 354,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 391,
+                                                    lineNumber: 346,
                                                     columnNumber: 33
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 390,
+                                                lineNumber: 345,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -767,7 +766,7 @@ function Competiciones() {
                                                                 children: idx + 1
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 405,
+                                                                lineNumber: 360,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -777,12 +776,12 @@ function Competiciones() {
                                                                     children: alumno.escudo
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                    lineNumber: 407,
+                                                                    lineNumber: 362,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 406,
+                                                                lineNumber: 361,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -794,12 +793,12 @@ function Competiciones() {
                                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$renderNick$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["renderNick"])(alumno.nombre)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                    lineNumber: 410,
+                                                                    lineNumber: 365,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 409,
+                                                                lineNumber: 364,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -807,7 +806,7 @@ function Competiciones() {
                                                                 children: alumno.ganados
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 412,
+                                                                lineNumber: 367,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -815,7 +814,7 @@ function Competiciones() {
                                                                 children: alumno.perdidos
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 413,
+                                                                lineNumber: 368,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -823,7 +822,7 @@ function Competiciones() {
                                                                 children: alumno.preguntasAcertadas
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 414,
+                                                                lineNumber: 369,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -831,7 +830,7 @@ function Competiciones() {
                                                                 children: alumno.preguntasFalladas
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 415,
+                                                                lineNumber: 370,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -839,36 +838,36 @@ function Competiciones() {
                                                                 children: alumno.likes
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                                lineNumber: 416,
+                                                                lineNumber: 371,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 404,
+                                                        lineNumber: 359,
                                                         columnNumber: 37
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 402,
+                                                lineNumber: 357,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 389,
+                                        lineNumber: 344,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                lineNumber: 387,
+                                lineNumber: 342,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/competiciones/page.tsx",
-                        lineNumber: 349,
+                        lineNumber: 304,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -879,7 +878,7 @@ function Competiciones() {
                                 children: "Competición Docentes"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                lineNumber: 425,
+                                lineNumber: 380,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -894,7 +893,7 @@ function Competiciones() {
                                                     children: "PG"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 429,
+                                                    lineNumber: 384,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -902,7 +901,7 @@ function Competiciones() {
                                                     children: "EC"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 430,
+                                                    lineNumber: 385,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -910,7 +909,7 @@ function Competiciones() {
                                                     children: "Docente"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 431,
+                                                    lineNumber: 386,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -918,7 +917,7 @@ function Competiciones() {
                                                     children: "G"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 432,
+                                                    lineNumber: 387,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -926,7 +925,7 @@ function Competiciones() {
                                                     children: "P"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 433,
+                                                    lineNumber: 388,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -934,7 +933,7 @@ function Competiciones() {
                                                     children: "PA"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 434,
+                                                    lineNumber: 389,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -942,7 +941,7 @@ function Competiciones() {
                                                     children: "PF"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 435,
+                                                    lineNumber: 390,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -950,18 +949,18 @@ function Competiciones() {
                                                     children: "❤️"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/competiciones/page.tsx",
-                                                    lineNumber: 436,
+                                                    lineNumber: 391,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                            lineNumber: 428,
+                                            lineNumber: 383,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 427,
+                                        lineNumber: 382,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -973,7 +972,7 @@ function Competiciones() {
                                                         children: idx + 1
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 442,
+                                                        lineNumber: 397,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -983,12 +982,12 @@ function Competiciones() {
                                                             children: docente.escudo
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 444,
+                                                            lineNumber: 399,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 443,
+                                                        lineNumber: 398,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1000,12 +999,12 @@ function Competiciones() {
                                                             children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$renderNick$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["renderNick"])(docente.nombre)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/competiciones/page.tsx",
-                                                            lineNumber: 447,
+                                                            lineNumber: 402,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 446,
+                                                        lineNumber: 401,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1013,7 +1012,7 @@ function Competiciones() {
                                                         children: docente.ganados
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 449,
+                                                        lineNumber: 404,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1021,7 +1020,7 @@ function Competiciones() {
                                                         children: docente.perdidos
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 450,
+                                                        lineNumber: 405,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1029,7 +1028,7 @@ function Competiciones() {
                                                         children: docente.preguntasAcertadas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 451,
+                                                        lineNumber: 406,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1037,7 +1036,7 @@ function Competiciones() {
                                                         children: docente.preguntasFalladas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 452,
+                                                        lineNumber: 407,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1045,30 +1044,30 @@ function Competiciones() {
                                                         children: docente.likes
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                                        lineNumber: 453,
+                                                        lineNumber: 408,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, idx, true, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 441,
+                                                lineNumber: 396,
                                                 columnNumber: 33
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 439,
+                                        lineNumber: 394,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                lineNumber: 426,
+                                lineNumber: 381,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/competiciones/page.tsx",
-                        lineNumber: 424,
+                        lineNumber: 379,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1079,7 +1078,7 @@ function Competiciones() {
                                 children: "Significado de las siglas:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                lineNumber: 461,
+                                lineNumber: 416,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -1091,14 +1090,14 @@ function Competiciones() {
                                                 children: "PG"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 463,
+                                                lineNumber: 418,
                                                 columnNumber: 29
                                             }, this),
                                             ": Posición Global"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 463,
+                                        lineNumber: 418,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1107,14 +1106,14 @@ function Competiciones() {
                                                 children: "EC"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 464,
+                                                lineNumber: 419,
                                                 columnNumber: 29
                                             }, this),
                                             ": Escudo Centro / Avatar"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 464,
+                                        lineNumber: 419,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1123,14 +1122,14 @@ function Competiciones() {
                                                 children: "CE"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 465,
+                                                lineNumber: 420,
                                                 columnNumber: 29
                                             }, this),
                                             ": Nombre del Centro"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 465,
+                                        lineNumber: 420,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1139,14 +1138,14 @@ function Competiciones() {
                                                 children: "A"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 466,
+                                                lineNumber: 421,
                                                 columnNumber: 29
                                             }, this),
                                             ": Alumno"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 466,
+                                        lineNumber: 421,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1155,14 +1154,14 @@ function Competiciones() {
                                                 children: "G"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 467,
+                                                lineNumber: 422,
                                                 columnNumber: 29
                                             }, this),
                                             ": Ganados"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 467,
+                                        lineNumber: 422,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1171,14 +1170,14 @@ function Competiciones() {
                                                 children: "P"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 468,
+                                                lineNumber: 423,
                                                 columnNumber: 29
                                             }, this),
                                             ": Perdidos"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 468,
+                                        lineNumber: 423,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1187,14 +1186,14 @@ function Competiciones() {
                                                 children: "PA"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 469,
+                                                lineNumber: 424,
                                                 columnNumber: 29
                                             }, this),
                                             ": Preguntas Acertadas"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 469,
+                                        lineNumber: 424,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1203,14 +1202,14 @@ function Competiciones() {
                                                 children: "PF"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 470,
+                                                lineNumber: 425,
                                                 columnNumber: 29
                                             }, this),
                                             ": Preguntas Falladas"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 470,
+                                        lineNumber: 425,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1219,38 +1218,38 @@ function Competiciones() {
                                                 children: "❤️"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                                lineNumber: 471,
+                                                lineNumber: 426,
                                                 columnNumber: 29
                                             }, this),
                                             ": Likes"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/competiciones/page.tsx",
-                                        lineNumber: 471,
+                                        lineNumber: 426,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/competiciones/page.tsx",
-                                lineNumber: 462,
+                                lineNumber: 417,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/competiciones/page.tsx",
-                        lineNumber: 460,
+                        lineNumber: 415,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/competiciones/page.tsx",
-                lineNumber: 348,
+                lineNumber: 303,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/competiciones/page.tsx",
-        lineNumber: 296,
+        lineNumber: 251,
         columnNumber: 9
     }, this);
 }

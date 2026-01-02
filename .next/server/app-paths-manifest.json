@@ -7,6 +7,7 @@
   "/api/auth/logout/route": "app/api/auth/logout/route.js",
   "/api/auth/me/route": "app/api/auth/me/route.js",
   "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/centros/ranking/route": "app/api/centros/ranking/route.js",
   "/api/championship/reset/route": "app/api/championship/reset/route.js",
   "/api/championship/results/route": "app/api/championship/results/route.js",
   "/api/championship/seasons/route": "app/api/championship/seasons/route.js",

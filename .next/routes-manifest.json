@@ -125,6 +125,12 @@
       "namedRegex": "^/api/auth/register(?:/)?$"
     },
     {
+      "page": "/api/centros/ranking",
+      "regex": "^/api/centros/ranking(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/centros/ranking(?:/)?$"
+    },
+    {
       "page": "/api/championship/reset",
       "regex": "^/api/championship/reset(?:/)?$",
       "routeKeys": {},

@@ -123,7 +123,9 @@ export default function Home() {
           </div>
           {/* Registro/Login en el centro */}
           <div className="flex items-center justify-center">
-            <RegisterLoginForm />
+            <div className="w-full max-w-md bg-sky-100 rounded-xl shadow-lg p-2">
+              <RegisterLoginForm />
+            </div>
           </div>
           {/* Derecha: Aprende con Pipo arriba, Aprende con Pipo abajo */}
           <div className="flex flex-col gap-4 justify-center">

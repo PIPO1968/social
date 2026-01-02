@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,18 +10,31 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 });
         }
 
-        // Insertar la nueva pregunta en la base de datos
-        const nuevaPregunta = await prisma.pregunta.create({
-            data: {
-                pregunta: pregunta.trim(),
-                respuesta: respuesta.trim(),
-                categoria: asignatura.charAt(0).toUpperCase() + asignatura.slice(1), // Capitalizar
-                curso: curso,
-                asignatura: asignatura
-            }
-        });
+        // Construir el nombre del archivo
+        const fileName = `${asignatura}-${curso}.json`;
+        const filePath = path.join(process.cwd(), 'src', 'questions', fileName);
 
-        return NextResponse.json({ message: `Pregunta agregada con ID ${nuevaPregunta.id}` });
+        // Verificar si el archivo existe
+        if (!fs.existsSync(filePath)) {
+            return NextResponse.json({ error: 'El archivo correspondiente no existe' }, { status: 400 });
+        }
+
+        // Leer el archivo existente
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        let questions = JSON.parse(fileContent);
+
+        // Agregar la nueva pregunta
+        const nuevaPregunta = {
+            pregunta: pregunta.trim(),
+            respuesta: respuesta.trim(),
+            categoria: asignatura.charAt(0).toUpperCase() + asignatura.slice(1) // Capitalizar
+        };
+        questions.push(nuevaPregunta);
+
+        // Escribir de vuelta al archivo
+        fs.writeFileSync(filePath, JSON.stringify(questions, null, 2));
+
+        return NextResponse.json({ message: `Pregunta agregada al archivo ${fileName}` });
     } catch (error) {
         console.error('Error al agregar pregunta:', error);
         return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });

@@ -65,6 +65,7 @@ export default function CentrosCompetencia() {
     const [asignaturaSeleccionada, setAsignaturaSeleccionada] = useState<string>("todas");
     const [hayDatosAsignatura, setHayDatosAsignatura] = useState<boolean>(true);
     const [cursoSeleccionado, setCursoSeleccionado] = useState<string>("todos");
+    const [premioCentroUsuario, setPremioCentroUsuario] = useState<any>(null);
     const asignaturas = ["todas", "Matemáticas", "Lenguaje", "Literatura", "Historia", "Geografía", "Naturaleza", "Inglés", "General"];
     const cursos = ["todos", "1º Primaria", "2º Primaria", "3º Primaria", "4º Primaria", "5º Primaria", "6º Primaria"];
 
@@ -166,7 +167,7 @@ export default function CentrosCompetencia() {
         // Todas las asignaturas tienen el mismo nivel de dificultad
         return 1.0; // 100% para todas
     };    // Función para calcular estadísticas de un centro
-    const calcularStatsDelCentro = (nombreCentro: string, usuarios: Usuario[]): CentroStats => {
+    const calcularStatsDelCentro = async (nombreCentro: string, usuarios: Usuario[]): Promise<CentroStats> => {
         // Separar estudiantes y docentes del centro
         const estudiantesDelCentro = usuarios.filter(u =>
             u.centro === nombreCentro && u.tipo !== "docente"
@@ -232,7 +233,7 @@ export default function CentrosCompetencia() {
         const puntosCompeticiones = obtenerActividadCompeticiones(nombreCentro);
 
         // ✅ PREMIOS: Obtener puntos extra por premios ganados
-        const premioCentro = obtenerPremioDelCentro(nombreCentro);
+        const premioCentro = await obtenerPremioDelCentro(nombreCentro);
         const puntosPremios = premioCentro ? (Number(premioCentro.puntosExtra) || 0) : 0;
 
         // Calcular puntuación según el sistema propuesto (incluyendo docentes)
@@ -357,13 +358,13 @@ export default function CentrosCompetencia() {
     };
 
     // ✅ SISTEMA DE PREMIOS: Función para obtener premios del mes actual
-    const obtenerPremiosDelMes = (): any[] => {
-        // Simplificado: no usar localStorage, devolver vacío
-        return [];
+    const obtenerPremiosDelMes = async (): Promise<any[]> => {
+        // Usar la función de generar premios
+        return await generarPremiosAutomaticos();
     };
 
     // ✅ SISTEMA DE PREMIOS: Función para generar premios automáticamente
-    const generarPremiosAutomaticos = (mes?: number, año?: number): any[] => {
+    const generarPremiosAutomaticos = async (mes?: number, año?: number): Promise<any[]> => {
         if (typeof window === "undefined") return [];
 
         // Usar mes y año proporcionados, o el actual si no se especifican
@@ -372,7 +373,7 @@ export default function CentrosCompetencia() {
         const añoUsar = año || fechaActual.getFullYear();
 
         // Obtener ranking del mes especificado
-        const rankingMensual = cargarRankingMensual(añoUsar, mesUsar);
+        const rankingMensual = await cargarRankingMensual(añoUsar, mesUsar);
 
         if (rankingMensual.length === 0) return [];
 
@@ -457,8 +458,8 @@ export default function CentrosCompetencia() {
     };
 
     // ✅ SISTEMA DE PREMIOS: Función para verificar si un centro ganó premio
-    const obtenerPremioDelCentro = (nombreCentro: string): any => {
-        const premiosDelMes = obtenerPremiosDelMes();
+    const obtenerPremioDelCentro = async (nombreCentro: string): Promise<any> => {
+        const premiosDelMes = await obtenerPremiosDelMes();
         return premiosDelMes.find(premio => premio.centro === nombreCentro);
     };
 
@@ -496,19 +497,57 @@ export default function CentrosCompetencia() {
     };
 
     // Función para obtener meses disponibles en historial
-    const obtenerMesesDisponibles = (): string[] => {
-        // Simplificado: no usar localStorage
+    const obtenerMesesDisponibles = async (): Promise<string[]> => {
+        try {
+            const response = await fetch('/api/centros/ranking?action=months');
+            if (response.ok) {
+                const months = await response.json();
+                return months;
+            }
+        } catch (error) {
+            console.error('Error obteniendo meses disponibles:', error);
+        }
         return [];
     };
 
     // Función para guardar ranking mensual en historial
-    const guardarRankingMensual = (centros: CentroStats[]) => {
-        // Simplificado: no guardar en localStorage
+    const guardarRankingMensual = async (centros: CentroStats[]) => {
+        try {
+            const fechaActual = new Date();
+            const year = fechaActual.getFullYear();
+            const month = fechaActual.getMonth() + 1;
+
+            const response = await fetch('/api/centros/ranking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    year,
+                    month,
+                    rankings: centros
+                })
+            });
+
+            if (!response.ok) {
+                console.error('Error guardando ranking mensual');
+            }
+        } catch (error) {
+            console.error('Error guardando ranking mensual:', error);
+        }
     };
 
     // Función para cargar ranking de un mes específico
-    const cargarRankingMensual = (año: number, mes: number): CentroStats[] => {
-        // Simplificado: no cargar de localStorage
+    const cargarRankingMensual = async (año: number, mes: number): Promise<CentroStats[]> => {
+        try {
+            const response = await fetch(`/api/centros/ranking?year=${año}&month=${mes}`);
+            if (response.ok) {
+                const rankings = await response.json();
+                return rankings;
+            }
+        } catch (error) {
+            console.error('Error cargando ranking mensual:', error);
+        }
         return [];
     };
 
@@ -553,7 +592,7 @@ export default function CentrosCompetencia() {
                 }
 
                 // Cargar datos históricos
-                const mesesDisponibles = obtenerMesesDisponibles();
+                const mesesDisponibles = await obtenerMesesDisponibles();
                 setMesesDisponibles(mesesDisponibles);
 
                 const historialGanadores = obtenerHistorialGanadores();
@@ -594,9 +633,9 @@ export default function CentrosCompetencia() {
                     .map(u => u.centro))];
 
                 // Calcular estadísticas para cada centro
-                const statsDeLosCentros = centrosUnicos.map(nombreCentro =>
+                const statsDeLosCentros = await Promise.all(centrosUnicos.map(nombreCentro =>
                     calcularStatsDelCentro(nombreCentro, usuarios)
-                );
+                ));
 
                 // Ordenar por puntuación y asignar medallas
                 const centrosOrdenados = statsDeLosCentros
@@ -621,7 +660,7 @@ export default function CentrosCompetencia() {
                     const numeroMes = mesesNombres.indexOf(nombreMes) + 1;
 
                     if (numeroMes > 0) {
-                        const rankingMes = cargarRankingMensual(año, numeroMes);
+                        const rankingMes = await cargarRankingMensual(año, numeroMes);
                         if (rankingMes.length > 0) {
                             setCentros(rankingMes);
                         } else {
@@ -634,14 +673,20 @@ export default function CentrosCompetencia() {
                     // Mes actual
                     setCentros(centrosConMedallas);
                     // Guardar ranking mensual automáticamente
-                    guardarRankingMensual(centrosConMedallas);
+                    await guardarRankingMensual(centrosConMedallas);
                 }
 
                 // Cargar historial de ganadores
                 setHistorialGanadores(obtenerHistorialGanadores());
 
                 // Cargar premios del mes
-                setPremiosDelMes(obtenerPremiosDelMes());
+                setPremiosDelMes(await obtenerPremiosDelMes());
+
+                // Cargar premio del centro del usuario si existe
+                if (userData.user && userData.user.centro) {
+                    const premio = await obtenerPremioDelCentro(userData.user.centro);
+                    setPremioCentroUsuario(premio);
+                }
 
                 setLoading(false);
 
@@ -914,37 +959,34 @@ export default function CentrosCompetencia() {
                 )}
 
                 {/* ✅ PREMIOS DEL CENTRO: Sección especial para premios ganados */}
-                {centroDelUsuario && (() => {
-                    const premioCentro = obtenerPremioDelCentro(centroDelUsuario.nombre);
-                    return premioCentro ? (
-                        <div role="region" aria-labelledby="premio-centro-title" className="mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 rounded-lg p-6 shadow-lg">
-                            <div className="flex items-center">
-                                <div className="text-4xl mr-4">🎉</div>
-                                <div>
-                                    <h3 id="premio-centro-title" className="text-xl font-bold text-purple-800 mb-2">
-                                        {t('felicitacionesPremio')}
-                                    </h3>
-                                    <div className="bg-white bg-opacity-60 rounded-lg p-4 inline-block">
-                                        <div className="flex items-center mb-2">
-                                            <span className="text-2xl mr-2">{premioCentro.emoji}</span>
-                                            <span className="font-bold text-purple-800">{premioCentro.titulo}:</span>
-                                            <span className="ml-2 text-purple-700">{normalizarValorPremio(premioCentro.premio)}</span>
-                                        </div>
-                                        <p className="text-sm text-purple-600 mb-2">{premioCentro.descripcion}</p>
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-semibold text-purple-800">
-                                                🏆 <strong>{t('bonusObtenido')}:</strong> +{Number(premioCentro.puntosExtra) || 0} puntos extra
-                                            </p>
-                                            <p className="text-sm text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block">
-                                                🏅 <strong>{t('insigniaAutomatica')}:</strong> {t('premio')}
-                                            </p>
-                                        </div>
+                {centroDelUsuario && premioCentroUsuario && (
+                    <div role="region" aria-labelledby="premio-centro-title" className="mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 rounded-lg p-6 shadow-lg">
+                        <div className="flex items-center">
+                            <div className="text-4xl mr-4">🎉</div>
+                            <div>
+                                <h3 id="premio-centro-title" className="text-xl font-bold text-purple-800 mb-2">
+                                    {t('felicitacionesPremio')}
+                                </h3>
+                                <div className="bg-white bg-opacity-60 rounded-lg p-4 inline-block">
+                                    <div className="flex items-center mb-2">
+                                        <span className="text-2xl mr-2">{premioCentroUsuario.emoji}</span>
+                                        <span className="font-bold text-purple-800">{premioCentroUsuario.titulo}:</span>
+                                        <span className="ml-2 text-purple-700">{normalizarValorPremio(premioCentroUsuario.premio)}</span>
+                                    </div>
+                                    <p className="text-sm text-purple-600 mb-2">{premioCentroUsuario.descripcion}</p>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold text-purple-800">
+                                            🏆 <strong>{t('bonusObtenido')}:</strong> +{Number(premioCentroUsuario.puntosExtra) || 0} puntos extra
+                                        </p>
+                                        <p className="text-sm text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block">
+                                            🏅 <strong>{t('insigniaAutomatica')}:</strong> {t('premio')}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ) : null;
-                })()}
+                    </div>
+                )}
 
                 {/* ✅ USUARIOS DEL CENTRO: Detalle de respuestas acertadas por usuario */}
                 {centroDelUsuario && allUsers.length > 0 && (() => {

@@ -76,29 +76,31 @@ async function POST(request) {
                 status: 400
             });
         }
+        // Construir el nombre del archivo
         const fileName = `${asignatura}-${curso}.json`;
         const filePath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'questions', fileName);
         // Verificar si el archivo existe
         if (!__TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].existsSync(filePath)) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: `Archivo ${fileName} no encontrado`
+                error: 'El archivo correspondiente no existe'
             }, {
-                status: 404
+                status: 400
             });
         }
-        // Leer el archivo
+        // Leer el archivo existente
         const fileContent = __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].readFileSync(filePath, 'utf-8');
-        let questions = JSON.parse(fileContent); // Agregar la nueva pregunta
+        let questions = JSON.parse(fileContent);
+        // Agregar la nueva pregunta
         const nuevaPregunta = {
             pregunta: pregunta.trim(),
             respuesta: respuesta.trim(),
             categoria: asignatura.charAt(0).toUpperCase() + asignatura.slice(1) // Capitalizar
         };
         questions.push(nuevaPregunta);
-        // Escribir de vuelta
+        // Escribir de vuelta al archivo
         __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].writeFileSync(filePath, JSON.stringify(questions, null, 2));
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            message: `Pregunta agregada a ${fileName}`
+            message: `Pregunta agregada al archivo ${fileName}`
         });
     } catch (error) {
         console.error('Error al agregar pregunta:', error);

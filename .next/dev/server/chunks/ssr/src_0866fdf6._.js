@@ -58,31 +58,19 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 const UserLink = ({ nick, className })=>{
     const [isPremium, setIsPremium] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const checkPremium = ()=>{
-            // Verificar si el usuario es Premium
-            if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-            ;
+        const checkPremium = async ()=>{
+            if (nick) {
+                try {
+                    const response = await fetch(`/api/user/premium-status?nick=${encodeURIComponent(nick)}`);
+                    const data = await response.json();
+                    setIsPremium(data.isPremium || false);
+                } catch (error) {
+                    setIsPremium(false);
+                }
+            }
         };
         // Verificar inicialmente
         checkPremium();
-        // Escuchar cambios en localStorage
-        const handleStorageChange = (e)=>{
-            if (e.key?.startsWith('premium_') || e.key === null) {
-                checkPremium();
-            }
-        };
-        // Escuchar eventos personalizados de premium
-        const handlePremiumUpdate = (e)=>{
-            if (e.detail.nick === nick) {
-                checkPremium();
-            }
-        };
-        window.addEventListener('storage', handleStorageChange);
-        window.addEventListener('premiumUpdate', handlePremiumUpdate);
-        return ()=>{
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('premiumUpdate', handlePremiumUpdate);
-        };
     }, [
         nick
     ]);
@@ -93,7 +81,7 @@ const UserLink = ({ nick, className })=>{
             children: nick || "(sin nick)"
         }, void 0, false, {
             fileName: "[project]/src/components/UserLink.tsx",
-            lineNumber: 58,
+            lineNumber: 30,
             columnNumber: 16
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -111,18 +99,18 @@ const UserLink = ({ nick, className })=>{
                     children: "👑"
                 }, void 0, false, {
                     fileName: "[project]/src/components/UserLink.tsx",
-                    lineNumber: 70,
+                    lineNumber: 42,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/UserLink.tsx",
-                lineNumber: 69,
+                lineNumber: 41,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/UserLink.tsx",
-        lineNumber: 62,
+        lineNumber: 34,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -190,6 +178,7 @@ function CentrosCompetencia() {
     const [asignaturaSeleccionada, setAsignaturaSeleccionada] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("todas");
     const [hayDatosAsignatura, setHayDatosAsignatura] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const [cursoSeleccionado, setCursoSeleccionado] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("todos");
+    const [premioCentroUsuario, setPremioCentroUsuario] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const asignaturas = [
         "todas",
         "Matemáticas",
@@ -373,23 +362,20 @@ function CentrosCompetencia() {
     };
     // Función para obtener actividad de competiciones (campeonato)
     const obtenerActividadCompeticiones = (centro)=>{
-        if ("TURBOPACK compile-time truthy", 1) return 0;
-        //TURBOPACK unreachable
-        ;
+        // Simplificado: no usar localStorage, calcular basado en respuestas acertadas
+        return 0; // TODO: implementar con API si necesario
     };
     // ✅ COMPETENCIAS POR ASIGNATURA: Función para obtener estadísticas específicas
     const obtenerEstadisticasAsignatura = (asignatura, usuarios, cursoFiltro)=>{
-        if ("TURBOPACK compile-time truthy", 1) return {};
-        //TURBOPACK unreachable
-        ;
-        const estadisticasCentros = undefined;
+        // Simplificado: no usar localStorage, devolver vacío
+        return {};
     };
     // Función auxiliar - todas las asignaturas tienen la misma dificultad
     const obtenerFactorAsignatura = (asignatura)=>{
         // Todas las asignaturas tienen el mismo nivel de dificultad
         return 1.0; // 100% para todas
     }; // Función para calcular estadísticas de un centro
-    const calcularStatsDelCentro = (nombreCentro, usuarios)=>{
+    const calcularStatsDelCentro = async (nombreCentro, usuarios)=>{
         // Separar estudiantes y docentes del centro
         const estudiantesDelCentro = usuarios.filter((u)=>u.centro === nombreCentro && u.tipo !== "docente");
         const docentesDelCentro = usuarios.filter((u)=>u.centro === nombreCentro && u.tipo === "docente");
@@ -432,7 +418,7 @@ function CentrosCompetencia() {
         // Obtener actividad de competiciones (datos reales de campeonatos)
         const puntosCompeticiones = obtenerActividadCompeticiones(nombreCentro);
         // ✅ PREMIOS: Obtener puntos extra por premios ganados
-        const premioCentro = obtenerPremioDelCentro(nombreCentro);
+        const premioCentro = await obtenerPremioDelCentro(nombreCentro);
         const puntosPremios = premioCentro ? Number(premioCentro.puntosExtra) || 0 : 0;
         // Calcular puntuación según el sistema propuesto (incluyendo docentes)
         const puntajeTotal = estudiantesActivos * 10 + docentesActivos * 20 + respuestasCorrectas * 5 + concursosGanados * 50 + historiasCreadas * 15 + interaccionesSociales * 2 + // Interacciones sociales 
@@ -500,7 +486,8 @@ function CentrosCompetencia() {
             "Ravelo": "Ravelo.jpg",
             "Rodriguez Alberto": "Rodriguez Alberto.jpg",
             "Rodriguez Campos": "Rodriguez Campos.png",
-            "Saint Andrew's": "Saint Andrew,s.jpg",
+            "Saint Andrew's": "avatars/Saint Andrews.jpg",
+            "Saint Andrews": "avatars/Saint Andrews.jpg",
             "Salesianas": "Salesianas.jpg",
             "San Agustin": "San Agustin.jpg",
             "San Fernando": "San Fernando.jpg",
@@ -540,24 +527,12 @@ function CentrosCompetencia() {
         return logo.includes('.jpg') || logo.includes('.png') || logo.includes('.jpeg');
     };
     // ✅ SISTEMA DE PREMIOS: Función para obtener premios del mes actual
-    const obtenerPremiosDelMes = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const fechaActual = undefined;
-        const añoActual = undefined;
-        const mesActual = undefined; // 1-12
-        // Clave para premios del mes actual
-        const clavePremiosActual = undefined;
-        // Calcular mes anterior
-        let mesAnterior;
-        let añoAnterior;
-        const clavePremiosAnterior = undefined;
-        // Devolver premios del mes actual (que serán los del mes anterior si acabamos de generarlos)
-        const premiosGuardados = undefined;
+    const obtenerPremiosDelMes = async ()=>{
+        // Usar la función de generar premios
+        return await generarPremiosAutomaticos();
     };
     // ✅ SISTEMA DE PREMIOS: Función para generar premios automáticamente
-    const generarPremiosAutomaticos = (mes, año)=>{
+    const generarPremiosAutomaticos = async (mes, año)=>{
         if ("TURBOPACK compile-time truthy", 1) return [];
         //TURBOPACK unreachable
         ;
@@ -572,29 +547,20 @@ function CentrosCompetencia() {
     };
     // ✅ SISTEMA DE PREMIOS: Función para asignar trofeos a usuarios de un centro
     const asignarTrofeoACentro = (nombreCentro, idTrofeo)=>{
-        if ("TURBOPACK compile-time truthy", 1) return;
-        //TURBOPACK unreachable
-        ;
+    // Simplificado: no usar localStorage
     };
     // ✅ SISTEMA DE PREMIOS: Función para verificar si los trofeos ya fueron asignados este mes
     const trofeosYaAsignadosEsteMes = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return false;
-        //TURBOPACK unreachable
-        ;
-        const fechaActual = undefined;
-        const claveTrofeosAsignados = undefined;
+        // Simplificado: no usar localStorage
+        return false;
     };
     // ✅ SISTEMA DE PREMIOS: Función para marcar que los trofeos fueron asignados este mes
     const marcarTrofeosAsignadosEsteMes = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return;
-        //TURBOPACK unreachable
-        ;
-        const fechaActual = undefined;
-        const claveTrofeosAsignados = undefined;
+    // Simplificado: no usar localStorage
     };
     // ✅ SISTEMA DE PREMIOS: Función para verificar si un centro ganó premio
-    const obtenerPremioDelCentro = (nombreCentro)=>{
-        const premiosDelMes = obtenerPremiosDelMes();
+    const obtenerPremioDelCentro = async (nombreCentro)=>{
+        const premiosDelMes = await obtenerPremiosDelMes();
         return premiosDelMes.find((premio)=>premio.centro === nombreCentro);
     };
     // Normaliza un valor de premio para asegurarnos de devolver siempre una cadena
@@ -627,53 +593,64 @@ function CentrosCompetencia() {
         return `centros_ranking_${año}_${mes.toString().padStart(2, '0')}`;
     };
     // Función para obtener meses disponibles en historial
-    const obtenerMesesDisponibles = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const meses = undefined;
-        const fechaActual = undefined;
-        // Agregar mes actual
-        const mesActual = undefined;
-        let i;
+    const obtenerMesesDisponibles = async ()=>{
+        try {
+            const response = await fetch('/api/centros/ranking?action=months');
+            if (response.ok) {
+                const months = await response.json();
+                return months;
+            }
+        } catch (error) {
+            console.error('Error obteniendo meses disponibles:', error);
+        }
+        return [];
     };
     // Función para guardar ranking mensual en historial
-    const guardarRankingMensual = (centros)=>{
-        if ("TURBOPACK compile-time truthy", 1) return;
-        //TURBOPACK unreachable
-        ;
-        const fechaActual = undefined;
-        const claveMes = undefined;
-        const datosRanking = undefined;
+    const guardarRankingMensual = async (centros)=>{
+        try {
+            const fechaActual = new Date();
+            const year = fechaActual.getFullYear();
+            const month = fechaActual.getMonth() + 1;
+            const response = await fetch('/api/centros/ranking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    year,
+                    month,
+                    rankings: centros
+                })
+            });
+            if (!response.ok) {
+                console.error('Error guardando ranking mensual');
+            }
+        } catch (error) {
+            console.error('Error guardando ranking mensual:', error);
+        }
     };
     // Función para cargar ranking de un mes específico
-    const cargarRankingMensual = (año, mes)=>{
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const claveMes = undefined;
-        const datos = undefined;
+    const cargarRankingMensual = async (año, mes)=>{
+        try {
+            const response = await fetch(`/api/centros/ranking?year=${año}&month=${mes}`);
+            if (response.ok) {
+                const rankings = await response.json();
+                return rankings;
+            }
+        } catch (error) {
+            console.error('Error cargando ranking mensual:', error);
+        }
+        return [];
     };
     // Función para calcular ranking anual acumulativo
     const calcularRankingAnual = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const fechaActual = undefined;
-        const añoActual = undefined;
-        const centrosAcumulados = undefined;
-        let mes;
-        // Convertir a array y ordenar
-        const centrosArray = undefined;
+        // Simplificado: no usar localStorage
+        return [];
     };
     // Función para obtener historial de ganadores
     const obtenerHistorialGanadores = ()=>{
-        if ("TURBOPACK compile-time truthy", 1) return [];
-        //TURBOPACK unreachable
-        ;
-        const historial = undefined;
-        const fechaActual = undefined;
-        let i;
+        // Simplificado: no usar localStorage
+        return [];
     };
     const asignarMedallas = (centrosOrdenados)=>{
         return centrosOrdenados.map((centro, index)=>{
@@ -692,54 +669,43 @@ function CentrosCompetencia() {
     };
     // Cargar datos y calcular estadísticas
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const cargarDatos = ()=>{
+        const cargarDatos = async ()=>{
             try {
                 // Cargar usuario actual
-                const userData = localStorage.getItem('currentUser') || localStorage.getItem('user');
-                if (userData) {
-                    const user = JSON.parse(userData);
-                    setUsuario(user);
-                    setMiCentro(user.centro || "");
+                const userResponse = await fetch('/api/auth/me');
+                const userData = await userResponse.json();
+                if (userData.user) {
+                    setUsuario(userData.user);
+                    setMiCentro(userData.user.centro || "");
                 }
                 // Cargar datos históricos
-                const mesesDisponibles = obtenerMesesDisponibles();
+                const mesesDisponibles = await obtenerMesesDisponibles();
                 setMesesDisponibles(mesesDisponibles);
                 const historialGanadores = obtenerHistorialGanadores();
                 setHistorialGanadores(historialGanadores);
-                // Cargar todos los usuarios
-                const usuariosData = localStorage.getItem('users');
-                if (!usuariosData) {
+                // Cargar todos los usuarios desde la API
+                let usuarios = [];
+                try {
+                    const response = await fetch('/api/users');
+                    if (response.ok) {
+                        usuarios = await response.json();
+                        setAllUsers(usuarios);
+                    } else {
+                        console.error('Error al cargar usuarios:', response.status);
+                        setAllUsers([]);
+                    }
+                } catch (error) {
+                    console.error('Error al conectar con la API:', error);
+                    setAllUsers([]);
+                }
+                if (usuarios.length === 0) {
                     setLoading(false);
                     return;
                 }
-                const usuarios = JSON.parse(usuariosData);
-                setAllUsers(usuarios);
                 // ✅ VERIFICAR SI HAY DATOS PARA LA ASIGNATURA SELECCIONADA
                 if (asignaturaSeleccionada !== "todas") {
-                    // Verificar si hay datos específicos por asignatura
-                    const mapaAsignaturasInverso = {
-                        'Matemáticas': 'matematicas',
-                        'Historia': 'historia',
-                        'Geografía': 'geografia',
-                        'Literatura': 'literatura',
-                        'Inglés': 'ingles',
-                        'Naturaleza': 'naturaleza',
-                        'Lenguaje': 'lenguaje',
-                        'General': 'general'
-                    };
-                    const asignaturaParaLocalStorage = mapaAsignaturasInverso[asignaturaSeleccionada] || asignaturaSeleccionada.toLowerCase();
-                    let hayDatosEspecificos = false;
-                    for(let i = 0; i < localStorage.length; i++){
-                        const clave = localStorage.key(i);
-                        if (clave && clave.startsWith(`${asignaturaParaLocalStorage}_`)) {
-                            const valor = localStorage.getItem(clave);
-                            if (valor && parseInt(valor, 10) > 0) {
-                                hayDatosEspecificos = true;
-                                break;
-                            }
-                        }
-                    }
-                    setHayDatosAsignatura(hayDatosEspecificos);
+                    // Simplificado: asumir que no hay datos específicos
+                    setHayDatosAsignatura(false);
                 } else {
                     setHayDatosAsignatura(true);
                 }
@@ -748,7 +714,7 @@ function CentrosCompetencia() {
                     ...new Set(usuarios.filter((u)=>u.centro && u.centro.trim() !== "").map((u)=>u.centro))
                 ];
                 // Calcular estadísticas para cada centro
-                const statsDeLosCentros = centrosUnicos.map((nombreCentro)=>calcularStatsDelCentro(nombreCentro, usuarios));
+                const statsDeLosCentros = await Promise.all(centrosUnicos.map((nombreCentro)=>calcularStatsDelCentro(nombreCentro, usuarios)));
                 // Ordenar por puntuación y asignar medallas
                 const centrosOrdenados = statsDeLosCentros.sort((a, b)=>b.puntajeTotal - a.puntajeTotal);
                 const centrosConMedallas = asignarMedallas(centrosOrdenados);
@@ -779,7 +745,7 @@ function CentrosCompetencia() {
                     ];
                     const numeroMes = mesesNombres.indexOf(nombreMes) + 1;
                     if (numeroMes > 0) {
-                        const rankingMes = cargarRankingMensual(año, numeroMes);
+                        const rankingMes = await cargarRankingMensual(año, numeroMes);
                         if (rankingMes.length > 0) {
                             setCentros(rankingMes);
                         } else {
@@ -792,12 +758,17 @@ function CentrosCompetencia() {
                     // Mes actual
                     setCentros(centrosConMedallas);
                     // Guardar ranking mensual automáticamente
-                    guardarRankingMensual(centrosConMedallas);
+                    await guardarRankingMensual(centrosConMedallas);
                 }
                 // Cargar historial de ganadores
                 setHistorialGanadores(obtenerHistorialGanadores());
                 // Cargar premios del mes
-                setPremiosDelMes(obtenerPremiosDelMes());
+                setPremiosDelMes(await obtenerPremiosDelMes());
+                // Cargar premio del centro del usuario si existe
+                if (userData.user && userData.user.centro) {
+                    const premio = await obtenerPremioDelCentro(userData.user.centro);
+                    setPremioCentroUsuario(premio);
+                }
                 setLoading(false);
             } catch (error) {
                 // Silent fail
@@ -854,7 +825,7 @@ function CentrosCompetencia() {
                         className: "animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"
                     }, void 0, false, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1012,
+                        lineNumber: 744,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -862,18 +833,18 @@ function CentrosCompetencia() {
                         children: "Cargando competencia entre centros..."
                     }, void 0, false, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1013,
+                        lineNumber: 745,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                lineNumber: 1011,
+                lineNumber: 743,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/centros-competencia/page.tsx",
-            lineNumber: 1010,
+            lineNumber: 742,
             columnNumber: 13
         }, this);
     }
@@ -893,7 +864,7 @@ function CentrosCompetencia() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1024,
+                            lineNumber: 756,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -901,13 +872,13 @@ function CentrosCompetencia() {
                             children: t('leagueSubtitle')
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1027,
+                            lineNumber: 759,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1023,
+                    lineNumber: 755,
                     columnNumber: 17
                 }, this),
                 modoVacaciones && eventoEspecial && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -929,7 +900,7 @@ function CentrosCompetencia() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1036,
+                                lineNumber: 768,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -937,7 +908,7 @@ function CentrosCompetencia() {
                                 children: eventoEspecial.descripcion
                             }, void 0, false, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1039,
+                                lineNumber: 771,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -955,7 +926,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1045,
+                                                    lineNumber: 777,
                                                     columnNumber: 46
                                                 }, this),
                                                 " x",
@@ -964,7 +935,7 @@ function CentrosCompetencia() {
                                         }, void 0, true)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1043,
+                                        lineNumber: 775,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -972,24 +943,24 @@ function CentrosCompetencia() {
                                         children: "Todas las actividades dan puntos extra durante este período especial"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1048,
+                                        lineNumber: 780,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1042,
+                                lineNumber: 774,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1035,
+                        lineNumber: 767,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1034,
+                    lineNumber: 766,
                     columnNumber: 21
                 }, this),
                 !modoVacaciones && eventoEspecial && eventoEspecial.nombre && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1011,7 +982,7 @@ function CentrosCompetencia() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1060,
+                                lineNumber: 792,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1022,7 +993,7 @@ function CentrosCompetencia() {
                                         children: "Bonus Especial:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1064,
+                                        lineNumber: 796,
                                         columnNumber: 36
                                     }, this),
                                     " ",
@@ -1030,7 +1001,7 @@ function CentrosCompetencia() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1063,
+                                lineNumber: 795,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1038,18 +1009,18 @@ function CentrosCompetencia() {
                                 children: t('eventoLimitado')
                             }, void 0, false, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1066,
+                                lineNumber: 798,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1059,
+                        lineNumber: 791,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1058,
+                    lineNumber: 790,
                     columnNumber: 21
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1066,7 +1037,7 @@ function CentrosCompetencia() {
                                             children: "Ver datos:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1078,
+                                            lineNumber: 810,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1078,7 +1049,7 @@ function CentrosCompetencia() {
                                                     children: "📅 Mes Actual"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1080,
+                                                    lineNumber: 812,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1087,7 +1058,7 @@ function CentrosCompetencia() {
                                                     children: "📊 Histórico"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1089,
+                                                    lineNumber: 821,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1096,19 +1067,19 @@ function CentrosCompetencia() {
                                                     children: "🏆 Ranking Anual"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1098,
+                                                    lineNumber: 830,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1079,
+                                            lineNumber: 811,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1077,
+                                    lineNumber: 809,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1119,7 +1090,7 @@ function CentrosCompetencia() {
                                             children: t('filtrarAsignatura')
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1112,
+                                            lineNumber: 844,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1135,7 +1106,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1118,
+                                                    lineNumber: 850,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1143,7 +1114,7 @@ function CentrosCompetencia() {
                                                     children: "🔢 Matemáticas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1119,
+                                                    lineNumber: 851,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1151,7 +1122,7 @@ function CentrosCompetencia() {
                                                     children: "📝 Lenguaje"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1120,
+                                                    lineNumber: 852,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1159,7 +1130,7 @@ function CentrosCompetencia() {
                                                     children: "📖 Literatura"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1121,
+                                                    lineNumber: 853,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1167,7 +1138,7 @@ function CentrosCompetencia() {
                                                     children: "🏛️ Historia"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1122,
+                                                    lineNumber: 854,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1175,7 +1146,7 @@ function CentrosCompetencia() {
                                                     children: "🗺️ Geografía"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1123,
+                                                    lineNumber: 855,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1183,7 +1154,7 @@ function CentrosCompetencia() {
                                                     children: "🌿 Ciencias Naturales"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1124,
+                                                    lineNumber: 856,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1191,7 +1162,7 @@ function CentrosCompetencia() {
                                                     children: "🇬🇧 Inglés"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1125,
+                                                    lineNumber: 857,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1199,19 +1170,19 @@ function CentrosCompetencia() {
                                                     children: "🎯 General"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1126,
+                                                    lineNumber: 858,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1113,
+                                            lineNumber: 845,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1111,
+                                    lineNumber: 843,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1222,7 +1193,7 @@ function CentrosCompetencia() {
                                             children: t('filtrarCurso')
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1132,
+                                            lineNumber: 864,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1238,7 +1209,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1138,
+                                                    lineNumber: 870,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1246,7 +1217,7 @@ function CentrosCompetencia() {
                                                     children: "1️⃣ 1º Primaria"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1139,
+                                                    lineNumber: 871,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1254,7 +1225,7 @@ function CentrosCompetencia() {
                                                     children: "2️⃣ 2º Primaria"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1140,
+                                                    lineNumber: 872,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1262,7 +1233,7 @@ function CentrosCompetencia() {
                                                     children: "3️⃣ 3º Primaria"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1141,
+                                                    lineNumber: 873,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1270,7 +1241,7 @@ function CentrosCompetencia() {
                                                     children: "4️⃣ 4º Primaria"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1142,
+                                                    lineNumber: 874,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1278,7 +1249,7 @@ function CentrosCompetencia() {
                                                     children: "5️⃣ 5º Primaria"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1143,
+                                                    lineNumber: 875,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1286,19 +1257,19 @@ function CentrosCompetencia() {
                                                     children: "6️⃣ 6º Primaria"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1144,
+                                                    lineNumber: 876,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1133,
+                                            lineNumber: 865,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1131,
+                                    lineNumber: 863,
                                     columnNumber: 25
                                 }, this),
                                 modoVisualizacion === 'historico' && mesesDisponibles.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1309,7 +1280,7 @@ function CentrosCompetencia() {
                                             children: t('mes')
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1151,
+                                            lineNumber: 883,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1322,7 +1293,7 @@ function CentrosCompetencia() {
                                                     children: t('seleccionarMes')
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1157,
+                                                    lineNumber: 889,
                                                     columnNumber: 37
                                                 }, this),
                                                 mesesDisponibles.map((mes)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1330,25 +1301,25 @@ function CentrosCompetencia() {
                                                         children: mes
                                                     }, mes, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1159,
+                                                        lineNumber: 891,
                                                         columnNumber: 41
                                                     }, this))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1152,
+                                            lineNumber: 884,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1150,
+                                    lineNumber: 882,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1075,
+                            lineNumber: 807,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1362,7 +1333,7 @@ function CentrosCompetencia() {
                                             children: t('mostrar')
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1172,
+                                            lineNumber: 904,
                                             columnNumber: 36
                                         }, this),
                                         " ",
@@ -1376,7 +1347,7 @@ function CentrosCompetencia() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1171,
+                                    lineNumber: 903,
                                     columnNumber: 29
                                 }, this),
                                 modoVisualizacion === 'historico' && mesSeleccionado && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1387,7 +1358,7 @@ function CentrosCompetencia() {
                                             children: t('mostrar')
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1177,
+                                            lineNumber: 909,
                                             columnNumber: 36
                                         }, this),
                                         " ",
@@ -1397,7 +1368,7 @@ function CentrosCompetencia() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1176,
+                                    lineNumber: 908,
                                     columnNumber: 29
                                 }, this),
                                 modoVisualizacion === 'anual' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1408,7 +1379,7 @@ function CentrosCompetencia() {
                                             children: t('mostrar')
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1182,
+                                            lineNumber: 914,
                                             columnNumber: 36
                                         }, this),
                                         " ",
@@ -1419,19 +1390,19 @@ function CentrosCompetencia() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1181,
+                                    lineNumber: 913,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1169,
+                            lineNumber: 901,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1074,
+                    lineNumber: 806,
                     columnNumber: 17
                 }, this),
                 centroDelUsuario && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1453,14 +1424,14 @@ function CentrosCompetencia() {
                                             className: "w-12 h-12 object-contain rounded-lg border-2 border-yellow-400 mr-3"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1195,
+                                            lineNumber: 927,
                                             columnNumber: 41
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             className: "text-2xl mr-3",
                                             children: obtenerLogoCentro(centroDelUsuario.nombre)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1201,
+                                            lineNumber: 933,
                                             columnNumber: 41
                                         }, this),
                                         "🏠 ",
@@ -1470,7 +1441,7 @@ function CentrosCompetencia() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1193,
+                                    lineNumber: 925,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1486,7 +1457,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1207,
+                                                    lineNumber: 939,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1498,13 +1469,13 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1208,
+                                                    lineNumber: 940,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1206,
+                                            lineNumber: 938,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1517,7 +1488,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1211,
+                                                    lineNumber: 943,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1525,13 +1496,13 @@ function CentrosCompetencia() {
                                                     children: centroDelUsuario.puntajeTotal.toLocaleString()
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1212,
+                                                    lineNumber: 944,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1210,
+                                            lineNumber: 942,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1544,7 +1515,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1215,
+                                                    lineNumber: 947,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1556,7 +1527,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1216,
+                                                    lineNumber: 948,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1564,13 +1535,13 @@ function CentrosCompetencia() {
                                                     children: "estudiantes + docentes"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1217,
+                                                    lineNumber: 949,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1214,
+                                            lineNumber: 946,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1583,7 +1554,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1220,
+                                                    lineNumber: 952,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1591,190 +1562,187 @@ function CentrosCompetencia() {
                                                     children: centroDelUsuario.concursosGanados
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1221,
+                                                    lineNumber: 953,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1219,
+                                            lineNumber: 951,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1205,
+                                    lineNumber: 937,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1192,
+                            lineNumber: 924,
                             columnNumber: 29
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1191,
+                        lineNumber: 923,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1190,
+                    lineNumber: 922,
                     columnNumber: 21
                 }, this),
-                centroDelUsuario && (()=>{
-                    const premioCentro = obtenerPremioDelCentro(centroDelUsuario.nombre);
-                    return premioCentro ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        role: "region",
-                        "aria-labelledby": "premio-centro-title",
-                        className: "mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 rounded-lg p-6 shadow-lg",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "text-4xl mr-4",
-                                    children: "🎉"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1235,
-                                    columnNumber: 33
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            id: "premio-centro-title",
-                                            className: "text-xl font-bold text-purple-800 mb-2",
-                                            children: t('felicitacionesPremio')
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1237,
-                                            columnNumber: 37
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "bg-white bg-opacity-60 rounded-lg p-4 inline-block",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex items-center mb-2",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-2xl mr-2",
-                                                            children: premioCentro.emoji
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1242,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "font-bold text-purple-800",
-                                                            children: [
-                                                                premioCentro.titulo,
-                                                                ":"
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1243,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "ml-2 text-purple-700",
-                                                            children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$normalizadores$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["normalizarValorPremio"])(premioCentro.premio)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1244,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1241,
-                                                    columnNumber: 41
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-sm text-purple-600 mb-2",
-                                                    children: premioCentro.descripcion
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1246,
-                                                    columnNumber: 41
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "space-y-1",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-sm font-semibold text-purple-800",
-                                                            children: [
-                                                                "🏆 ",
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                                    children: [
-                                                                        t('bonusObtenido'),
-                                                                        ":"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1249,
-                                                                    columnNumber: 52
-                                                                }, this),
-                                                                " +",
-                                                                Number(premioCentro.puntosExtra) || 0,
-                                                                " puntos extra"
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1248,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-sm text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block",
-                                                            children: [
-                                                                "🏅 ",
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                                    children: [
-                                                                        t('insigniaAutomatica'),
-                                                                        ":"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1252,
-                                                                    columnNumber: 52
-                                                                }, this),
-                                                                " ",
-                                                                t('premio')
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1251,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1247,
-                                                    columnNumber: 41
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1240,
-                                            columnNumber: 37
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1236,
-                                    columnNumber: 33
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1234,
-                            columnNumber: 29
-                        }, this)
-                    }, void 0, false, {
+                centroDelUsuario && premioCentroUsuario && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    role: "region",
+                    "aria-labelledby": "premio-centro-title",
+                    className: "mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 rounded-lg p-6 shadow-lg",
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex items-center",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "text-4xl mr-4",
+                                children: "🎉"
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                lineNumber: 965,
+                                columnNumber: 29
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                        id: "premio-centro-title",
+                                        className: "text-xl font-bold text-purple-800 mb-2",
+                                        children: t('felicitacionesPremio')
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                        lineNumber: 967,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "bg-white bg-opacity-60 rounded-lg p-4 inline-block",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex items-center mb-2",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-2xl mr-2",
+                                                        children: premioCentroUsuario.emoji
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                        lineNumber: 972,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "font-bold text-purple-800",
+                                                        children: [
+                                                            premioCentroUsuario.titulo,
+                                                            ":"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                        lineNumber: 973,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "ml-2 text-purple-700",
+                                                        children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$normalizadores$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["normalizarValorPremio"])(premioCentroUsuario.premio)
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                        lineNumber: 974,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                lineNumber: 971,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-sm text-purple-600 mb-2",
+                                                children: premioCentroUsuario.descripcion
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                lineNumber: 976,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "space-y-1",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm font-semibold text-purple-800",
+                                                        children: [
+                                                            "🏆 ",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                children: [
+                                                                    t('bonusObtenido'),
+                                                                    ":"
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                                lineNumber: 979,
+                                                                columnNumber: 48
+                                                            }, this),
+                                                            " +",
+                                                            Number(premioCentroUsuario.puntosExtra) || 0,
+                                                            " puntos extra"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                        lineNumber: 978,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block",
+                                                        children: [
+                                                            "🏅 ",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                children: [
+                                                                    t('insigniaAutomatica'),
+                                                                    ":"
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                                lineNumber: 982,
+                                                                columnNumber: 48
+                                                            }, this),
+                                                            " ",
+                                                            t('premio')
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                        lineNumber: 981,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                                lineNumber: 977,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                        lineNumber: 970,
+                                        columnNumber: 33
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/centros-competencia/page.tsx",
+                                lineNumber: 966,
+                                columnNumber: 29
+                            }, this)
+                        ]
+                    }, void 0, true, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1233,
+                        lineNumber: 964,
                         columnNumber: 25
-                    }, this) : null;
-                })(),
+                    }, this)
+                }, void 0, false, {
+                    fileName: "[project]/src/app/centros-competencia/page.tsx",
+                    lineNumber: 963,
+                    columnNumber: 21
+                }, this),
                 centroDelUsuario && allUsers.length > 0 && (()=>{
                     // Obtener usuarios del centro (case insensitive y trim)
                     const usuariosCentro = allUsers.filter((u)=>u.centro && u.centro.trim().toLowerCase() === centroDelUsuario.nombre.trim().toLowerCase());
@@ -1793,7 +1761,7 @@ function CentrosCompetencia() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1273,
+                                lineNumber: 1002,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1810,7 +1778,7 @@ function CentrosCompetencia() {
                                                         children: "Usuario"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1280,
+                                                        lineNumber: 1009,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1818,7 +1786,7 @@ function CentrosCompetencia() {
                                                         children: "Respuestas Acertadas"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1281,
+                                                        lineNumber: 1010,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1826,7 +1794,7 @@ function CentrosCompetencia() {
                                                         children: "Historias"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1282,
+                                                        lineNumber: 1011,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1834,7 +1802,7 @@ function CentrosCompetencia() {
                                                         children: "Concursos"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1283,
+                                                        lineNumber: 1012,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1842,18 +1810,18 @@ function CentrosCompetencia() {
                                                         children: "Likes"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1284,
+                                                        lineNumber: 1013,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1279,
+                                                lineNumber: 1008,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1278,
+                                            lineNumber: 1007,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1866,7 +1834,7 @@ function CentrosCompetencia() {
                                                             children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$renderNick$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["renderNick"])(usuario.nick)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1290,
+                                                            lineNumber: 1019,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1874,7 +1842,7 @@ function CentrosCompetencia() {
                                                             children: Number(usuario.respuestasAcertadas) || 0
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1293,
+                                                            lineNumber: 1022,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1882,7 +1850,7 @@ function CentrosCompetencia() {
                                                             children: Array.isArray(usuario.historias) ? usuario.historias.length : Number(usuario.historiasCreadas) || 0
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1296,
+                                                            lineNumber: 1025,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1890,7 +1858,7 @@ function CentrosCompetencia() {
                                                             children: Number(usuario.concursosGanados) || 0
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1299,
+                                                            lineNumber: 1028,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1898,35 +1866,35 @@ function CentrosCompetencia() {
                                                             children: Number(usuario.likes) || 0
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1302,
+                                                            lineNumber: 1031,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, usuario.nick, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1289,
+                                                    lineNumber: 1018,
                                                     columnNumber: 45
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1287,
+                                            lineNumber: 1016,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1277,
+                                    lineNumber: 1006,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1276,
+                                lineNumber: 1005,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                        lineNumber: 1272,
+                        lineNumber: 1001,
                         columnNumber: 25
                     }, this);
                 })(),
@@ -1946,12 +1914,12 @@ function CentrosCompetencia() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1315,
+                                lineNumber: 1044,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1314,
+                            lineNumber: 1043,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1962,7 +1930,7 @@ function CentrosCompetencia() {
                                     children: "🏆 Top 3 Centros - Barras de Progreso"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1320,
+                                    lineNumber: 1049,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1989,7 +1957,7 @@ function CentrosCompetencia() {
                                                                     children: centro.medalla
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1331,
+                                                                    lineNumber: 1060,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1997,13 +1965,13 @@ function CentrosCompetencia() {
                                                                     children: centro.nombre
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1332,
+                                                                    lineNumber: 1061,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1330,
+                                                            lineNumber: 1059,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2014,13 +1982,13 @@ function CentrosCompetencia() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1334,
+                                                            lineNumber: 1063,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1329,
+                                                    lineNumber: 1058,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2032,12 +2000,12 @@ function CentrosCompetencia() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1341,
+                                                        lineNumber: 1070,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1340,
+                                                    lineNumber: 1069,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2048,25 +2016,25 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1346,
+                                                    lineNumber: 1075,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, centro.nombre, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1328,
+                                            lineNumber: 1057,
                                             columnNumber: 37
                                         }, this);
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1321,
+                                    lineNumber: 1050,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1319,
+                            lineNumber: 1048,
                             columnNumber: 21
                         }, this),
                         asignaturaSeleccionada !== "todas" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2080,7 +2048,7 @@ function CentrosCompetencia() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1358,
+                                    lineNumber: 1087,
                                     columnNumber: 29
                                 }, this),
                                 hayDatosAsignatura ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2094,7 +2062,7 @@ function CentrosCompetencia() {
                                                     children: "Vista filtrada por asignatura:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1365,
+                                                    lineNumber: 1094,
                                                     columnNumber: 44
                                                 }, this),
                                                 " Mostrando solo actividad relacionada con ",
@@ -2102,7 +2070,7 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1364,
+                                            lineNumber: 1093,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2110,7 +2078,7 @@ function CentrosCompetencia() {
                                             children: "Los puntos de respuestas correctas corresponden únicamente a preguntas de esta materia específica. Las demás métricas (concursos, historias, interacciones) se muestran proporcionalmente."
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1367,
+                                            lineNumber: 1096,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2121,20 +2089,20 @@ function CentrosCompetencia() {
                                                     children: "Tip:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1372,
+                                                    lineNumber: 1101,
                                                     columnNumber: 44
                                                 }, this),
                                                 ' Para ver el rendimiento completo de todos los centros, selecciona "📚 todas las asignaturas"'
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1371,
+                                            lineNumber: 1100,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1363,
+                                    lineNumber: 1092,
                                     columnNumber: 33
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "bg-orange-50 border border-orange-200 rounded-lg p-4",
@@ -2147,7 +2115,7 @@ function CentrosCompetencia() {
                                                     children: "Sin datos específicos:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1378,
+                                                    lineNumber: 1107,
                                                     columnNumber: 44
                                                 }, this),
                                                 " Aún no hay actividad registrada para ",
@@ -2155,7 +2123,7 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1377,
+                                            lineNumber: 1106,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2163,7 +2131,7 @@ function CentrosCompetencia() {
                                             children: "Los rankings mostrados son estimaciones basadas en el rendimiento general de cada centro. Los datos reales aparecerán cuando los usuarios respondan preguntas de esta materia."
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1380,
+                                            lineNumber: 1109,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2174,7 +2142,7 @@ function CentrosCompetencia() {
                                                     children: "Para generar datos reales:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1385,
+                                                    lineNumber: 1114,
                                                     columnNumber: 44
                                                 }, this),
                                                 " Los usuarios deben participar en competencias o responder preguntas específicas de ",
@@ -2182,19 +2150,19 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1384,
+                                            lineNumber: 1113,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1376,
+                                    lineNumber: 1105,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1357,
+                            lineNumber: 1086,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2208,7 +2176,7 @@ function CentrosCompetencia() {
                                             children: "Total de Centros"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1395,
+                                            lineNumber: 1124,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2216,7 +2184,7 @@ function CentrosCompetencia() {
                                             children: centros.length
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1396,
+                                            lineNumber: 1125,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2224,13 +2192,13 @@ function CentrosCompetencia() {
                                             children: "Participando en la liga"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1397,
+                                            lineNumber: 1126,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1394,
+                                    lineNumber: 1123,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2241,7 +2209,7 @@ function CentrosCompetencia() {
                                             children: "Puntuación Total"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1401,
+                                            lineNumber: 1130,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2249,7 +2217,7 @@ function CentrosCompetencia() {
                                             children: centros.reduce((total, centro)=>total + (Number(centro.puntajeTotal) || 0), 0).toLocaleString()
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1402,
+                                            lineNumber: 1131,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2257,13 +2225,13 @@ function CentrosCompetencia() {
                                             children: "Puntos acumulados"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1405,
+                                            lineNumber: 1134,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1400,
+                                    lineNumber: 1129,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2274,7 +2242,7 @@ function CentrosCompetencia() {
                                             children: "Promedio de Centro"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1409,
+                                            lineNumber: 1138,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2282,7 +2250,7 @@ function CentrosCompetencia() {
                                             children: Math.round(centros.reduce((total, centro)=>total + (Number(centro.puntajeTotal) || 0), 0) / (centros.length || 1)).toLocaleString()
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1410,
+                                            lineNumber: 1139,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2290,25 +2258,25 @@ function CentrosCompetencia() {
                                             children: "Puntos por centro"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1413,
+                                            lineNumber: 1142,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1408,
+                                    lineNumber: 1137,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1393,
+                            lineNumber: 1122,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1313,
+                    lineNumber: 1042,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2319,7 +2287,7 @@ function CentrosCompetencia() {
                             children: "📅 Información del Ciclo de Competencia"
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1420,
+                            lineNumber: 1149,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2333,7 +2301,7 @@ function CentrosCompetencia() {
                                             children: "Mes Actual"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1425,
+                                            lineNumber: 1154,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2344,7 +2312,7 @@ function CentrosCompetencia() {
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1426,
+                                            lineNumber: 1155,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2356,13 +2324,13 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1429,
+                                            lineNumber: 1158,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1424,
+                                    lineNumber: 1153,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2373,7 +2341,7 @@ function CentrosCompetencia() {
                                             children: "Días Restantes"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1435,
+                                            lineNumber: 1164,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2384,7 +2352,7 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1436,
+                                            lineNumber: 1165,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2392,13 +2360,13 @@ function CentrosCompetencia() {
                                             children: "Hasta próximo ranking"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1439,
+                                            lineNumber: 1168,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1434,
+                                    lineNumber: 1163,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2409,7 +2377,7 @@ function CentrosCompetencia() {
                                             children: "Próximo Ciclo"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1445,
+                                            lineNumber: 1174,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2417,7 +2385,7 @@ function CentrosCompetencia() {
                                             children: obtenerInfoCicloMensual().nombreProximoMes
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1446,
+                                            lineNumber: 1175,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2425,19 +2393,19 @@ function CentrosCompetencia() {
                                             children: "Nuevo ranking mensual"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1449,
+                                            lineNumber: 1178,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1444,
+                                    lineNumber: 1173,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1423,
+                            lineNumber: 1152,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2447,7 +2415,7 @@ function CentrosCompetencia() {
                                     children: "📊 Ciclo de Competencia:"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1455,
+                                    lineNumber: 1184,
                                     columnNumber: 25
                                 }, this),
                                 " Los rankings se actualizan automáticamente cada mes. Los puntos se acumulan desde el día 1 hasta el último día del mes, creando una competencia fresca cada 30 días.",
@@ -2455,19 +2423,19 @@ function CentrosCompetencia() {
                                     children: " ¡Cada mes es una nueva oportunidad para que tu centro llegue al primer puesto!"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1457,
+                                    lineNumber: 1186,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1454,
+                            lineNumber: 1183,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1419,
+                    lineNumber: 1148,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2478,7 +2446,7 @@ function CentrosCompetencia() {
                             children: "📊 Sistema de Puntuación"
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1463,
+                            lineNumber: 1192,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2490,7 +2458,7 @@ function CentrosCompetencia() {
                                         children: "¡Novedad!"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1466,
+                                        lineNumber: 1195,
                                         columnNumber: 29
                                     }, this),
                                     " 🎉 Ahora los ",
@@ -2498,19 +2466,19 @@ function CentrosCompetencia() {
                                         children: "docentes también participan"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1466,
+                                        lineNumber: 1195,
                                         columnNumber: 69
                                     }, this),
                                     " en el ranking de su centro. ¡Profesores y estudiantes trabajando juntos por el éxito del centro!"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1465,
+                                lineNumber: 1194,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1464,
+                            lineNumber: 1193,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2524,7 +2492,7 @@ function CentrosCompetencia() {
                                             children: "Estudiantes Activos"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1472,
+                                            lineNumber: 1201,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2532,7 +2500,7 @@ function CentrosCompetencia() {
                                             children: "10 pts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1473,
+                                            lineNumber: 1202,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2540,13 +2508,13 @@ function CentrosCompetencia() {
                                             children: "por estudiante activo"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1474,
+                                            lineNumber: 1203,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1471,
+                                    lineNumber: 1200,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2557,7 +2525,7 @@ function CentrosCompetencia() {
                                             children: "Docentes Activos"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1477,
+                                            lineNumber: 1206,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2565,7 +2533,7 @@ function CentrosCompetencia() {
                                             children: "20 pts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1478,
+                                            lineNumber: 1207,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2573,13 +2541,13 @@ function CentrosCompetencia() {
                                             children: "por docente activo"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1479,
+                                            lineNumber: 1208,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1476,
+                                    lineNumber: 1205,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2590,7 +2558,7 @@ function CentrosCompetencia() {
                                             children: "Respuestas Correctas"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1482,
+                                            lineNumber: 1211,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2598,7 +2566,7 @@ function CentrosCompetencia() {
                                             children: "5 pts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1483,
+                                            lineNumber: 1212,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2606,13 +2574,13 @@ function CentrosCompetencia() {
                                             children: "estudiantes + docentes"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1484,
+                                            lineNumber: 1213,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1481,
+                                    lineNumber: 1210,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2623,7 +2591,7 @@ function CentrosCompetencia() {
                                             children: "Concursos Ganados"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1487,
+                                            lineNumber: 1216,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2631,7 +2599,7 @@ function CentrosCompetencia() {
                                             children: "50 pts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1488,
+                                            lineNumber: 1217,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2639,13 +2607,13 @@ function CentrosCompetencia() {
                                             children: "estudiantes + docentes"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1489,
+                                            lineNumber: 1218,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1486,
+                                    lineNumber: 1215,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2656,7 +2624,7 @@ function CentrosCompetencia() {
                                             children: "Historias Creadas"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1492,
+                                            lineNumber: 1221,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2664,7 +2632,7 @@ function CentrosCompetencia() {
                                             children: "15 pts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1493,
+                                            lineNumber: 1222,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2672,13 +2640,13 @@ function CentrosCompetencia() {
                                             children: "estudiantes + docentes"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1494,
+                                            lineNumber: 1223,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1491,
+                                    lineNumber: 1220,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2689,7 +2657,7 @@ function CentrosCompetencia() {
                                             children: "Interacciones"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1497,
+                                            lineNumber: 1226,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2697,7 +2665,7 @@ function CentrosCompetencia() {
                                             children: "2 pts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1498,
+                                            lineNumber: 1227,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2705,25 +2673,25 @@ function CentrosCompetencia() {
                                             children: "likes, amigos, comentarios"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1499,
+                                            lineNumber: 1228,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1496,
+                                    lineNumber: 1225,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1470,
+                            lineNumber: 1199,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1462,
+                    lineNumber: 1191,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2746,13 +2714,13 @@ function CentrosCompetencia() {
                                                     children: " (Estimado)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1512,
+                                                    lineNumber: 1241,
                                                     columnNumber: 61
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1510,
+                                            lineNumber: 1239,
                                             columnNumber: 33
                                         }, this),
                                         cursoSeleccionado !== "todos" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2763,13 +2731,13 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1516,
+                                            lineNumber: 1245,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1507,
+                                    lineNumber: 1236,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2795,7 +2763,7 @@ function CentrosCompetencia() {
                                     })}`
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1521,
+                                    lineNumber: 1250,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2803,13 +2771,13 @@ function CentrosCompetencia() {
                                     children: "📅 Se actualiza automáticamente cada mes | 🔄 Datos en tiempo real"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1535,
+                                    lineNumber: 1264,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1506,
+                            lineNumber: 1235,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2826,7 +2794,7 @@ function CentrosCompetencia() {
                                                     children: "Ranking"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1544,
+                                                    lineNumber: 1273,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2834,7 +2802,7 @@ function CentrosCompetencia() {
                                                     children: "Centro"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1545,
+                                                    lineNumber: 1274,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2842,7 +2810,7 @@ function CentrosCompetencia() {
                                                     children: "Puntuación"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1546,
+                                                    lineNumber: 1275,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2850,7 +2818,7 @@ function CentrosCompetencia() {
                                                     children: "Miembros"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1547,
+                                                    lineNumber: 1276,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2858,7 +2826,7 @@ function CentrosCompetencia() {
                                                     children: "Activos"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1548,
+                                                    lineNumber: 1277,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2866,7 +2834,7 @@ function CentrosCompetencia() {
                                                     children: "Respuestas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1549,
+                                                    lineNumber: 1278,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2874,7 +2842,7 @@ function CentrosCompetencia() {
                                                     children: "Concursos"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1550,
+                                                    lineNumber: 1279,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2882,18 +2850,18 @@ function CentrosCompetencia() {
                                                     children: "Historias"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1551,
+                                                    lineNumber: 1280,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1543,
+                                            lineNumber: 1272,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1542,
+                                        lineNumber: 1271,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -2911,7 +2879,7 @@ function CentrosCompetencia() {
                                                                     children: centro.medalla
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1562,
+                                                                    lineNumber: 1291,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2922,18 +2890,18 @@ function CentrosCompetencia() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1563,
+                                                                    lineNumber: 1292,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1561,
+                                                            lineNumber: 1290,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1560,
+                                                        lineNumber: 1289,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2947,14 +2915,14 @@ function CentrosCompetencia() {
                                                                     className: "w-10 h-10 object-contain rounded-lg border border-gray-300 mr-3"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1569,
+                                                                    lineNumber: 1298,
                                                                     columnNumber: 53
                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                     className: "text-2xl mr-3",
                                                                     children: obtenerLogoCentro(centro.nombre)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1575,
+                                                                    lineNumber: 1304,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2964,7 +2932,7 @@ function CentrosCompetencia() {
                                                                             children: centro.nombre
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                            lineNumber: 1578,
+                                                                            lineNumber: 1307,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         centro.nombre === miCentro && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2972,24 +2940,24 @@ function CentrosCompetencia() {
                                                                             children: "👈 Tu centro"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                            lineNumber: 1580,
+                                                                            lineNumber: 1309,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1577,
+                                                                    lineNumber: 1306,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1567,
+                                                            lineNumber: 1296,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1566,
+                                                        lineNumber: 1295,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2999,12 +2967,12 @@ function CentrosCompetencia() {
                                                             children: centro.puntajeTotal.toLocaleString()
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1586,
+                                                            lineNumber: 1315,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1585,
+                                                        lineNumber: 1314,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3012,7 +2980,7 @@ function CentrosCompetencia() {
                                                         children: centro.estudiantes
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1590,
+                                                        lineNumber: 1319,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3022,12 +2990,12 @@ function CentrosCompetencia() {
                                                             children: centro.estudiantesActivos
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1594,
+                                                            lineNumber: 1323,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1593,
+                                                        lineNumber: 1322,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3035,7 +3003,7 @@ function CentrosCompetencia() {
                                                         children: centro.respuestasCorrectas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1598,
+                                                        lineNumber: 1327,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3043,7 +3011,7 @@ function CentrosCompetencia() {
                                                         children: centro.concursosGanados
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1601,
+                                                        lineNumber: 1330,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3051,29 +3019,29 @@ function CentrosCompetencia() {
                                                         children: centro.historiasCreadas
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1604,
+                                                        lineNumber: 1333,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, centro.nombre, true, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1556,
+                                                lineNumber: 1285,
                                                 columnNumber: 37
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1554,
+                                        lineNumber: 1283,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1541,
+                                lineNumber: 1270,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1540,
+                            lineNumber: 1269,
                             columnNumber: 21
                         }, this),
                         centros.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3084,7 +3052,7 @@ function CentrosCompetencia() {
                                     children: "📊"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1615,
+                                    lineNumber: 1344,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3092,7 +3060,7 @@ function CentrosCompetencia() {
                                     children: "No hay datos de centros disponibles todavía."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1616,
+                                    lineNumber: 1345,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3100,19 +3068,19 @@ function CentrosCompetencia() {
                                     children: "Los datos aparecerán cuando haya actividad de estudiantes."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1617,
+                                    lineNumber: 1346,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1614,
+                            lineNumber: 1343,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1505,
+                    lineNumber: 1234,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3126,7 +3094,7 @@ function CentrosCompetencia() {
                                     children: "🎯 ¿Cómo Participar?"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1625,
+                                    lineNumber: 1354,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -3139,61 +3107,61 @@ function CentrosCompetencia() {
                                                     children: "Estudiantes y Docentes"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1627,
+                                                    lineNumber: 1356,
                                                     columnNumber: 35
                                                 }, this),
                                                 " pueden participar"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1627,
+                                            lineNumber: 1356,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "• Mantente activo en la plataforma"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1628,
+                                            lineNumber: 1357,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "• Responde preguntas correctamente"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1629,
+                                            lineNumber: 1358,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "• Participa en concursos"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1630,
+                                            lineNumber: 1359,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "• Crea historias interesantes"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1631,
+                                            lineNumber: 1360,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "• Interactúa con compañeros y profesores"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1632,
+                                            lineNumber: 1361,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1626,
+                                    lineNumber: 1355,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1624,
+                            lineNumber: 1353,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3207,7 +3175,7 @@ function CentrosCompetencia() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1637,
+                                    lineNumber: 1366,
                                     columnNumber: 25
                                 }, this),
                                 premiosDelMes.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3224,7 +3192,7 @@ function CentrosCompetencia() {
                                                                 children: premio.emoji
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                lineNumber: 1644,
+                                                                lineNumber: 1373,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3237,7 +3205,7 @@ function CentrosCompetencia() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                        lineNumber: 1646,
+                                                                        lineNumber: 1375,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3245,7 +3213,7 @@ function CentrosCompetencia() {
                                                                         children: premio.premio
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                        lineNumber: 1647,
+                                                                        lineNumber: 1376,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     premio.centro === miCentro && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3253,19 +3221,19 @@ function CentrosCompetencia() {
                                                                         children: "🎉 ¡Tu centro!"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                        lineNumber: 1649,
+                                                                        lineNumber: 1378,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                lineNumber: 1645,
+                                                                lineNumber: 1374,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1643,
+                                                        lineNumber: 1372,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3276,7 +3244,7 @@ function CentrosCompetencia() {
                                                                 children: premio.centro
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                lineNumber: 1654,
+                                                                lineNumber: 1383,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3288,7 +3256,7 @@ function CentrosCompetencia() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                lineNumber: 1655,
+                                                                lineNumber: 1384,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3296,19 +3264,19 @@ function CentrosCompetencia() {
                                                                 children: "🏅 Insignia asignada"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                lineNumber: 1656,
+                                                                lineNumber: 1385,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                        lineNumber: 1653,
+                                                        lineNumber: 1382,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, index, true, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1641,
+                                                lineNumber: 1370,
                                                 columnNumber: 37
                                             }, this)),
                                         premiosDelMes.length > 10 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3320,13 +3288,13 @@ function CentrosCompetencia() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1661,
+                                            lineNumber: 1390,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1639,
+                                    lineNumber: 1368,
                                     columnNumber: 29
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
                                     className: "text-sm text-green-700 space-y-1",
@@ -3335,47 +3303,47 @@ function CentrosCompetencia() {
                                             children: "🥇 1er lugar: Trofeo digital especial"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1668,
+                                            lineNumber: 1397,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "🥈 2do lugar: Certificado de honor"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1669,
+                                            lineNumber: 1398,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "🥉 3er lugar: Mención especial"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1670,
+                                            lineNumber: 1399,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "🏆 Top 10: Badge exclusivo"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1671,
+                                            lineNumber: 1400,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "📚 Participación: Reconocimiento"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1672,
+                                            lineNumber: 1401,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1667,
+                                    lineNumber: 1396,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1636,
+                            lineNumber: 1365,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3386,7 +3354,7 @@ function CentrosCompetencia() {
                                     children: "✅ Características Implementadas"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1678,
+                                    lineNumber: 1407,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -3396,60 +3364,60 @@ function CentrosCompetencia() {
                                             children: "✅ Competencias por asignatura (selector activo)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1680,
+                                            lineNumber: 1409,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "✅ Gráficos de progreso (rankings visuales)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1681,
+                                            lineNumber: 1410,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "✅ Modo vacaciones (detección automática)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1682,
+                                            lineNumber: 1411,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "✅ Challenges especiales (eventos temáticos)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1683,
+                                            lineNumber: 1412,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "✅ Sistema anti-trampa (cursos automáticos)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1684,
+                                            lineNumber: 1413,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                             children: "✅ Rankings históricos (persistencia completa)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1685,
+                                            lineNumber: 1414,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1679,
+                                    lineNumber: 1408,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1677,
+                            lineNumber: 1406,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1623,
+                    lineNumber: 1352,
                     columnNumber: 17
                 }, this),
                 modoVisualizacion === 'anual' && centrosAnuales.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3463,7 +3431,7 @@ function CentrosCompetencia() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1693,
+                            lineNumber: 1422,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3482,7 +3450,7 @@ function CentrosCompetencia() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1704,
+                                                    lineNumber: 1433,
                                                     columnNumber: 41
                                                 }, this),
                                                 esImagen(obtenerLogoCentro(centro.nombre)) ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
@@ -3491,14 +3459,14 @@ function CentrosCompetencia() {
                                                     className: "w-12 h-12 object-contain rounded-lg border border-gray-300"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1712,
+                                                    lineNumber: 1441,
                                                     columnNumber: 45
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "text-3xl",
                                                     children: obtenerLogoCentro(centro.nombre)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1718,
+                                                    lineNumber: 1447,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3508,7 +3476,7 @@ function CentrosCompetencia() {
                                                             children: centro.nombre
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1721,
+                                                            lineNumber: 1450,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3520,25 +3488,25 @@ function CentrosCompetencia() {
                                                                     children: centro.puntajeTotal.toLocaleString()
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                                    lineNumber: 1723,
+                                                                    lineNumber: 1452,
                                                                     columnNumber: 73
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                            lineNumber: 1722,
+                                                            lineNumber: 1451,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1720,
+                                                    lineNumber: 1449,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1703,
+                                            lineNumber: 1432,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3547,29 +3515,29 @@ function CentrosCompetencia() {
                                                 className: `text-3xl ${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅'}`
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1728,
+                                                lineNumber: 1457,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                            lineNumber: 1727,
+                                            lineNumber: 1456,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, centro.nombre, true, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1698,
+                                    lineNumber: 1427,
                                     columnNumber: 33
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1696,
+                            lineNumber: 1425,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1692,
+                    lineNumber: 1421,
                     columnNumber: 21
                 }, this),
                 historialGanadores.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3580,7 +3548,7 @@ function CentrosCompetencia() {
                             children: "📅 Historial de Ganadores Mensuales"
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1744,
+                            lineNumber: 1473,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3598,19 +3566,19 @@ function CentrosCompetencia() {
                                                     className: "w-16 h-16 object-contain rounded-lg border-2 border-yellow-400"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1753,
+                                                    lineNumber: 1482,
                                                     columnNumber: 49
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "text-4xl",
                                                     children: obtenerLogoCentro(ganador.centro || "")
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                    lineNumber: 1759,
+                                                    lineNumber: 1488,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1751,
+                                                lineNumber: 1480,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -3618,7 +3586,7 @@ function CentrosCompetencia() {
                                                 children: ganador.centro || "Centro Desconocido"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1762,
+                                                lineNumber: 1491,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3630,7 +3598,7 @@ function CentrosCompetencia() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1763,
+                                                lineNumber: 1492,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3641,7 +3609,7 @@ function CentrosCompetencia() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1766,
+                                                lineNumber: 1495,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3649,23 +3617,23 @@ function CentrosCompetencia() {
                                                 children: "🏆"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                                lineNumber: 1769,
+                                                lineNumber: 1498,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                        lineNumber: 1750,
+                                        lineNumber: 1479,
                                         columnNumber: 37
                                     }, this)
                                 }, `${ganador.mes}-${ganador.año}`, false, {
                                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                    lineNumber: 1749,
+                                    lineNumber: 1478,
                                     columnNumber: 33
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1747,
+                            lineNumber: 1476,
                             columnNumber: 25
                         }, this),
                         historialGanadores.length > 12 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3679,29 +3647,29 @@ function CentrosCompetencia() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/centros-competencia/page.tsx",
-                                lineNumber: 1776,
+                                lineNumber: 1505,
                                 columnNumber: 33
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/centros-competencia/page.tsx",
-                            lineNumber: 1775,
+                            lineNumber: 1504,
                             columnNumber: 29
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/centros-competencia/page.tsx",
-                    lineNumber: 1743,
+                    lineNumber: 1472,
                     columnNumber: 21
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/centros-competencia/page.tsx",
-            lineNumber: 1021,
+            lineNumber: 753,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/app/centros-competencia/page.tsx",
-        lineNumber: 1020,
+        lineNumber: 752,
         columnNumber: 9
     }, this);
 }

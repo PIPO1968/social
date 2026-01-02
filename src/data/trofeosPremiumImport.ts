@@ -3,6 +3,6 @@ import trofeosPremium from './trofeos-premium.json';
 
 export const TROFEOS_PREMIUM = trofeosPremium.map(t => ({
     src: t.imagen,
-    texto: `${t.titulo}\n${t.descripcion}`,
+    texto: t.titulo,
     tipo: 'manual'
 }));

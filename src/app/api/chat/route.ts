@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
                 to = user.nick;
                 from = direction.replace('From ', '');
             }
-            return { from, to, text, fecha: c.createdAt.toLocaleString('es-ES') };
+            // Usar ISO string para evitar problemas de parseo en frontend
+            return { from, to, text, fecha: c.createdAt.toISOString() };
         });
 
         return NextResponse.json(messages);

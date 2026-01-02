@@ -23,9 +23,26 @@ function AdminPremium() {
         'PIPO68'
     ];
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        // Verificar si hay usuario logueado
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
+        // Verificar si hay usuario logueado via API
+        const checkUser = async ()=>{
+            try {
+                const response = await fetch('/api/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.user) {
+                        setUsuarioLogueado(data.user);
+                    } else {
+                        setAccesoDenegado(true);
+                    }
+                } else {
+                    setAccesoDenegado(true);
+                }
+            } catch (error) {
+                console.error('Error checking user:', error);
+                setAccesoDenegado(true);
+            }
+        };
+        checkUser();
     }, []);
     // Si no tiene acceso, mostrar página de error
     if (accesoDenegado) {
@@ -39,7 +56,7 @@ function AdminPremium() {
                         children: "🚫"
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 71,
+                        lineNumber: 65,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -47,7 +64,7 @@ function AdminPremium() {
                         children: "Acceso Denegado"
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 72,
+                        lineNumber: 66,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -55,7 +72,7 @@ function AdminPremium() {
                         children: "Acceso restringido a esta página de administración."
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 75,
+                        lineNumber: 69,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -64,7 +81,7 @@ function AdminPremium() {
                         children: "Volver al Inicio"
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 78,
+                        lineNumber: 72,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -76,12 +93,12 @@ function AdminPremium() {
                                     children: "Acceso autorizado para usuarios registrados:"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 87,
+                                    lineNumber: 81,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 87,
+                                    lineNumber: 81,
                                     columnNumber: 90
                                 }, this),
                                 "• Administrador: ",
@@ -89,18 +106,18 @@ function AdminPremium() {
                                     children: "PIPO68"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 88,
+                                    lineNumber: 82,
                                     columnNumber: 46
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 88,
+                                    lineNumber: 82,
                                     columnNumber: 69
                                 }, this),
                                 '• Docentes: Usuarios con tipo "docente"',
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 89,
+                                    lineNumber: 83,
                                     columnNumber: 68
                                 }, this),
                                 "URL: ",
@@ -109,36 +126,37 @@ function AdminPremium() {
                                     children: "tudominio.com/admin-premium"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 90,
+                                    lineNumber: 84,
                                     columnNumber: 34
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                            lineNumber: 86,
+                            lineNumber: 80,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 85,
+                        lineNumber: 79,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                lineNumber: 70,
+                lineNumber: 64,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/admin-premium/page.tsx",
-            lineNumber: 69,
+            lineNumber: 63,
             columnNumber: 13
         }, this);
     }
     // Cargar solicitudes pendientes
-    const cargarSolicitudes = ()=>{
+    const cargarSolicitudes = async ()=>{
         try {
-            const solicitudes = JSON.parse(localStorage.getItem('solicitudes_premium') || '[]');
+            const response = await fetch('/api/premium/solicitudes');
+            const solicitudes = await response.json();
             setSolicitudesPendientes(solicitudes.filter((s)=>s.estado === 'pendiente'));
             setMostrarSolicitudes(true);
         } catch (error) {
@@ -147,204 +165,191 @@ function AdminPremium() {
         }
     };
     // Aprobar solicitud de pago (activar Premium)
-    const aprobarSolicitud = (solicitud)=>{
+    const aprobarSolicitud = async (solicitud)=>{
         try {
-            // Activar Premium para el usuario
-            const fechaExpiracion = new Date();
-            fechaExpiracion.setFullYear(fechaExpiracion.getFullYear() + 1);
-            const premiumData = {
-                activo: true,
-                fechaInicio: new Date().toISOString(),
-                expiracion: fechaExpiracion.toISOString(),
-                tipo: solicitud.tipo,
-                precio: solicitud.precio,
-                metodoPago: solicitud.metodoPago,
-                activadoPorAdmin: true,
-                solicitudId: solicitud.id,
-                emailPago: solicitud.email
-            };
-            localStorage.setItem(`premium_${solicitud.nick}`, JSON.stringify(premiumData));
-            // Marcar solicitud como aprobada
-            const todasSolicitudes = JSON.parse(localStorage.getItem('solicitudes_premium') || '[]');
-            const solicitudIndex = todasSolicitudes.findIndex((s)=>s.id === solicitud.id);
-            if (solicitudIndex !== -1) {
-                todasSolicitudes[solicitudIndex].estado = 'aprobado';
-                todasSolicitudes[solicitudIndex].fechaAprobacion = new Date().toISOString();
-                localStorage.setItem('solicitudes_premium', JSON.stringify(todasSolicitudes));
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'approve',
+                    solicitudId: solicitud.id
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMensaje(`🎉 ${data.message}`);
+                cargarSolicitudes(); // Recargar lista
+            } else {
+                setMensaje(`❌ ${data.error}`);
             }
-            setMensaje(`🎉 Premium activado para ${solicitud.nick} tras verificar pago de €${solicitud.precio}`);
-            cargarSolicitudes(); // Recargar lista
-            // Disparar eventos para actualizar componentes
-            window.dispatchEvent(new Event('storage'));
-            window.dispatchEvent(new CustomEvent('premiumUpdate', {
-                detail: {
-                    nick: solicitud.nick,
-                    action: 'add'
-                }
-            }));
         } catch (error) {
             console.error('Error al aprobar solicitud:', error);
             setMensaje("❌ Error al aprobar la solicitud");
         }
     };
     // Rechazar solicitud
-    const rechazarSolicitud = (solicitud, motivo = 'Pago no verificado')=>{
+    const rechazarSolicitud = async (solicitud, motivo = 'Pago no verificado')=>{
         try {
-            const todasSolicitudes = JSON.parse(localStorage.getItem('solicitudes_premium') || '[]');
-            const solicitudIndex = todasSolicitudes.findIndex((s)=>s.id === solicitud.id);
-            if (solicitudIndex !== -1) {
-                todasSolicitudes[solicitudIndex].estado = 'rechazado';
-                todasSolicitudes[solicitudIndex].fechaRechazo = new Date().toISOString();
-                todasSolicitudes[solicitudIndex].motivo = motivo;
-                localStorage.setItem('solicitudes_premium', JSON.stringify(todasSolicitudes));
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'reject',
+                    solicitudId: solicitud.id,
+                    motivo
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMensaje(`❌ ${data.message}`);
+                cargarSolicitudes(); // Recargar lista
+            } else {
+                setMensaje(`❌ ${data.error}`);
             }
-            setMensaje(`❌ Solicitud rechazada para ${solicitud.nick}: ${motivo}`);
-            cargarSolicitudes(); // Recargar lista
         } catch (error) {
             console.error('Error al rechazar solicitud:', error);
             setMensaje("❌ Error al rechazar la solicitud");
         }
     };
     // Hacer Premium
-    const hacerPremium = ()=>{
+    const hacerPremium = async ()=>{
         if (!nick.trim()) {
             setMensaje("❌ Ingresa un nick válido");
             return;
         }
         try {
-            const fechaExpiracion = new Date();
-            fechaExpiracion.setFullYear(fechaExpiracion.getFullYear() + 1);
-            const premiumData = {
-                activo: true,
-                fechaInicio: new Date().toISOString(),
-                expiracion: fechaExpiracion.toISOString(),
-                tipo: "anual",
-                precio: 12,
-                activadoPorAdmin: true,
-                beneficios: {
-                    perfil: "Avatar personalizado, marco dorado, efectos visuales",
-                    competencia: "Liga Premium exclusiva, eventos temáticos",
-                    aprendizaje: "Minijuegos Premium, pistas ilimitadas, historias Premium"
-                }
-            };
-            localStorage.setItem(`premium_${usuarioSeleccionado}`, JSON.stringify(premiumData));
-            setMensaje(`🎉 ¡Premium activado para ${usuarioSeleccionado} hasta ${fechaExpiracion.toLocaleDateString()}!`);
-            // Disparar eventos para actualizar componentes
-            window.dispatchEvent(new Event('storage'));
-            window.dispatchEvent(new CustomEvent('premiumUpdate', {
-                detail: {
-                    nick: usuarioSeleccionado,
-                    action: 'add'
-                }
-            }));
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'activate',
+                    nick
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMensaje(`🎉 ${data.message}`);
+            } else {
+                setMensaje(`❌ ${data.error}`);
+            }
         } catch (error) {
             console.error('Error al activar premium:', error);
             setMensaje("❌ Error al activar Premium");
         }
     };
     // Anular Premium
-    const anularPremium = ()=>{
+    const anularPremium = async ()=>{
         if (!nick.trim()) {
             setMensaje("❌ Ingresa un nick válido");
             return;
         }
         try {
-            localStorage.removeItem(`premium_${nick}`);
-            setMensaje(`🗑️ Premium anulado para ${nick}`);
-            // Disparar eventos para actualizar componentes
-            window.dispatchEvent(new Event('storage'));
-            window.dispatchEvent(new CustomEvent('premiumUpdate', {
-                detail: {
-                    nick,
-                    action: 'remove'
-                }
-            }));
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'deactivate',
+                    nick
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMensaje(`🗑️ ${data.message}`);
+            } else {
+                setMensaje(`❌ ${data.error}`);
+            }
         } catch (error) {
             console.error('Error al anular premium:', error);
             setMensaje("❌ Error al anular Premium");
         }
     };
-    const activarPremium = ()=>{
+    const activarPremium = async ()=>{
         if (!nick.trim()) {
             setMensaje("❌ Ingresa un nick válido");
             return;
         }
         try {
-            // Verificar si ya tiene premium activo
-            const premiumExistente = localStorage.getItem(`premium_${nick}`);
-            let fechaExpiracion = new Date();
-            let tiempoRestante = 0;
-            if (premiumExistente) {
-                const premiumData = JSON.parse(premiumExistente);
-                const fechaExpiracionExistente = new Date(premiumData.expiracion);
-                const ahora = new Date();
-                if (fechaExpiracionExistente > ahora) {
-                    // Calcular días restantes de premium existente
-                    tiempoRestante = Math.ceil((fechaExpiracionExistente.getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24));
-                }
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'activate',
+                    nick
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMensaje(`🎉 ¡Premium activado exitosamente para ${nick}!`);
+            } else {
+                setMensaje(`❌ ${data.error}`);
             }
-            // Establecer nueva fecha de expiración: 1 año + tiempo restante
-            fechaExpiracion.setFullYear(fechaExpiracion.getFullYear() + 1);
-            fechaExpiracion.setDate(fechaExpiracion.getDate() + tiempoRestante);
-            const premiumData = {
-                activo: true,
-                fechaInicio: new Date().toISOString(),
-                expiracion: fechaExpiracion.toISOString(),
-                tipo: "anual",
-                precio: 12,
-                activadoPorAdmin: true,
-                tiempoRestanteExtendido: tiempoRestante > 0,
-                beneficios: {
-                    perfil: "Avatar personalizado, marco dorado, efectos visuales",
-                    competencia: "Liga Premium exclusiva, eventos temáticos",
-                    aprendizaje: "Minijuegos Premium, pistas ilimitadas, historias Premium"
-                }
-            };
-            localStorage.setItem(`premium_${nick}`, JSON.stringify(premiumData));
-            const mensajeExtendido = tiempoRestante > 0 ? `\n\n⏰ Se ha añadido 1 año al tiempo restante de tu premium anterior (${tiempoRestante} días).` : '';
-            setMensaje(`🎉 ¡Premium activado exitosamente para ${nick}!\n\nVálido hasta: ${fechaExpiracion.toLocaleDateString()}\nBeneficios: Liga Premium Exclusiva, Estadísticas Avanzadas, Avatares Especiales y más.${mensajeExtendido}`);
-            // Disparar eventos para actualizar componentes
-            window.dispatchEvent(new Event('storage'));
-            window.dispatchEvent(new CustomEvent('premiumUpdate', {
-                detail: {
-                    nick,
-                    action: 'add'
-                }
-            }));
         } catch (error) {
             console.error('Error al activar Premium:', error);
             setMensaje("❌ Error al activar Premium. Inténtalo de nuevo.");
         }
     };
-    const verificarPremium = ()=>{
+    const verificarPremium = async ()=>{
         if (!nick.trim()) {
             setMensaje("❌ Ingresa un nick válido");
             return;
         }
         try {
-            const premiumInfo = localStorage.getItem(`premium_${nick}`);
-            if (premiumInfo) {
-                const premium = JSON.parse(premiumInfo);
-                if (new Date(premium.expiracion) > new Date()) {
-                    setMensaje(`✅ ${nick} tiene Premium ACTIVO hasta: ${new Date(premium.expiracion).toLocaleDateString()}`);
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'check',
+                    nick
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                if (data.premium) {
+                    setMensaje(`✅ ${nick} tiene Premium ACTIVO`);
                 } else {
-                    setMensaje(`❌ ${nick} tenía Premium pero ha EXPIRADO el: ${new Date(premium.expiracion).toLocaleDateString()}`);
+                    setMensaje(`❌ ${nick} NO tiene Premium activado`);
                 }
             } else {
-                setMensaje(`❌ ${nick} NO tiene Premium activado`);
+                setMensaje(`❌ ${data.error}`);
             }
         } catch (error) {
             setMensaje("❌ Error al verificar Premium");
         }
     };
-    const desactivarPremium = ()=>{
+    const desactivarPremium = async ()=>{
         if (!nick.trim()) {
             setMensaje("❌ Ingresa un nick válido");
             return;
         }
         try {
-            localStorage.removeItem(`premium_${nick}`);
-            setMensaje(`🗑️ Premium desactivado para ${nick}`);
+            const response = await fetch('/api/premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'deactivate',
+                    nick
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMensaje(`🗑️ ${data.message}`);
+            } else {
+                setMensaje(`❌ ${data.error}`);
+            }
         } catch (error) {
             setMensaje("❌ Error al desactivar Premium");
         }
@@ -361,7 +366,7 @@ function AdminPremium() {
                         children: "🔧 Admin Premium"
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 334,
+                        lineNumber: 282,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -372,7 +377,7 @@ function AdminPremium() {
                                 children: "Nick del usuario:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 339,
+                                lineNumber: 287,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -383,13 +388,13 @@ function AdminPremium() {
                                 placeholder: "Ej: PIPO68"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 342,
+                                lineNumber: 290,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 338,
+                        lineNumber: 286,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -401,7 +406,7 @@ function AdminPremium() {
                                 children: "✅ Activar Premium"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 352,
+                                lineNumber: 300,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -410,7 +415,7 @@ function AdminPremium() {
                                 children: "🗑️ Anular Premium"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 359,
+                                lineNumber: 307,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -419,7 +424,7 @@ function AdminPremium() {
                                 children: "🔍 Verificar Estado"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 366,
+                                lineNumber: 314,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -428,13 +433,13 @@ function AdminPremium() {
                                 children: "📋 Ver Solicitudes"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 373,
+                                lineNumber: 321,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 351,
+                        lineNumber: 299,
                         columnNumber: 21
                     }, this),
                     mensaje && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -444,12 +449,12 @@ function AdminPremium() {
                             children: mensaje
                         }, void 0, false, {
                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                            lineNumber: 388,
+                            lineNumber: 336,
                             columnNumber: 29
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 382,
+                        lineNumber: 330,
                         columnNumber: 25
                     }, this),
                     mostrarSolicitudes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -464,13 +469,13 @@ function AdminPremium() {
                                         children: solicitudesPendientes.length
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 397,
+                                        lineNumber: 345,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 395,
+                                lineNumber: 343,
                                 columnNumber: 29
                             }, this),
                             solicitudesPendientes.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -478,7 +483,7 @@ function AdminPremium() {
                                 children: "✅ No hay solicitudes pendientes"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 403,
+                                lineNumber: 351,
                                 columnNumber: 33
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-4",
@@ -496,7 +501,7 @@ function AdminPremium() {
                                                                 children: solicitud.nick
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                                lineNumber: 412,
+                                                                lineNumber: 360,
                                                                 columnNumber: 53
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -504,7 +509,7 @@ function AdminPremium() {
                                                                 children: solicitud.email
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                                lineNumber: 413,
+                                                                lineNumber: 361,
                                                                 columnNumber: 53
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -515,38 +520,34 @@ function AdminPremium() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                                lineNumber: 414,
+                                                                lineNumber: 362,
                                                                 columnNumber: 53
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                        lineNumber: 411,
+                                                        lineNumber: 359,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "text-right",
                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             className: "bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full",
-                                                            children: [
-                                                                solicitud.metodoPago.toUpperCase(),
-                                                                " €",
-                                                                solicitud.precio
-                                                            ]
-                                                        }, void 0, true, {
+                                                            children: "Pendiente"
+                                                        }, void 0, false, {
                                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                            lineNumber: 419,
+                                                            lineNumber: 367,
                                                             columnNumber: 53
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                        lineNumber: 418,
+                                                        lineNumber: 366,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 410,
+                                                lineNumber: 358,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -558,7 +559,7 @@ function AdminPremium() {
                                                         children: "✅ Aprobar y Activar Premium"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                        lineNumber: 426,
+                                                        lineNumber: 374,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -567,30 +568,30 @@ function AdminPremium() {
                                                         children: "❌ Rechazar"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                        lineNumber: 432,
+                                                        lineNumber: 380,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 425,
+                                                lineNumber: 373,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, solicitud.id, true, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 409,
+                                        lineNumber: 357,
                                         columnNumber: 41
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 407,
+                                lineNumber: 355,
                                 columnNumber: 33
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 394,
+                        lineNumber: 342,
                         columnNumber: 25
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -601,7 +602,7 @@ function AdminPremium() {
                                 children: "📋 Instrucciones:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 447,
+                                lineNumber: 395,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -613,14 +614,14 @@ function AdminPremium() {
                                                 children: "Activar Premium:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 449,
+                                                lineNumber: 397,
                                                 columnNumber: 33
                                             }, this),
                                             " Activa Premium por 1 año para cualquier usuario"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 449,
+                                        lineNumber: 397,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -629,14 +630,14 @@ function AdminPremium() {
                                                 children: "Anular Premium:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 450,
+                                                lineNumber: 398,
                                                 columnNumber: 33
                                             }, this),
                                             " Remueve el estado Premium de un usuario"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 450,
+                                        lineNumber: 398,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -645,14 +646,14 @@ function AdminPremium() {
                                                 children: "Verificar Estado:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 451,
+                                                lineNumber: 399,
                                                 columnNumber: 33
                                             }, this),
                                             " Comprueba si un usuario ya tiene Premium activo"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 451,
+                                        lineNumber: 399,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -661,14 +662,14 @@ function AdminPremium() {
                                                 children: "Ver Solicitudes:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 452,
+                                                lineNumber: 400,
                                                 columnNumber: 33
                                             }, this),
                                             " Muestra pagos pendientes de verificación"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 452,
+                                        lineNumber: 400,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -677,20 +678,20 @@ function AdminPremium() {
                                                 children: "Aprobar/Rechazar:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                                lineNumber: 453,
+                                                lineNumber: 401,
                                                 columnNumber: 33
                                             }, this),
                                             " Gestiona las solicitudes tras verificar Bizum"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                                        lineNumber: 453,
+                                        lineNumber: 401,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 448,
+                                lineNumber: 396,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -702,19 +703,19 @@ function AdminPremium() {
                                             children: "🔒 Proceso de seguridad:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 458,
+                                            lineNumber: 406,
                                             columnNumber: 33
                                         }, this),
                                         " Ahora los usuarios NO pueden hacerse Premium automáticamente. Deben solicitar y esperar verificación manual del pago."
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 457,
+                                    lineNumber: 405,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 456,
+                                lineNumber: 404,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -726,12 +727,12 @@ function AdminPremium() {
                                             children: "🌐 Acceso en servidor:"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 465,
+                                            lineNumber: 413,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 465,
+                                            lineNumber: 413,
                                             columnNumber: 72
                                         }, this),
                                         "• URL: ",
@@ -740,18 +741,18 @@ function AdminPremium() {
                                             children: "tudominio.com/admin-premium"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 466,
+                                            lineNumber: 414,
                                             columnNumber: 40
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 466,
+                                            lineNumber: 414,
                                             columnNumber: 117
                                         }, this),
                                         "• Protegido por nick de administrador",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 467,
+                                            lineNumber: 415,
                                             columnNumber: 70
                                         }, this),
                                         "• Solo usuario autorizado: ",
@@ -759,24 +760,24 @@ function AdminPremium() {
                                             children: "PIPO68"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                                            lineNumber: 468,
+                                            lineNumber: 416,
                                             columnNumber: 60
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/admin-premium/page.tsx",
-                                    lineNumber: 464,
+                                    lineNumber: 412,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                                lineNumber: 463,
+                                lineNumber: 411,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 446,
+                        lineNumber: 394,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -787,28 +788,28 @@ function AdminPremium() {
                             children: "📊 Ver Estadísticas"
                         }, void 0, false, {
                             fileName: "[project]/src/app/admin-premium/page.tsx",
-                            lineNumber: 474,
+                            lineNumber: 422,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin-premium/page.tsx",
-                        lineNumber: 473,
+                        lineNumber: 421,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/admin-premium/page.tsx",
-                lineNumber: 333,
+                lineNumber: 281,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/admin-premium/page.tsx",
-            lineNumber: 332,
+            lineNumber: 280,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/app/admin-premium/page.tsx",
-        lineNumber: 331,
+        lineNumber: 279,
         columnNumber: 9
     }, this);
 }

@@ -290,6 +290,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/centros/ranking/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/centros/ranking">> = Specific
+  const handler = {} as typeof import("../../src/app/api/centros/ranking/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/api/championship/reset/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/championship/reset">> = Specific

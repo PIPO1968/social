@@ -1,10 +1,12 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { renderNick } from "@/utils/renderNick";
 import { TROFEOS_PREMIUM } from "@/data/trofeosPremiumImport";
 import { useTranslation } from "@/utils/i18n";
 import { useRouter } from "next/navigation";
 import { BUTTON_STYLES } from "../../utils/styles";
+import { useUser } from "@/contexts/UserContext";
+import { UserLink } from "@/components/UserLink";
 
 interface Usuario {
     nick: string;
@@ -27,6 +29,7 @@ interface Usuario {
 
 const PerfilUsuario: React.FC = () => {
     const router = useRouter();
+    const { user, setUser } = useUser();
     // Función para asignar trofeos al usuario si su centro ganó premios este mes
     const asignarTrofeosUsuario = async (usuario: any) => {
         if (typeof window === "undefined") return;
@@ -72,7 +75,6 @@ const PerfilUsuario: React.FC = () => {
         }
     };
 
-    const [user, setUser] = useState<any>(null);
     const [bullyingActivo, setBullyingActivo] = useState(false);
     const [usuarioBullying, setUsuarioBullying] = useState("");
     const [palabraProhibida, setPalabraProhibida] = useState("");
@@ -88,6 +90,7 @@ const PerfilUsuario: React.FC = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatMessages, setChatMessages] = useState<{ from: string, to: string, text: string, fecha?: string }[]>([]);
     const [mensajeRecibido, setMensajeRecibido] = useState(false);
+    const [tieneMensajesSinLeer, setTieneMensajesSinLeer] = useState(false);
     const [noticiaTitulo, setNoticiaTitulo] = useState("");
     const [noticiaTexto, setNoticiaTexto] = useState("");
     const [noticiaImagen, setNoticiaImagen] = useState<string>("");
@@ -100,55 +103,55 @@ const PerfilUsuario: React.FC = () => {
     // Estados para datos de base de datos
     const [premiumData, setPremiumData] = useState<any>(null);
     const [userTrofeos, setUserTrofeos] = useState<{ trofeosDesbloqueados: number[]; trofeosBloqueados: number[] }>({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
+    const [displayedUserProfile, setDisplayedUserProfile] = useState<any>(null);
     const [concursos, setConcursos] = useState<any[]>([]);
     // Estados para preguntas
     const [cursoSeleccionado, setCursoSeleccionado] = useState<string>("1primaria");
     const [asignaturaSeleccionada, setAsignaturaSeleccionada] = useState<string>("matematicas");
     const [pregunta, setPregunta] = useState<string>("");
     const [respuesta, setRespuesta] = useState<string>("");
+    // Estados para solicitudes de amistad
+    const [pendingRequests, setPendingRequests] = useState<any[]>([]);
 
     const { t } = useTranslation();
 
 
-    const displayedUser = selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados };
+    const displayedUser = useMemo(() => selectedUser ? (selectedUserData || { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }) : { ...user, trofeosDesbloqueados: userTrofeos.trofeosDesbloqueados, trofeosBloqueados: userTrofeos.trofeosBloqueados }, [selectedUser, selectedUserData, user, userTrofeos]);
 
-    // Inicialización y sincronización de usuario y rankings SOLO una vez
+    // Inicialización y sincronización de rankings
     useEffect(() => {
-        // Obtener usuario actual
-        fetch('/api/auth/me')
-            .then(response => {
-                if (!response.ok) {
-                    router.push('/');
-                    return null;
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.user) {
-                    setUser(data.user);
-                } else if (data && !data.user) {
-                    router.push('/');
-                }
-            })
-            .catch(error => {
-                console.warn('Error comprobando sesión:', error);
-            });
-
         // Obtener concursos
         fetch('/api/concursos')
             .then(response => response.json())
             .then(concursos => {
                 setConcursos(concursos);
+                // Calcular el próximo ID basado en los concursos existentes
+                const maxNumero = concursos.length > 0 ? Math.max(...concursos.map(c => c.numero)) : 0;
+                setConcursoId(maxNumero + 1);
             })
             .catch(error => {
                 console.warn('No se pudo cargar la lista de concursos:', error);
+            });
+
+        // Obtener todos los usuarios registrados para el selector del chat
+        fetch('/api/users')
+            .then(response => response.json())
+            .then(users => {
+                if (Array.isArray(users)) {
+                    // Ordenar alfabéticamente por nick
+                    users.sort((a, b) => a.nick.localeCompare(b.nick, 'es', { sensitivity: 'base' }));
+                    setUsuarios(users);
+                }
+            })
+            .catch(error => {
+                console.warn('No se pudo cargar la lista de usuarios:', error);
             });
     }, []);
 
     // Manejo seguro de datos premium y trofeos
     useEffect(() => {
-        if (displayedUser && displayedUser.nick) {
-            fetch('/api/premium/data?nick=' + displayedUser.nick)
+        if (user && user.nick) {
+            fetch('/api/premium/data?nick=' + user.nick)
                 .then(response => response.json())
                 .then(data => {
                     if (data && !data.error) {
@@ -163,22 +166,55 @@ const PerfilUsuario: React.FC = () => {
                     console.warn('No se pudo cargar datos premium:', error);
                 });
 
-            fetch('/api/trofeos/user-trofeos?nick=' + displayedUser.nick)
+            // Cargar datos del perfil del usuario para sincronizar trofeos
+            fetch('/api/user/profile?nick=' + user.nick)
                 .then(response => response.json())
-                .then(data => {
-                    if (data && !data.error) {
-                        setUserTrofeos(data);
-                    } else {
-                        setUserTrofeos({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
-                        console.warn('No hay trofeos para este usuario.');
+                .then(profileData => {
+                    if (profileData && profileData.user) {
+                        // Guardar los datos completos del perfil
+                        setDisplayedUserProfile(profileData.user);
+
+                        // Sincronizar trofeos automáticos con los datos completos del perfil
+                        fetch('/api/trofeos/user-trofeos?nick=' + user.nick)
+                            .then(response => response.json())
+                            .then(trofeosData => {
+                                if (trofeosData && !trofeosData.error) {
+                                    setUserTrofeos(trofeosData);
+                                    // Sincronizar trofeos automáticos
+                                    syncAutoTrofeos(profileData.user, trofeosData);
+                                } else {
+                                    setUserTrofeos({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
+                                    // Sincronizar trofeos automáticos
+                                    syncAutoTrofeos(profileData.user, { trofeosDesbloqueados: [], trofeosBloqueados: [] });
+                                }
+                            })
+                            .catch(error => {
+                                setUserTrofeos({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
+                                console.warn('No se pudo cargar trofeos:', error);
+                                // Sincronizar trofeos automáticos
+                                syncAutoTrofeos(profileData.user, { trofeosDesbloqueados: [], trofeosBloqueados: [] });
+                            });
                     }
                 })
                 .catch(error => {
-                    setUserTrofeos({ trofeosDesbloqueados: [], trofeosBloqueados: [] });
-                    console.warn('No se pudo cargar trofeos:', error);
+                    console.warn('No se pudo cargar datos del perfil:', error);
+                });
+
+            fetch('/api/friends?action=requests&nick=' + user.nick)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.requests) {
+                        setPendingRequests(data.requests);
+                    } else {
+                        setPendingRequests([]);
+                    }
+                })
+                .catch(error => {
+                    setPendingRequests([]);
+                    console.warn('No se pudo cargar solicitudes:', error);
                 });
         }
-    }, [displayedUser]);
+    }, [user]);
 
     // Cargar mensajes del chat solo cuando cambia el usuario
     useEffect(() => {
@@ -187,6 +223,18 @@ const PerfilUsuario: React.FC = () => {
                 .then(response => response.json())
                 .then(messages => {
                     setChatMessages(messages);
+                    // Comprobar si hay mensajes no leídos
+                    const lastRead = localStorage.getItem('lastReadMsg') || '';
+                    // Buscar el último mensaje recibido para este usuario
+                    const lastReceived = messages.filter(msg => msg.to === user.nick)
+                        .map(msg => {
+                            // Parsear fecha robustamente
+                            const d = msg.fecha ? Date.parse(msg.fecha) : NaN;
+                            return isNaN(d) ? 0 : d;
+                        })
+                        .reduce((max, curr) => Math.max(max, curr), 0);
+                    const unread = lastReceived > Number(lastRead);
+                    setTieneMensajesSinLeer(unread);
                 })
                 .catch(error => {
                     console.warn('No se pudo cargar los mensajes del chat:', error);
@@ -198,12 +246,98 @@ const PerfilUsuario: React.FC = () => {
         e.preventDefault();
         setPalabraProhibida("");
     };
+    const handleSendMessage = () => {
+        if (!chatInput.trim() || !user || !selectedUser) return;
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from: user.nick, to: selectedUser, text: chatInput.trim() })
+        })
+            .then(() => {
+                setChatInput('');
+                // Refrescar mensajes
+                fetch('/api/chat?nick=' + user.nick)
+                    .then(response => response.json())
+                    .then(messages => {
+                        setChatMessages(messages);
+                        // Guardar timestamp del último mensaje recibido como leído
+                        const lastReceived = messages.filter(msg => msg.to === user.nick)
+                            .map(msg => {
+                                const d = msg.fecha ? Date.parse(msg.fecha) : NaN;
+                                return isNaN(d) ? 0 : d;
+                            })
+                            .reduce((max, curr) => Math.max(max, curr), 0);
+                        if (lastReceived > 0) {
+                            localStorage.setItem('lastReadMsg', lastReceived.toString());
+                        } else {
+                            localStorage.setItem('lastReadMsg', Date.now().toString());
+                        }
+                        setTieneMensajesSinLeer(false);
+                    })
+                    .catch(error => console.warn('No se pudo refrescar los mensajes:', error));
+            })
+            .catch(error => {
+                console.error('Error enviando mensaje:', error);
+            });
+    };
+
+    const handleAcceptRequest = async (requestId: number) => {
+        if (!user) return;
+
+        try {
+            const response = await fetch('/api/friends', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'accept', userNick: user.nick, requestId })
+            });
+            if (response.ok) {
+                // Remover de pendingRequests
+                setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+                // Recargar para actualizar contadores
+                window.location.reload();
+            } else {
+                alert('Error al aceptar solicitud');
+            }
+        } catch (error) {
+            alert('Error al aceptar solicitud');
+        }
+    };
+
+    const handleRejectRequest = async (requestId: number) => {
+        if (!user) return;
+
+        try {
+            const response = await fetch('/api/friends', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reject', userNick: user.nick, requestId })
+            });
+            if (response.ok) {
+                // Remover de pendingRequests
+                setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+                // Recargar para actualizar contadores
+                window.location.reload();
+            } else {
+                alert('Error al rechazar solicitud');
+            }
+        } catch (error) {
+            alert('Error al rechazar solicitud');
+        }
+    };
     const handleApagarBullying = () => {
         setBullyingActivo(false);
         setUsuarioBullying("");
     };
     const handleConcursoSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!concursoTitulo.trim() || !concursoTexto.trim() || !fechaInicio || !fechaFin) {
+            alert('Por favor, completa todos los campos: título, descripción, fecha de inicio y fecha de finalización.');
+            return;
+        }
+        if (!user || !user.nick) {
+            alert('Debes estar logueado para crear un concurso.');
+            return;
+        }
         fetch('/api/concursos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -213,13 +347,18 @@ const PerfilUsuario: React.FC = () => {
                 texto: concursoTexto,
                 inicio: fechaInicio,
                 fin: fechaFin,
-                autor: user ? user.nick : "",
+                autor: user.nick,
                 ganador: usuarioGanador,
                 fechaFinal: fechaFin
             })
         })
-            .then(response => response.json())
-            .then(() => {
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Error desconocido'); });
+                }
+                return response.json();
+            })
+            .then(data => {
                 setConcursoId(concursoId + 1);
                 setConcursoTitulo("");
                 setConcursoTexto("");
@@ -228,9 +367,11 @@ const PerfilUsuario: React.FC = () => {
                 setUsuarioGanador("");
                 // Refrescar concursos
                 fetch('/api/concursos').then(r => r.json()).then(setConcursos);
+                alert('Concurso creado exitosamente.');
             })
             .catch(error => {
                 console.error('Error creando concurso:', error);
+                alert('Error creando concurso: ' + error.message);
             });
     };
     // Función general para sumar o restar likes a cualquier usuario
@@ -375,30 +516,30 @@ const PerfilUsuario: React.FC = () => {
             });
     };    // Lista de trofeos normales (24)
     const TROFEOS = [
-        { src: "/trofeo1.jpg", texto: "Trofeo 1", tipo: "auto" },
-        { src: "/trofeo2.jpg", texto: "Trofeo 2", tipo: "auto" },
-        { src: "/trofeo3.jpg", texto: "Trofeo 3", tipo: "auto" },
-        { src: "/trofeo4.jpg", texto: "Trofeo 4", tipo: "auto" },
-        { src: "/trofeo5.jpg", texto: "Trofeo 5", tipo: "auto" },
-        { src: "/trofeo6.jpg", texto: "Trofeo 6", tipo: "auto" },
-        { src: "/trofeo7.jpg", texto: "Trofeo 7", tipo: "auto" },
-        { src: "/trofeo8.jpg", texto: "Trofeo 8", tipo: "auto" },
-        { src: "/trofeo9.jpg", texto: "Trofeo 9", tipo: "auto" },
-        { src: "/trofeo10.jpg", texto: "Trofeo 10", tipo: "auto" },
-        { src: "/trofeo11.jpg", texto: "Trofeo 11", tipo: "auto" },
-        { src: "/trofeo12.jpg", texto: "Trofeo 12", tipo: "auto" },
-        { src: "/trofeo13.png", texto: "Trofeo 13", tipo: "auto" },
+        { src: "/trofeo25.jpg", texto: "Trofeo 1", tipo: "auto" },
+        { src: "/trofeo7.jpg", texto: "Trofeo 2", tipo: "auto" },
+        { src: "/trofeo12.jpg", texto: "Trofeo 3", tipo: "auto" },
+        { src: "/trofeo5.jpg", texto: "Trofeo 4", tipo: "auto" },
+        { src: "/trofeo13.png", texto: "Trofeo 5", tipo: "auto" },
+        { src: "/trofeo17.jpg", texto: "Trofeo 6", tipo: "auto" },
+        { src: "/trofeo27.jpg", texto: "Trofeo 7", tipo: "auto" },
+        { src: "/trofeo10.jpg", texto: "Trofeo 8", tipo: "auto" },
+        { src: "/trofeo23.jpg", texto: "Trofeo 9", tipo: "auto" },
+        { src: "/trofeo15.jpg", texto: "Trofeo 10", tipo: "auto" },
+        { src: "/trofeo26.jpg", texto: "Trofeo 11", tipo: "auto" },
+        { src: "/trofeo1.jpg", texto: "Trofeo 12", tipo: "auto" },
+        { src: "/trofeo22.jpg", texto: "Trofeo 13", tipo: "auto" },
         { src: "/trofeo14.jpg", texto: "Trofeo 14", tipo: "auto" },
-        { src: "/trofeo15.jpg", texto: "Trofeo 15", tipo: "auto" },
-        { src: "/trofeo16.jpg", texto: "Trofeo 16", tipo: "auto" },
-        { src: "/trofeo17.jpg", texto: "Trofeo 17", tipo: "auto" },
+        { src: "/trofeo20.jpg", texto: "Trofeo 15", tipo: "auto" },
+        { src: "/trofeo11.jpg", texto: "Trofeo 16", tipo: "auto" },
+        { src: "/trofeo24.jpg", texto: "Trofeo 17", tipo: "auto" },
         { src: "/trofeo18.jpg", texto: "Trofeo 18", tipo: "auto" },
         { src: "/trofeo19.jpg", texto: "Trofeo 19", tipo: "auto" },
-        { src: "/trofeo20.jpg", texto: "Trofeo 20", tipo: "auto" },
-        { src: "/trofeo21.jpg", texto: "Trofeo 21", tipo: "auto" },
-        { src: "/trofeo22.jpg", texto: "Trofeo 22", tipo: "auto" },
-        { src: "/trofeo23.jpg", texto: "Trofeo 23", tipo: "auto" },
-        { src: "/trofeo24.jpg", texto: "Trofeo 24", tipo: "auto" },
+        { src: "/trofeo15.jpg", texto: "Trofeo 20", tipo: "auto" },
+        { src: "/trofeo9.jpg", texto: "Trofeo 21", tipo: "auto" },
+        { src: "/trofeo8.jpg", texto: "Trofeo 22", tipo: "auto" },
+        { src: "/trofeo21.jpg", texto: "Trofeo 23", tipo: "auto" },
+        { src: "/trofeo16.jpg", texto: "Trofeo 24", tipo: "auto" },
         { src: "/trofeo1.jpg", texto: "🏆 Campeón Mensual", tipo: "asignado" },
         { src: "/trofeo2.jpg", texto: "🥈 Subcampeón Mensual", tipo: "asignado" },
         { src: "/trofeo3.jpg", texto: "🥉 Tercer Lugar Mensual", tipo: "asignado" },
@@ -409,37 +550,40 @@ const PerfilUsuario: React.FC = () => {
     // TROFEOS_PREMIUM ahora se importa desde trofeosPremiumImport.ts
     // Trofeos automáticos con condición
     const TROFEOS_AUTO = [
-        { src: "/trofeo1.jpg", texto: "Trofeo 1", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 10 },
-        { src: "/trofeo2.jpg", texto: "Trofeo 2", tipo: "auto", condicion: (user: any) => (user.amigos?.length || 0) >= 1 },
-        { src: "/trofeo3.jpg", texto: "Trofeo 3", tipo: "auto", condicion: (user: any) => (user.comentariosRealizados || 0) >= 1 },
-        { src: "/trofeo4.jpg", texto: "Trofeo 4", tipo: "auto", condicion: (user: any) => (user.historias?.length || 0) >= 1 },
-        { src: "/trofeo5.jpg", texto: "Trofeo 5", tipo: "auto", condicion: (user: any) => (user.preguntasAcertadas || 0) >= 20 },
-        { src: "/trofeo6.jpg", texto: "Trofeo 6", tipo: "auto", condicion: (user: any) => (user.competicionesSuperadas || 0) >= 1 },
-        { src: "/trofeo7.jpg", texto: "Trofeo 7", tipo: "auto", condicion: (user: any) => !!user.estaEnRanking },
-        { src: "/trofeo8.jpg", texto: "Trofeo 8", tipo: "auto", condicion: (user: any) => (user.concursosGanados || 0) >= 1 },
-        { src: "/trofeo9.jpg", texto: "Trofeo 9", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 100 },
-        { src: "/trofeo10.jpg", texto: "Trofeo 10", tipo: "auto", condicion: (user: any) => (user.amigos?.length || 0) >= 10 },
-        { src: "/trofeo11.jpg", texto: "Trofeo 11", tipo: "auto", condicion: (user: any) => (user.historias?.length || 0) >= 3 },
-        { src: "/trofeo12.jpg", texto: "Trofeo 12", tipo: "auto", condicion: (user: any) => (user.comentariosRecibidos || 0) >= 3 },
-        { src: "/trofeo13.png", texto: "Trofeo 13", tipo: "auto", condicion: (user: any) => !!user.estaEnRankingCompeticiones },
-        { src: "/trofeo14.jpg", texto: "Trofeo 14", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 500 },
-        { src: "/trofeo15.jpg", texto: "Trofeo 15", tipo: "auto", condicion: (user: any) => (user.amigos?.length || 0) >= 30 },
-        { src: "/trofeo16.jpg", texto: "Trofeo 16", tipo: "auto", condicion: (user: any) => (user.comentariosRecibidos || 0) >= 10 },
-        { src: "/trofeo17.jpg", texto: "Trofeo 17", tipo: "auto", condicion: (user: any) => (user.historias?.length || 0) >= 15 },
-        { src: "/trofeo18.jpg", texto: "Trofeo 18", tipo: "auto", condicion: (user: any) => (user.concursosGanados || 0) >= 3 },
-        { src: "/trofeo19.jpg", texto: "Trofeo 19", tipo: "auto", condicion: (user: any) => (user.preguntasAcertadas || 0) >= 1000 },
+        { src: "/trofeo25.jpg", texto: "Trofeo 1", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 10 },
+        { src: "/trofeo7.jpg", texto: "Trofeo 2", tipo: "auto", condicion: (user: any) => Array.isArray(user.amigos) && user.amigos.length >= 1 },
+        { src: "/trofeo12.jpg", texto: "Trofeo 3", tipo: "auto", condicion: (user: any) => (user.comentariosRecibidos || 0) >= 1 },
+        { src: "/trofeo5.jpg", texto: "Trofeo 4", tipo: "auto", condicion: (user: any) => (user.historiasCreadas || 0) >= 1 },
+        { src: "/trofeo13.png", texto: "Trofeo 5", tipo: "auto", condicion: (user: any) => (user.respuestasAcertadas || 0) >= 20 },
+        { src: "/trofeo17.jpg", texto: "Trofeo 6", tipo: "auto", condicion: (user: any) => (user.competicionesSuperadas || 0) >= 1 },
         {
-            src: "/trofeo20.jpg", texto: "Trofeo 20", tipo: "auto", condicion: (user: any) => {
-                if (!user.fechaInscripcion) return false;
-                const fecha = new Date(user.fechaInscripcion);
-                const ahora = new Date();
-                const diff = ahora.getTime() - fecha.getTime();
-                return diff >= 365 * 24 * 60 * 60 * 1000; // 1 año en ms
+            src: "/trofeo27.jpg", texto: "Trofeo 7", tipo: "auto", condicion: (user: any) => {
+                // Aparecer en rankings
+                return (user.respuestasAcertadas || 0) >= 1 || (user.likes || 0) >= 1 || (user.historiasCreadas || 0) >= 1;
             }
         },
-        { src: "/trofeo21.jpg", texto: "Trofeo 21", tipo: "auto", condicion: (user: any) => (user.historias?.length || 0) >= 30 },
-        { src: "/trofeo22.jpg", texto: "Trofeo 22", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 1000 },
-        { src: "/trofeo23.jpg", texto: "Trofeo 23", tipo: "auto", condicion: (user: any) => (user.amigos?.length || 0) >= 50 }
+        { src: "/trofeo10.jpg", texto: "Trofeo 8", tipo: "auto", condicion: (user: any) => (user.concursosGanados || 0) >= 1 },
+        { src: "/trofeo23.jpg", texto: "Trofeo 9", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 100 },
+        { src: "/trofeo15.jpg", texto: "Trofeo 10", tipo: "auto", condicion: (user: any) => Array.isArray(user.amigos) && user.amigos.length >= 10 },
+        { src: "/trofeo26.jpg", texto: "Trofeo 11", tipo: "auto", condicion: (user: any) => (user.historiasCreadas || 0) >= 3 },
+        { src: "/trofeo1.jpg", texto: "Trofeo 12", tipo: "auto", condicion: (user: any) => (user.comentariosRecibidos || 0) >= 3 },
+        { src: "/trofeo22.jpg", texto: "Trofeo 13", tipo: "auto", condicion: (user: any) => (user.competicionesSuperadas || 0) >= 1 },
+        { src: "/trofeo14.jpg", texto: "Trofeo 14", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 500 },
+        { src: "/trofeo20.jpg", texto: "Trofeo 15", tipo: "auto", condicion: (user: any) => Array.isArray(user.amigos) && user.amigos.length >= 30 },
+        { src: "/trofeo11.jpg", texto: "Trofeo 16", tipo: "auto", condicion: (user: any) => (user.comentariosRecibidos || 0) >= 10 },
+        { src: "/trofeo24.jpg", texto: "Trofeo 17", tipo: "auto", condicion: (user: any) => (user.historiasCreadas || 0) >= 15 },
+        { src: "/trofeo18.jpg", texto: "Trofeo 18", tipo: "auto", condicion: (user: any) => (user.concursosGanados || 0) >= 3 },
+        { src: "/trofeo19.jpg", texto: "Trofeo 19", tipo: "auto", condicion: (user: any) => (user.respuestasAcertadas || 0) >= 1000 },
+        { src: "/trofeo15.jpg", texto: "Trofeo 20", tipo: "auto", condicion: (user: any) => (user.anosEnStoryUp || 0) >= 1 },
+        { src: "/trofeo9.jpg", texto: "Trofeo 21", tipo: "auto", condicion: (user: any) => (user.historiasCreadas || 0) >= 30 },
+        { src: "/trofeo8.jpg", texto: "Trofeo 22", tipo: "auto", condicion: (user: any) => (user.likes || 0) >= 1000 },
+        { src: "/trofeo21.jpg", texto: "Trofeo 23", tipo: "auto", condicion: (user: any) => Array.isArray(user.amigos) && user.amigos.length >= 50 },
+        {
+            src: "/trofeo16.jpg", texto: "Trofeo 24", tipo: "auto", condicion: (user: any) => {
+                // Máster (500 respuestas)
+                return (user.likes || 0) >= 500 && Array.isArray(user.amigos) && user.amigos.length >= 10 && (user.historiasCreadas || 0) >= 5 && (user.respuestasAcertadas || 0) >= 100;
+            }
+        }
     ];
     // Unificar todos los trofeos para el selector
     const TROFEOS_ALL = [...TROFEOS, ...TROFEOS_PREMIUM];
@@ -452,26 +596,41 @@ const PerfilUsuario: React.FC = () => {
             ...user,
             amigos: Array.isArray(user.amigos) ? user.amigos : []
         };
+
+        console.log('getAutoTrofeos: Evaluating user data:', userSync);
+
         let autoTrofeos = TROFEOS_AUTO
-            .map((t, idx) => (typeof t.condicion === 'function' && t.condicion(userSync)) ? idx : null)
-            .filter(idx => idx !== null);
+            .map((t, idx) => {
+                const conditionResult = typeof t.condicion === 'function' && t.condicion(userSync);
+                console.log(`getAutoTrofeos: Trofeo ${idx} condition result:`, conditionResult, 'for user data:', {
+                    likes: userSync.likes,
+                    amigos: userSync.amigos,
+                    comentariosRecibidos: userSync.comentariosRecibidos,
+                    historias: userSync.historias,
+                    respuestasAcertadas: userSync.respuestasAcertadas
+                });
+                return conditionResult ? idx + 1 : null;  // ids empiezan en 1
+            })
+            .filter(id => id !== null);
+
+        console.log('getAutoTrofeos: Final auto trofeos:', autoTrofeos);
 
         // Desbloqueo automático de trofeos premium
         const esPremium = userSync.premium === true || userSync.isPremium === true || userSync.tipo === "premium";
         const historiasCreadas = Array.isArray(userSync.historias) ? userSync.historias.length : (userSync.historiasCreadas || 0);
-        const preguntasAcertadas = userSync.preguntasAcertadas || 0;
+        const respuestasAcertadas = userSync.respuestasAcertadas || 0;
         // Trofeo Premium 1: Historiador Premium
         if (esPremium && historiasCreadas >= 35) {
-            autoTrofeos.push(TROFEOS.length); // Índice del trofeo premium 1
+            autoTrofeos.push(101); // id del trofeo premium 1
         }
         // Trofeo Premium 2: Sabio Premium
-        if (esPremium && preguntasAcertadas >= 1200) {
-            autoTrofeos.push(TROFEOS.length + 1); // Índice del trofeo premium 2
+        if (esPremium && respuestasAcertadas >= 1200) {
+            autoTrofeos.push(102); // id del trofeo premium 2
         }
         // Trofeo Premium 3: Amigo Premium
         const amigosCount = Array.isArray(userSync.amigos) ? userSync.amigos.length : 0;
         if (esPremium && amigosCount >= 60) {
-            autoTrofeos.push(TROFEOS.length + 2); // Índice del trofeo premium 3
+            autoTrofeos.push(103); // id del trofeo premium 3
         }
         // Trofeo Premium 4: Espíritu Navideño Premium
         let tieneHistoriaNavidad = false;
@@ -489,7 +648,7 @@ const PerfilUsuario: React.FC = () => {
             });
         }
         if (esPremium && tieneHistoriaNavidad) {
-            autoTrofeos.push(TROFEOS.length + 3); // Índice del trofeo premium 4
+            autoTrofeos.push(104); // id del trofeo premium 4
         }
         // Trofeo Premium 5: Verano Dorado Premium
         let tieneHistoriaVerano = false;
@@ -505,7 +664,7 @@ const PerfilUsuario: React.FC = () => {
             });
         }
         if (esPremium && tieneHistoriaVerano) {
-            autoTrofeos.push(TROFEOS.length + 4); // Índice del trofeo premium 5
+            autoTrofeos.push(105); // id del trofeo premium 5
         }
         // Trofeo Premium 6: Veterano Dorado
         let mesesPremium = 0;
@@ -520,7 +679,7 @@ const PerfilUsuario: React.FC = () => {
             }
         }
         if (esPremium && mesesPremium >= 6) {
-            autoTrofeos.push(TROFEOS.length + 5); // Índice del trofeo premium 6
+            autoTrofeos.push(106); // id del trofeo premium 6
         }
         // Trofeo Premium 7: Diseñador del Futuro
         let tieneLogoStoryUp = false;
@@ -532,11 +691,11 @@ const PerfilUsuario: React.FC = () => {
             });
         }
         if (esPremium && tieneLogoStoryUp) {
-            autoTrofeos.push(TROFEOS.length + 6); // Índice del trofeo premium 7
+            autoTrofeos.push(107); // id del trofeo premium 7
         }
         // Trofeo Premium 8: Escritor Premium
-        if (esPremium && historiasCreadas >= 15) {
-            autoTrofeos.push(TROFEOS.length + 7); // Índice del trofeo premium 8
+        if (esPremium && historiasCreadas >= 50) {
+            autoTrofeos.push(108); // id del trofeo premium 8
         }
 
         // Trofeo Premium 9: Competidor Premium
@@ -546,12 +705,12 @@ const PerfilUsuario: React.FC = () => {
         const totalAutoTrofeos = autoTrofeos.length;
         const totalTrofeos = totalTrofeosDesbloqueados + totalAutoTrofeos;
         if (esPremium && totalTrofeos >= 30) {
-            autoTrofeos.push(TROFEOS.length + 8); // Índice del trofeo premium 9
+            autoTrofeos.push(109); // id del trofeo premium 9
         }
         // Trofeo Premium 10: Cerebro de Oro
-        // 2500+ preguntas acertadas en Aprende con Pipo
-        if (esPremium && preguntasAcertadas >= 2500) {
-            autoTrofeos.push(TROFEOS.length + 9); // Índice del trofeo premium 10
+        // 2500+ respuestas acertadas en Aprende con Pipo
+        if (esPremium && respuestasAcertadas >= 2500) {
+            autoTrofeos.push(110); // id del trofeo premium 10
         }
 
         // Trofeo Premium 11: Analista Premium
@@ -561,22 +720,111 @@ const PerfilUsuario: React.FC = () => {
         const nivelesMaterias = userSync.nivelesMaterias || {};
         const todasNivel3 = materiasRequeridas.every(m => nivelesMaterias[m] >= 3);
         if (esPremium && todasNivel3) {
-            autoTrofeos.push(TROFEOS.length + 10); // Índice del trofeo premium 11
+            autoTrofeos.push(111); // id del trofeo premium 11
         }
         // Trofeo Premium 12: Red Social Premium
         // Conseguir 100+ amigos
         if (esPremium && amigosCount >= 100) {
-            autoTrofeos.push(TROFEOS.length + 11); // Índice del trofeo premium 12
+            autoTrofeos.push(112); // id del trofeo premium 12
         }
         return autoTrofeos;
     };
+    // Función para sincronizar trofeos automáticos
+    const syncAutoTrofeos = async (userData: any, currentTrofeos: any) => {
+        if (!userData || !userData.nick) {
+            console.log('syncAutoTrofeos: No userData or nick', userData);
+            return;
+        }
+
+        console.log('syncAutoTrofeos: Starting for user', userData.nick, 'with data:', userData);
+        console.log('syncAutoTrofeos: Checking conditions manually:');
+        console.log('- amigos:', userData.amigos, '>= 1?', userData.amigos >= 1);
+        console.log('- likes:', userData.likes, '>= 10?', userData.likes >= 10);
+        console.log('- historias:', userData.historias, '>= 1?', userData.historias >= 1);
+        console.log('- respuestasAcertadas:', userData.respuestasAcertadas, '>= 20?', userData.respuestasAcertadas >= 20);
+        console.log('- comentariosRecibidos:', userData.comentariosRecibidos, '>= 1?', userData.comentariosRecibidos >= 1);
+
+        try {
+            // Calcular trofeos automáticos que deberían estar desbloqueados
+            const autoTrofeos = getAutoTrofeos(userData);
+            console.log('syncAutoTrofeos: Auto trofeos calculated:', autoTrofeos);
+
+            const manual = Array.isArray(currentTrofeos.trofeosDesbloqueados) ? currentTrofeos.trofeosDesbloqueados : [];
+            const bloqueados = Array.isArray(currentTrofeos.trofeosBloqueados) ? currentTrofeos.trofeosBloqueados : [];
+
+            console.log('syncAutoTrofeos: Current trofeos - manual:', manual, 'bloqueados:', bloqueados);
+
+            // Filtrar trofeos automáticos que no están ya desbloqueados ni bloqueados
+            const nuevosAutoTrofeos = autoTrofeos.filter((idx: number) =>
+                !manual.includes(idx) && !bloqueados.includes(idx)
+            );
+
+            // Trofeos que ya no cumplen la condición (remover)
+            const toRemove = manual.filter((id: number) => !autoTrofeos.includes(id));
+
+            console.log('syncAutoTrofeos: Trofeos to remove:', toRemove);
+
+            let updatedTrofeosDesbloqueados = manual;
+
+            if (nuevosAutoTrofeos.length > 0 || toRemove.length > 0) {
+                // Agregar nuevos y remover los que ya no cumplen
+                updatedTrofeosDesbloqueados = [...manual, ...nuevosAutoTrofeos].filter(id => !toRemove.includes(id));
+
+                const updated = {
+                    trofeosDesbloqueados: updatedTrofeosDesbloqueados,
+                    trofeosBloqueados: bloqueados
+                };
+
+                console.log('syncAutoTrofeos: Saving updated trofeos:', updated);
+
+                // Guardar en la base de datos
+                await fetch('/api/trofeos/user-trofeos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nick: userData.nick, ...updated })
+                });
+
+                // Actualizar el estado local
+                setUserTrofeos(updated);
+
+                console.log(`Sincronizados ${nuevosAutoTrofeos.length} trofeos automáticos y removidos ${toRemove.length} trofeos para ${userData.nick}`);
+            } else {
+                console.log('syncAutoTrofeos: No changes needed');
+            }
+        } catch (error) {
+            console.error('Error sincronizando trofeos automáticos:', error);
+        }
+    };
     // Función para saber si un trofeo está desbloqueado
     const isTrofeoUnlocked = (user: any, idx: number) => {
+        console.log('isTrofeoUnlocked called with user:', user, 'idx:', idx);
+        console.log('displayedUser:', displayedUser);
+        console.log('userTrofeos:', userTrofeos);
+
+        // Calcular trofeos automáticos basados en los datos del usuario
         const auto = getAutoTrofeos(user);
-        const manual = Array.isArray(user.trofeosDesbloqueados) ? user.trofeosDesbloqueados : [];
-        const bloqueados = Array.isArray(user.trofeosBloqueados) ? user.trofeosBloqueados : [];
-        const asignados = Array.isArray(user.trofeos) ? user.trofeos : [];
-        return (auto.includes(idx) || manual.includes(idx) || asignados.includes(idx)) && !bloqueados.includes(idx);
+        console.log('Auto trofeos for this user:', auto);
+
+        // Usar los trofeos guardados en la base de datos
+        const manual = Array.isArray(userTrofeos.trofeosDesbloqueados) ? userTrofeos.trofeosDesbloqueados : [];
+        const bloqueados = Array.isArray(userTrofeos.trofeosBloqueados) ? userTrofeos.trofeosBloqueados : [];
+
+        console.log('Manual trofeos:', manual, 'Bloqueados:', bloqueados);
+
+        // Mapear idx a trofeoId
+        const getTrofeoId = (idx: number) => {
+            if (idx < TROFEOS.length) {
+                return idx + 1;
+            } else {
+                return 101 + (idx - TROFEOS.length);
+            }
+        };
+
+        const trofeoId = getTrofeoId(idx);
+        const isUnlocked = (auto.includes(trofeoId) || manual.includes(trofeoId)) && !bloqueados.includes(trofeoId);
+        console.log('Trofeo', idx, 'id:', trofeoId, 'is unlocked:', isUnlocked);
+
+        return isUnlocked;
     };
 
     if (!user) {
@@ -590,10 +838,259 @@ const PerfilUsuario: React.FC = () => {
         );
     }
 
-    const isPremium = displayedUser ? (premiumData && premiumData.activo) : false;
+    const isPremium = displayedUser ? (displayedUser.premium === true || displayedUser.isPremium === true || displayedUser.tipo === "premium") : false;
     return (
         <div className="min-h-screen bg-green-100 flex flex-col pt-4">
-            {/* ...existing code... */}
+            {/* Solicitudes de Amistad Pendientes */}
+            {pendingRequests.length > 0 && (
+                <div className="w-full max-w-4xl mx-auto mb-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h3 className="text-lg font-bold text-yellow-800 mb-2">Solicitudes de Amistad Pendientes</h3>
+                        {pendingRequests.map((request: any) => (
+                            <div key={request.id} className="flex items-center justify-between bg-white p-3 rounded mb-2 shadow">
+                                <span className="text-gray-700">Solicitud de <strong>{renderNick(request.solicitante.nick)}</strong></span>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleAcceptRequest(request.id)}
+                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-semibold"
+                                    >
+                                        Aceptar
+                                    </button>
+                                    <button
+                                        onClick={() => handleRejectRequest(request.id)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold"
+                                    >
+                                        Rechazar
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+            <div className="w-full max-w-6xl mx-auto mt-4 mb-4 flex items-center justify-center gap-4">
+                {tieneMensajesSinLeer && (
+                    <button
+                        className="bg-green-500 text-white px-4 py-2 rounded font-semibold animate-bounce"
+                        onClick={() => {
+                            localStorage.setItem('lastReadMsg', Date.now().toString());
+                            setTieneMensajesSinLeer(false);
+                        }}
+                    >
+                        Mensajes sin leer
+                    </button>
+                )}
+                <h1 className="text-3xl font-bold text-center">Perfil de: <UserLink nick={displayedUser.nick} /></h1>
+            </div>
+            <div className="w-full max-w-6xl mx-auto mt-8 grid grid-cols-2 gap-8">
+                {/* Información Personal - Izquierda */}
+                <div className={`bg-white rounded-lg shadow-md p-6 flex flex-col items-center relative transition-all duration-500 ${isPremium ? 'border-4 border-yellow-400 shadow-2xl shadow-yellow-400/50 animate-pulse overflow-hidden' : ''}`}>
+                    {/* Efecto de partículas para premium */}
+                    {isPremium && (
+                        <div className="absolute inset-0 pointer-events-none">
+                            <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-ping opacity-75"></div>
+                            <div className="absolute top-4 left-4 w-1 h-1 bg-yellow-300 rounded-full animate-bounce opacity-60"></div>
+                            <div className="absolute bottom-4 right-6 w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse opacity-80"></div>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-center mb-4 relative">
+                        <h3 className={`text-xl font-bold text-center w-full transition-all duration-300 ${isPremium ? 'text-yellow-600' : ''}`}>
+                            Información Personal
+                            {isPremium && (
+                                <span className="ml-2 animate-spin">👑</span>
+                            )}
+                        </h3>
+                    </div>
+
+                    <div className="flex flex-col items-center mb-4 relative">
+                        <div className={`relative ${isPremium ? '' : ''}`}>
+                            <img src={displayedUser.avatar || "/avatars/simple1.png"} alt="Avatar" className={`w-20 h-20 rounded-full mb-2 transition-all duration-300 ${isPremium ? 'ring-4 ring-yellow-400 ring-opacity-70 shadow-lg shadow-yellow-400/50 hover:scale-110' : ''}`} />
+                            {isPremium && (
+                                <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-xs animate-bounce">
+                                    ✨
+                                </div>
+                            )}
+                        </div>
+                        <div className="mt-4">
+                            <a href="/perfil/avatar" className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600 transition">Seleccionar y Cambiar Avatar</a>
+                        </div>
+                    </div>
+
+                    <p><strong>Nick:</strong> {renderNick(displayedUser.nick)}</p>
+                    <p><strong>Email:</strong> {displayedUser.email}</p>
+                    <p><strong>Centro Educativo:</strong> {displayedUser.centro}</p>
+                    <p><strong>Curso:</strong> {displayedUser.curso}</p>
+                    <p><strong>Tipo de Usuario:</strong> {displayedUser.tipo}</p>
+                    <p><strong>Fecha de Inscripción:</strong> {displayedUser.fechaInscripcion ? new Date(displayedUser.fechaInscripcion).toLocaleDateString('es-ES') : ''}</p>
+                    <div className="mb-2 flex items-center">
+                        <div className="flex flex-col mt-2 gap-y-4">
+                            <div className="flex flex-row gap-x-12">
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">👍</span>
+                                    <strong>Likes:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-300 text-green-900 font-bold text-sm">{displayedUser.likes || 0}</span>
+                                </div>
+                                <div className="flex items-center ml-8">
+                                    <span className="mr-2 text-lg">👥</span>
+                                    <strong>Total de Amigos:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-300 text-blue-900 font-bold text-sm">{displayedUser.amigos || 0}</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-row gap-x-12">
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">📖</span>
+                                    <strong>Total de Historias:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-200 text-purple-900 font-bold text-sm">{displayedUser.historias ? displayedUser.historias.length : 0}</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">💬</span>
+                                    <strong>Total de Comentarios:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-200 text-yellow-900 font-bold text-sm">{displayedUser.comentariosRecibidos || 0}</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-row gap-x-12">
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">🏆</span>
+                                    <strong>Trofeos Desbloqueados:</strong>
+                                    {(() => {
+                                        const trofeos = Array.isArray(displayedUser.trofeosDesbloqueados) ? displayedUser.trofeosDesbloqueados : [];
+                                        const total = trofeos.length;
+                                        return (
+                                            <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-200 text-pink-900 font-bold text-sm">{total}</span>
+                                        );
+                                    })()}
+                                </div>
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">✅</span>
+                                    <strong>Respuestas acertadas:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-200 text-indigo-900 font-bold text-sm">{displayedUser.respuestasAcertadas || 0}</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-row gap-x-12">
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">🥇</span>
+                                    <strong>Competiciones:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-200 text-teal-900 font-bold text-sm">{displayedUser.competicionesSuperadas || 0}</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">🎉</span>
+                                    <strong>Concursos:</strong>
+                                    <span className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-200 text-red-900 font-bold text-sm">{displayedUser.concursosGanados || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Trofeos y Trofeos Premium - Derecha */}
+                <div className="flex flex-col gap-4">
+                    {/* Trofeos */}
+                    <div className="bg-white shadow-lg rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-center mb-4">Trofeos</h3>
+                        <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+                            {TROFEOS.slice(0, 24).map((trofeo, idx) => (
+                                <div key={idx} className={`relative aspect-square flex flex-col items-center justify-center p-1 rounded-lg overflow-hidden ${isTrofeoUnlocked(displayedUser, idx) ? 'bg-yellow-100 border-2 border-yellow-400' : 'bg-gray-100 border-2 border-gray-300'}`}>
+                                    <img src={trofeo.src} alt={trofeo.texto} className={`w-[50px] h-[50px] ${!isTrofeoUnlocked(displayedUser, idx) ? 'opacity-25' : ''}`} />
+                                    {!isTrofeoUnlocked(displayedUser, idx) && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-red-600 text-4xl font-bold">✕</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Trofeos Premium */}
+                    <div className="bg-white shadow-lg rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-center mb-4">Trofeos Premium</h3>
+                        <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
+                            {TROFEOS_PREMIUM.map((trofeo, idx) => (
+                                <div key={idx} className={`relative aspect-square flex flex-col items-center justify-center p-1 rounded-lg overflow-hidden ${isTrofeoUnlocked(displayedUser, TROFEOS.length + idx) ? 'bg-purple-100 border-2 border-purple-400' : 'bg-gray-100 border-2 border-gray-300'}`}>
+                                    <img src={trofeo.src} alt={trofeo.texto} className={`w-[50px] h-[50px] ${!isTrofeoUnlocked(displayedUser, TROFEOS.length + idx) ? 'opacity-25' : ''}`} />
+                                    {!isTrofeoUnlocked(displayedUser, TROFEOS.length + idx) && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-red-600 text-4xl font-bold">✕</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Chat - Debajo */}
+            <div className="w-full max-w-6xl mx-auto mt-8">
+                <div className="bg-white shadow-lg rounded-lg p-6 flex flex-row gap-6">
+                    {/* Selector de usuario a la izquierda */}
+                    <div className="w-1/4 min-w-[180px] flex flex-col gap-2">
+                        <label htmlFor="user-selector" className="font-semibold mb-2">Selecciona usuario:</label>
+                        <select
+                            id="user-selector"
+                            className="border rounded px-3 py-2"
+                            value={selectedUser}
+                            onChange={e => setSelectedUser(e.target.value)}
+                        >
+                            <option value="">-- Elige un usuario --</option>
+                            {usuarios.filter(u => u.nick !== user.nick).map(u => (
+                                <option key={u.nick} value={u.nick}>{u.nick}</option>
+                            ))}
+                        </select>
+                    </div>
+                    {/* Chat principal */}
+                    <div className="flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-center mb-4">Chat</h3>
+                        <div className="h-64 overflow-y-auto border rounded p-4 mb-4 bg-gray-50">
+                            {chatMessages.slice(-5).map((msg, idx) => {
+                                const esEnviado = msg.from === user.nick;
+                                const tipo = esEnviado ? 'enviado' : 'recibido';
+                                const fecha = msg.fecha ? new Date(msg.fecha) : new Date();
+                                // Mostrar fecha robustamente
+                                let fechaStr = '';
+                                if (msg.fecha) {
+                                    const d = Date.parse(msg.fecha);
+                                    if (!isNaN(d)) {
+                                        const fecha = new Date(d);
+                                        fechaStr = `${fecha.toLocaleDateString('es-ES')} - ${fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+                                    } else {
+                                        fechaStr = msg.fecha;
+                                    }
+                                }
+                                else {
+                                    fechaStr = '';
+                                }
+                                return (
+                                    <div key={idx} className={`mb-2 ${esEnviado ? 'text-right' : 'text-left'}`}>
+                                        <span className="font-semibold">{msg.from}:</span> {msg.text}
+                                        <span className="text-xs text-gray-500 ml-2">({tipo} - {fechaStr})</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={chatInput}
+                                onChange={(e) => setChatInput(e.target.value)}
+                                placeholder="Escribe un mensaje..."
+                                className="flex-1 border rounded px-3 py-2"
+                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                disabled={!selectedUser}
+                            />
+                            <button
+                                onClick={handleSendMessage}
+                                className="bg-blue-500 text-white px-4 py-2 rounded font-semibold"
+                                disabled={!selectedUser || !chatInput.trim()}
+                            >
+                                Enviar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* BLOQUES EXTRA SOLO PARA DOCENTES */}
             {user.tipo && user.tipo.toLowerCase() === "docente" && (
                 <>
@@ -646,7 +1143,7 @@ const PerfilUsuario: React.FC = () => {
                                             <label className="text-sm mb-1">{t('fechaFin')}</label>
                                             <input type="date" className="border rounded px-3 py-2" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
                                         </div>
-                                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded font-semibold">{t('enviar')}</button>
+                                        <button type="button" className="bg-blue-500 text-white px-4 py-2 rounded font-semibold" onClick={handleConcursoSubmit}>{t('enviar')}</button>
                                     </div>
                                 </form>
                             </div>

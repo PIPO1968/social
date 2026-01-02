@@ -433,5 +433,10 @@
     "pregunta": "¿Cuál es la mitad de 60?",
     "respuesta": "30",
     "categoria": "Matemáticas"
+  },
+  {
+    "pregunta": "¿Cuanto es 1/3 de 30?",
+    "respuesta": "10",
+    "categoria": "Matematicas"
   }
 ]

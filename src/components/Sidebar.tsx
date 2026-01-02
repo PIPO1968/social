@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { renderNick } from "@/utils/renderNick";
+import { useUser } from "@/contexts/UserContext";
 
 const links = [
     { href: '/perfil', label: 'Perfil' },
@@ -16,24 +17,9 @@ const links = [
 ];
 
 const Sidebar: React.FC = () => {
+    const { user } = useUser();
     const [usuarios, setUsuarios] = useState<any[]>([]);
     const [unreadMessages, setUnreadMessages] = useState(false);
-    const [user, setUser] = useState<any>(null);
-
-    useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const response = await fetch('/api/auth/me');
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data.user);
-                }
-            } catch (error) {
-                console.error('Error loading user:', error);
-            }
-        };
-        loadUser();
-    }, []);
 
     useEffect(() => {
         const loadUsers = async () => {

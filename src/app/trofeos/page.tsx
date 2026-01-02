@@ -31,7 +31,7 @@ export default function Trofeos() {
                 <div className="flex flex-col items-center bg-white rounded-lg shadow p-3">
                     <img src="/trofeo12.jpg" alt="Trofeo 3" className="w-16 h-16 object-contain mb-2" />
                     <span className="font-semibold text-sm">Trofeo 3</span>
-                    <span className="text-xs text-gray-500 text-center">Comentaste en una historia</span>
+                    <span className="text-xs text-gray-500 text-center">Recibiste tu primer comentario</span>
                 </div>
                 {/* Cuarto bloque personalizado */}
                 <div className="flex flex-col items-center bg-white rounded-lg shadow p-3">
@@ -186,7 +186,7 @@ export default function Trofeos() {
                             </div>
                         </div>
                         <span className="font-bold text-sm text-amber-900">Historiador Premium</span>
-                        <span className="text-xs text-amber-800 text-center font-medium">Tus primeras 35 historias.</span>
+                        <span className="text-xs text-amber-800 text-center font-medium">Al menos 35 historias creadas.</span>
                     </div>
 
                     {/* Trofeo Premium 2 */}
@@ -198,7 +198,7 @@ export default function Trofeos() {
                             </div>
                         </div>
                         <span className="font-bold text-sm text-amber-900">Sabio Premium</span>
-                        <span className="text-xs text-amber-800 text-center font-medium">1200 preguntas acertadas en Aprende con Pipo.</span>
+                        <span className="text-xs text-amber-800 text-center font-medium">1200 respuestas acertadas en Aprende con Pipo.</span>
                     </div>
 
                     {/* Trofeo Premium 3 */}
@@ -294,7 +294,7 @@ export default function Trofeos() {
                             </div>
                         </div>
                         <span className="font-bold text-sm text-amber-900">Cerebro de Oro</span>
-                        <span className="text-xs text-amber-800 text-center font-medium">2500+ preguntas acertadas en Aprende con Pipo.</span>
+                        <span className="text-xs text-amber-800 text-center font-medium">2500+ respuestas acertadas en Aprende con Pipo.</span>
                     </div>
 
                     {/* Trofeo Premium 11 */}

@@ -68,8 +68,8 @@ function calcularPuntosUsuario(user: any): number {
     puntos += user.userTrofeos.length * 50;
 
     // Puntos por participación en competiciones premium
-    if (user.competicionesPremium) {
-        puntos += user.competicionesPremium.puntuacionTotal || 0;
+    if (user.competicionPremium) {
+        puntos += user.competicionPremium.puntuacionTotal || 0;
     }
 
     return puntos;

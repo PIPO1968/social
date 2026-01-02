@@ -7,6 +7,7 @@ interface BotonesAmistadProps {
 const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
     const [user, setUser] = useState<any>(null);
     const [esAmigo, setEsAmigo] = useState(false);
+    const [sentRequest, setSentRequest] = useState(false);
 
     useEffect(() => {
         // Get current user
@@ -30,6 +31,15 @@ const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
                 setEsAmigo(data.friends.some((f: any) => f.nick === perfilNick));
             })
             .catch(() => { });
+
+        // Check if sent request
+        fetch(`/api/friends?action=requests&nick=${perfilNick}`)
+            .then(response => response.json())
+            .then(data => {
+                const request = data.requests.find((r: any) => r.solicitante.nick === user.nick);
+                setSentRequest(!!request);
+            })
+            .catch(() => { });
     }, [user, perfilNick]);
 
     const handleSolicitar = async () => {
@@ -42,10 +52,12 @@ const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
                 body: JSON.stringify({ action: 'add', userNick: user.nick, friendNick: perfilNick })
             });
             if (response.ok) {
-                setEsAmigo(true);
+                setSentRequest(true);
             } else {
+                response.json().then(data => alert(data.error || 'Error al enviar solicitud'));
             }
         } catch (error) {
+            alert('Error al enviar solicitud');
         }
     };
 
@@ -60,7 +72,10 @@ const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
             });
             if (response.ok) {
                 setEsAmigo(false);
+                setSentRequest(false); // Asegurar que no hay solicitud pendiente
+                window.location.reload(); // Recargar para actualizar estados
             } else {
+                alert('Error al finalizar amistad');
             }
         } catch (error) {
         }
@@ -75,6 +90,17 @@ const BotonesAmistad: React.FC<BotonesAmistadProps> = ({ perfilNick }) => {
                 onClick={handleFinalizar}
             >
                 Finalizar amistad
+            </button>
+        );
+    }
+
+    if (sentRequest) {
+        return (
+            <button
+                className="bg-gray-500 text-white font-bold py-2 px-6 rounded-xl text-base shadow mb-2"
+                disabled
+            >
+                Solicitud enviada
             </button>
         );
     }

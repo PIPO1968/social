@@ -191,17 +191,22 @@ export default function Estadisticas() {
                             return total;
                         })()}</li>
                         <li><span className="mr-2 text-xl">❓</span><b>Total de preguntas respondidas:</b> {(() => {
-                            let totalAcertadas = 0;
-                            let totalFalladas = 0;
+                            let totalRespondidas = 0;
                             users.forEach((u: any) => {
-                                totalAcertadas += u.respuestasAcertadas || 0;
-                                // Si hay estadísticas adicionales en JSON
+                                // Sumar acertadas
+                                totalRespondidas += u.respuestasAcertadas || 0;
+                                // Sumar falladas (de campo directo y de stats_individual)
+                                if (typeof u.preguntasFalladas === 'number') {
+                                    totalRespondidas += u.preguntasFalladas;
+                                }
                                 if (u.stats_individual) {
                                     const stats = JSON.parse(u.stats_individual);
-                                    totalFalladas += stats.preguntasFalladas || 0;
+                                    if (typeof stats.preguntasFalladas === 'number') {
+                                        totalRespondidas += stats.preguntasFalladas;
+                                    }
                                 }
                             });
-                            return totalAcertadas + totalFalladas;
+                            return totalRespondidas;
                         })()}</li>
                         <li><span className="mr-2 text-xl">❓</span><b>{t('totalPreguntasAcertadas')}:</b> {(() => {
                             let total = 0;
@@ -213,10 +218,14 @@ export default function Estadisticas() {
                         <li><span className="mr-2 text-xl">❓</span><b>Total de preguntas falladas:</b> {(() => {
                             let total = 0;
                             users.forEach((u: any) => {
-                                // Si hay estadísticas adicionales en JSON
+                                if (typeof u.preguntasFalladas === 'number') {
+                                    total += u.preguntasFalladas;
+                                }
                                 if (u.stats_individual) {
                                     const stats = JSON.parse(u.stats_individual);
-                                    total += stats.preguntasFalladas || 0;
+                                    if (typeof stats.preguntasFalladas === 'number') {
+                                        total += stats.preguntasFalladas;
+                                    }
                                 }
                             });
                             return total;

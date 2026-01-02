@@ -62,9 +62,25 @@ export async function POST(request: NextRequest) {
             const fechaExpiracion = new Date();
             fechaExpiracion.setFullYear(fechaExpiracion.getFullYear() + 1);
 
-            await prisma.user.update({
+            const userUpdated = await prisma.user.update({
                 where: { nick },
                 data: { premium: true }
+            });
+
+            // Crear o actualizar registro en premium_data
+            await prisma.premiumData.upsert({
+                where: { userId: userUpdated.id },
+                update: {
+                    fechaInicio: new Date(),
+                    fechaExpiracion: fechaExpiracion,
+                    activo: true
+                },
+                create: {
+                    userId: userUpdated.id,
+                    fechaInicio: new Date(),
+                    fechaExpiracion: fechaExpiracion,
+                    activo: true
+                }
             });
 
             return NextResponse.json({

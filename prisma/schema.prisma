@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -22,8 +22,9 @@ model User {
   tipo      String?  // "estudiante" o "docente"
   language  String?  @default("es") // Idioma preferido
   fechaInscripcion DateTime?
-  likes     Int      @default(0)
+  likes     Float      @default(0)
   respuestasAcertadas Int @default(0)
+  preguntasFalladas Int @default(0)
   competicionesSuperadas Int @default(0)
   concursosGanados Int @default(0)
   comentariosRecibidos Int @default(0)
@@ -31,9 +32,9 @@ model User {
   anosEnStoryUp Int @default(0)
   premium   Boolean  @default(false)
   // Campos para estadísticas JSON
-  stats_individual Json?
-  stats_centro Json?
-  stats_docente Json?
+  stats_individual String?
+  stats_centro String?
+  stats_docente String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -42,6 +43,8 @@ model User {
   noticias      Noticia[]
   amigosComoUser    Amigo[] @relation("amigosComoUser")
   amigosComoAmigo   Amigo[] @relation("amigosComoAmigo")
+  solicitudesEnviadas SolicitudAmistad[] @relation("solicitudesEnviadas")
+  solicitudesRecibidas SolicitudAmistad[] @relation("solicitudesRecibidas")
   chat          Chat[]
   campeonatos   Campeonato[]
   concursos     Concurso[]
@@ -93,6 +96,19 @@ model Amigo {
   createdAt DateTime @default(now())
 
   @@map("amigos")
+}
+
+model SolicitudAmistad {
+  id          Int      @id @default(autoincrement())
+  solicitanteId Int
+  solicitadoId  Int
+  solicitante  User     @relation("solicitudesEnviadas", fields: [solicitanteId], references: [id])
+  solicitado   User     @relation("solicitudesRecibidas", fields: [solicitadoId], references: [id])
+  estado       String   @default("pendiente") // pendiente, aceptada, rechazada
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("solicitudes_amistad")
 }
 
 model Chat {
@@ -193,7 +209,7 @@ model Torneo {
   estado      String   @default("activo") // "activo", "finalizado"
   ganadorId   Int?
   ganador     User?    @relation("torneosGanados", fields: [ganadorId], references: [id])
-  resultados  Json?    // Array de {nick, aciertos, puntuacion}
+  resultados  String?    // Array de {nick, aciertos, puntuacion}
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -264,9 +280,9 @@ model TorneoPremium {
   id          Int      @id @default(autoincrement())
   userId      Int      @unique
   user        User     @relation(fields: [userId], references: [id])
-  torneos     Json     // Lista de torneos disponibles
+  torneos     String     // Lista de torneos disponibles
   lastReset   DateTime?
-  torneoActivo Json?   // Información del torneo activo
+  torneoActivo String?   // Información del torneo activo
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

@@ -24,6 +24,10 @@ export async function GET(request: NextRequest) {
         const trofeosDesbloqueados = userTrofeos.filter(t => t.desbloqueado).map(t => t.trofeoId);
         const trofeosBloqueados = userTrofeos.filter(t => !t.desbloqueado).map(t => t.trofeoId);
 
+        console.log('API user-trofeos GET: Returning for', nick);
+        console.log('trofeosDesbloqueados:', trofeosDesbloqueados);
+        console.log('trofeosBloqueados:', trofeosBloqueados);
+
         return NextResponse.json({ trofeosDesbloqueados, trofeosBloqueados });
     } catch (error) {
         console.error('Error fetching user trofeos:', error);
@@ -35,6 +39,10 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { nick, trofeosDesbloqueados, trofeosBloqueados } = body;
+
+        console.log('API user-trofeos POST: Received data for', nick);
+        console.log('trofeosDesbloqueados:', trofeosDesbloqueados);
+        console.log('trofeosBloqueados:', trofeosBloqueados);
 
         const user = await prisma.user.findUnique({ where: { nick } });
         if (!user) {
@@ -53,7 +61,11 @@ export async function POST(request: NextRequest) {
             trofeos.push({ userId: user.id, trofeoId: id, desbloqueado: false });
         });
 
+        console.log('API user-trofeos POST: Creating trofeos:', trofeos);
+
         await prisma.userTrofeo.createMany({ data: trofeos });
+
+        console.log('API user-trofeos POST: Successfully saved trofeos for', nick);
 
         return NextResponse.json({ success: true });
     } catch (error) {
