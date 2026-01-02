@@ -442,7 +442,7 @@ export default function AprendeConPipo() {
                 let participaciones = (stats.participaciones || 0) + 1;
                 let puntuacionTotalGlobal = (stats.puntuacionTotal || 0) + puntuacionTotal;
                 let victorias = stats.victorias || 0;
-                if (torneos.find(t => t.id === torneoId)?.resultados?.[0]?.nick === usuarioActual?.nick) {
+                if (torneos.find((t: any) => t.id === torneoId)?.resultados?.[0]?.nick === usuarioActual?.nick) {
                     victorias += 1;
                 }
                 await fetch('/api/premium/competiciones', {
