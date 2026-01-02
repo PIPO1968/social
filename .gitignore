@@ -1,1 +1,4 @@
-node_modules
+# Ignorar archivos y carpetas generadas automáticamente
+.next/
+node_modules/
+*.log

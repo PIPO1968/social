@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/user/Desktop/social/src/app/api/auth/logout/route.ts"],"sourcesContent":["import { NextRequest, NextResponse } from 'next/server';\r\n\r\nexport async function POST(request: NextRequest) {\r\n    const response = NextResponse.json({ message: 'Sesión cerrada' });\r\n\r\n    // Borrar la cookie\r\n    response.cookies.set('auth-token', '', {\r\n        httpOnly: true,\r\n        secure: process.env.NODE_ENV === 'production',\r\n        sameSite: 'lax',\r\n        maxAge: 0\r\n    });\r\n\r\n    return response;\r\n}"],"names":[],"mappings":";;;;AAAA;;AAEO,eAAe,KAAK,OAAoB;IAC3C,MAAM,WAAW,gJAAY,CAAC,IAAI,CAAC;QAAE,SAAS;IAAiB;IAE/D,mBAAmB;IACnB,SAAS,OAAO,CAAC,GAAG,CAAC,cAAc,IAAI;QACnC,UAAU;QACV,QAAQ,oDAAyB;QACjC,UAAU;QACV,QAAQ;IACZ;IAEA,OAAO;AACX","debugId":null}}]
-}
