@@ -1,3 +1,4 @@
+
 # StoryUp - Red Social Educativa
 
 Una plataforma educativa interactiva para estudiantes de primaria con funcionalidades de red social, aprendizaje y competiciones.
@@ -92,3 +93,5 @@ npm start
 3. Commit cambios (`git commit -am 'Agrega nueva funcionalidad'`)
 4. Push (`git push origin feature/nueva-funcionalidad`)
 5. Abre un Pull Request
+# social
+Red social educativa para primaria con Next.js, Prisma y Railway
