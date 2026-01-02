@@ -227,7 +227,7 @@ const PerfilUsuario: React.FC = () => {
                     const lastRead = localStorage.getItem('lastReadMsg') || '';
                     // Buscar el último mensaje recibido para este usuario
                     const lastReceived = messages.filter(msg => msg.to === user.nick)
-                        .map(msg => {
+                        .map((msg: any) => {
                             // Parsear fecha robustamente
                             const d = msg.fecha ? Date.parse(msg.fecha) : NaN;
                             return isNaN(d) ? 0 : d;
