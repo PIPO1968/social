@@ -226,7 +226,7 @@ const PerfilUsuario: React.FC = () => {
                     // Comprobar si hay mensajes no leídos
                     const lastRead = localStorage.getItem('lastReadMsg') || '';
                     // Buscar el último mensaje recibido para este usuario
-                    const lastReceived = messages.filter(msg => msg.to === user.nick)
+                    const lastReceived = messages.filter((msg: any) => msg.to === user.nick)
                         .map((msg: any) => {
                             // Parsear fecha robustamente
                             const d = msg.fecha ? Date.parse(msg.fecha) : NaN;
