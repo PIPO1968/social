@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
+        const { torneos, lastReset, torneoActivo } = await request.json();
         const token = request.cookies.get('auth-token')?.value;
         if (!token) {
             return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
