@@ -232,7 +232,7 @@ const PerfilUsuario: React.FC = () => {
                             const d = msg.fecha ? Date.parse(msg.fecha) : NaN;
                             return isNaN(d) ? 0 : d;
                         })
-                        .reduce((max, curr) => Math.max(max, curr), 0);
+                        .reduce((max: any, curr: any) => Math.max(max, curr), 0);
                     const unread = lastReceived > Number(lastRead);
                     setTieneMensajesSinLeer(unread);
                 })
