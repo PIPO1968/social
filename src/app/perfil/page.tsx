@@ -126,7 +126,7 @@ const PerfilUsuario: React.FC = () => {
             .then(concursos => {
                 setConcursos(concursos);
                 // Calcular el próximo ID basado en los concursos existentes
-                const maxNumero = concursos.length > 0 ? Math.max(...concursos.map(c => c.numero)) : 0;
+                const maxNumero = concursos.length > 0 ? Math.max(...concursos.map((c: any) => c.numero)) : 0;
                 setConcursoId(maxNumero + 1);
             })
             .catch(error => {
