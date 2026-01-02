@@ -292,7 +292,7 @@ const PerfilUsuario: React.FC = () => {
             });
             if (response.ok) {
                 // Remover de pendingRequests
-                setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+                setPendingRequests(prev => prev.filter((r: any) => r.id !== requestId));
                 // Recargar para actualizar contadores
                 window.location.reload();
             } else {
@@ -314,7 +314,7 @@ const PerfilUsuario: React.FC = () => {
             });
             if (response.ok) {
                 // Remover de pendingRequests
-                setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+                setPendingRequests(prev => prev.filter((r: any) => r.id !== requestId));
                 // Recargar para actualizar contadores
                 window.location.reload();
             } else {
@@ -500,7 +500,7 @@ const PerfilUsuario: React.FC = () => {
     const handleLockTrofeo = (trofeoIdx: number) => {
         if (!selectedUser) return;
         const updated = {
-            trofeosDesbloqueados: Array.isArray(userTrofeos.trofeosDesbloqueados) ? userTrofeos.trofeosDesbloqueados.filter((id: number) => id !== trofeoIdx) : [],
+            trofeosDesbloqueados: Array.isArray(userTrofeos.trofeosDesbloqueados) ? userTrofeos.trofeosDesbloqueados.filter((id: any) => id !== trofeoIdx) : [],
             trofeosBloqueados: Array.isArray(userTrofeos.trofeosBloqueados) ? [...userTrofeos.trofeosBloqueados, trofeoIdx] : [trofeoIdx]
         };
         fetch('/api/trofeos/user-trofeos', {
@@ -600,7 +600,7 @@ const PerfilUsuario: React.FC = () => {
         console.log('getAutoTrofeos: Evaluating user data:', userSync);
 
         let autoTrofeos = TROFEOS_AUTO
-            .map((t, idx) => {
+            .map((t: any, idx: number) => {
                 const conditionResult = typeof t.condicion === 'function' && t.condicion(userSync);
                 console.log(`getAutoTrofeos: Trofeo ${idx} condition result:`, conditionResult, 'for user data:', {
                     likes: userSync.likes,
@@ -611,7 +611,7 @@ const PerfilUsuario: React.FC = () => {
                 });
                 return conditionResult ? idx + 1 : null;  // ids empiezan en 1
             })
-            .filter(id => id !== null);
+            .filter((id: any) => id !== null);
 
         console.log('getAutoTrofeos: Final auto trofeos:', autoTrofeos);
 
@@ -755,12 +755,12 @@ const PerfilUsuario: React.FC = () => {
             console.log('syncAutoTrofeos: Current trofeos - manual:', manual, 'bloqueados:', bloqueados);
 
             // Filtrar trofeos automáticos que no están ya desbloqueados ni bloqueados
-            const nuevosAutoTrofeos = autoTrofeos.filter((idx: number) =>
+            const nuevosAutoTrofeos = autoTrofeos.filter((idx: any) =>
                 !manual.includes(idx) && !bloqueados.includes(idx)
             );
 
             // Trofeos que ya no cumplen la condición (remover)
-            const toRemove = manual.filter((id: number) => !autoTrofeos.includes(id));
+            const toRemove = manual.filter((id: any) => !autoTrofeos.includes(id));
 
             console.log('syncAutoTrofeos: Trofeos to remove:', toRemove);
 
@@ -768,7 +768,7 @@ const PerfilUsuario: React.FC = () => {
 
             if (nuevosAutoTrofeos.length > 0 || toRemove.length > 0) {
                 // Agregar nuevos y remover los que ya no cumplen
-                updatedTrofeosDesbloqueados = [...manual, ...nuevosAutoTrofeos].filter(id => !toRemove.includes(id));
+                updatedTrofeosDesbloqueados = [...manual, ...nuevosAutoTrofeos].filter((id: any) => !toRemove.includes(id));
 
                 const updated = {
                     trofeosDesbloqueados: updatedTrofeosDesbloqueados,
@@ -989,7 +989,7 @@ const PerfilUsuario: React.FC = () => {
                     <div className="bg-white shadow-lg rounded-lg p-6">
                         <h3 className="text-xl font-bold text-center mb-4">Trofeos</h3>
                         <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-                            {TROFEOS.slice(0, 24).map((trofeo, idx) => (
+                            {TROFEOS.slice(0, 24).map((trofeo: any, idx: number) => (
                                 <div key={idx} className={`relative aspect-square flex flex-col items-center justify-center p-1 rounded-lg overflow-hidden ${isTrofeoUnlocked(displayedUser, idx) ? 'bg-yellow-100 border-2 border-yellow-400' : 'bg-gray-100 border-2 border-gray-300'}`}>
                                     <img src={trofeo.src} alt={trofeo.texto} className={`w-[50px] h-[50px] ${!isTrofeoUnlocked(displayedUser, idx) ? 'opacity-25' : ''}`} />
                                     {!isTrofeoUnlocked(displayedUser, idx) && (
@@ -1006,7 +1006,7 @@ const PerfilUsuario: React.FC = () => {
                     <div className="bg-white shadow-lg rounded-lg p-6">
                         <h3 className="text-xl font-bold text-center mb-4">Trofeos Premium</h3>
                         <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
-                            {TROFEOS_PREMIUM.map((trofeo, idx) => (
+                            {TROFEOS_PREMIUM.map((trofeo: any, idx: number) => (
                                 <div key={idx} className={`relative aspect-square flex flex-col items-center justify-center p-1 rounded-lg overflow-hidden ${isTrofeoUnlocked(displayedUser, TROFEOS.length + idx) ? 'bg-purple-100 border-2 border-purple-400' : 'bg-gray-100 border-2 border-gray-300'}`}>
                                     <img src={trofeo.src} alt={trofeo.texto} className={`w-[50px] h-[50px] ${!isTrofeoUnlocked(displayedUser, TROFEOS.length + idx) ? 'opacity-25' : ''}`} />
                                     {!isTrofeoUnlocked(displayedUser, TROFEOS.length + idx) && (
@@ -1034,7 +1034,7 @@ const PerfilUsuario: React.FC = () => {
                             onChange={e => setSelectedUser(e.target.value)}
                         >
                             <option value="">-- Elige un usuario --</option>
-                            {usuarios.filter(u => u.nick !== user.nick).map(u => (
+                            {usuarios.filter((u: any) => u.nick !== user.nick).map((u: any) => (
                                 <option key={u.nick} value={u.nick}>{u.nick}</option>
                             ))}
                         </select>
@@ -1043,7 +1043,7 @@ const PerfilUsuario: React.FC = () => {
                     <div className="flex-1 flex flex-col">
                         <h3 className="text-xl font-bold text-center mb-4">Chat</h3>
                         <div className="h-64 overflow-y-auto border rounded p-4 mb-4 bg-gray-50">
-                            {chatMessages.slice(-5).map((msg, idx) => {
+                            {chatMessages.slice(-5).map((msg: any, idx: number) => {
                                 const esEnviado = msg.from === user.nick;
                                 const tipo = esEnviado ? 'enviado' : 'recibido';
                                 const fecha = msg.fecha ? new Date(msg.fecha) : new Date();
@@ -1173,7 +1173,7 @@ const PerfilUsuario: React.FC = () => {
                                 </select>
                                 <select className="border rounded px-3 py-2 text-sm" value={ganadorSeleccionado} onChange={e => setGanadorSeleccionado(e.target.value)}>
                                     <option value="">{t('seleccionarGanador')}</option>
-                                    {usuarios.sort((a, b) => a.nick.localeCompare(b.nick)).map((u, idx) => (
+                                    {usuarios.sort((a: any, b: any) => a.nick.localeCompare(b.nick)).map((u: any, idx: number) => (
                                         <option key={idx} value={u.nick}>{u.nick}</option>
                                     ))}
                                 </select>
