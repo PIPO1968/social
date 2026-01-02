@@ -261,8 +261,8 @@ const PerfilUsuario: React.FC = () => {
                     .then(messages => {
                         setChatMessages(messages);
                         // Guardar timestamp del último mensaje recibido como leído
-                        const lastReceived = messages.filter(msg => msg.to === user.nick)
-                            .map(msg => {
+                        const lastReceived = messages.filter((msg: any) => msg.to === user.nick)
+                            .map((msg: any) => {
                                 const d = msg.fecha ? Date.parse(msg.fecha) : NaN;
                                 return isNaN(d) ? 0 : d;
                             })
