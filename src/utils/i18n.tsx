@@ -53,7 +53,7 @@ const translations: Record<string, Record<string, string>> = {
         "aleman": "Alemán",
         "cerrarSesion": "Cerrar sesión",
         // Home page translations
-        "tuRedSocialEscolar": "Tu red social escolar de Canarias",
+        "tuRedSocialEscolar": "Tu web social escolar en Canarias",
         "perfil": "Perfil",
         "perfilDesc": "Crea y personaliza tu perfil escolar.",
         "historias": "Historias",
