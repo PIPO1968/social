@@ -70,7 +70,7 @@ const Header: React.FC = () => {
                 {user && (
                     <span className="ml-4 font-bold flex items-center gap-2">
                         👤 {user.nick}
-                        {isPremium && (
+                        {isPremium ? (
                             <button
                                 className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                                 onClick={() => window.location.href = '/premium-nuevo'}
@@ -87,59 +87,60 @@ const Header: React.FC = () => {
                                 {t("haztePremium")}
                             </button>
                         )}
+                    </span>
                 )}
-            </div>
+                    </div>
             {/* Idiomas, Premium y cerrar sesión a la derecha */}
-            <div className="flex items-center gap-4">
-                {/* Botón Premium diferenciado */}
-                {isPremium ? (
-                    <button
-                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                        onClick={() => window.location.href = '/premium-nuevo'}
-                        title={t("premiumTitle")}
-                    >
-                        {t("miPremium")}
-                    </button>
-                ) : (
-                    <button
-                        className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                        onClick={() => window.location.href = '/premium-nuevo'}
-                        title={t("haztePremiumTitle")}
-                    >
-                        {t("haztePremium")}
-                    </button>
-                )}
+                <div className="flex items-center gap-4">
+                    {/* Botón Premium diferenciado */}
+                    {isPremium ? (
+                        <button
+                            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                            onClick={() => window.location.href = '/premium-nuevo'}
+                            title={t("premiumTitle")}
+                        >
+                            {t("miPremium")}
+                        </button>
+                    ) : (
+                        <button
+                            className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                            onClick={() => window.location.href = '/premium-nuevo'}
+                            title={t("haztePremiumTitle")}
+                        >
+                            {t("haztePremium")}
+                        </button>
+                    )}
 
-                {/* Botón Admin - Solo para PIPO68 */}
-                {user && user.nick === 'PIPO68' && (
-                    <button
-                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                        onClick={() => window.location.href = '/admin-premium'}
-                        title={t("adminTitle")}
-                    >
-                        {t("admin")}
-                    </button>
-                )}
+                    {/* Botón Admin - Solo para PIPO68 */}
+                    {user && user.nick === 'PIPO68' && (
+                        <button
+                            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                            onClick={() => window.location.href = '/admin-premium'}
+                            title={t("adminTitle")}
+                        >
+                            {t("admin")}
+                        </button>
+                    )}
 
-                <select
-                    aria-label={t("seleccionaIdioma")}
-                    className="border rounded px-2 py-1"
-                    value={lang}
-                    onChange={(e) => setLang(e.target.value as any)}
-                >
-                    <option value="es">{t("espanol")}</option>
-                    <option value="en">{t("ingles")}</option>
-                    <option value="fr">{t("frances")}</option>
-                    <option value="de">{t("aleman")}</option>
-                </select>
-                <button
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                    onClick={async () => {
-                        await fetch('/api/auth/logout', { method: 'POST' });
-                        window.location.href = '/';
-                    }}
-                >{t("cerrarSesion")}</button>
-            </div>
+                    <select
+                        aria-label={t("seleccionaIdioma")}
+                        className="border rounded px-2 py-1"
+                        value={lang}
+                        onChange={(e) => setLang(e.target.value as any)}
+                    >
+                        <option value="es">{t("espanol")}</option>
+                        <option value="en">{t("ingles")}</option>
+                        <option value="fr">{t("frances")}</option>
+                        <option value="de">{t("aleman")}</option>
+                    </select>
+                    <button
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                        onClick={async () => {
+                            await fetch('/api/auth/logout', { method: 'POST' });
+                            window.location.href = '/';
+                        }}
+                    >{t("cerrarSesion")}</button>
+                </div>
         </header>
     );
 };
