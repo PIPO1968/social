@@ -59,13 +59,8 @@ const Header: React.FC = () => {
     }, []);
     return (
         <header className="w-full flex items-center justify-between bg-blue-900 shadow px-6 py-3 text-white">
-            {/* Logo y usuarios a la izquierda */}
-            <div className="flex items-center gap-4">
-                ...existing code...
-                {/* Fecha y hora en el centro */}
-                <div className="flex-1 flex justify-center items-center">
-                    <span className="font-mono text-lg">{dateTime}</span>
-                </div>
+            {/* Izquierda: logo, usuarios y online */}
+            <div className="flex items-center gap-4 min-w-0">
                 <img src="/favicon.ico" alt="Trofeo principal" className="h-10 w-10" />
                 {registeredUsers !== null && onlineUsers !== null ? (
                     <span>{t("usuarios")}: <span id="registered-users">{registeredUsers}</span> | {t("online")}: <span id="online-users">{onlineUsers}</span></span>
@@ -75,25 +70,62 @@ const Header: React.FC = () => {
                 {user && (
                     <span className="ml-4 font-bold flex items-center gap-2">
                         👤 {user.nick}
-                        {isPremium ? (
-                            <button
-                                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                                onClick={() => window.location.href = '/premium-nuevo'}
-                                title={t("premiumTitle")}
-                            >
-                                {t("miPremium")}
-                            </button>
-                        ) : (
-                            <button
-                                className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                                onClick={() => window.location.href = '/premium-nuevo'}
-                                title={t("haztePremiumTitle")}
-                            >
-                                {t("haztePremium")}
-                            </button>
-                        )}
                     </span>
                 )}
+            </div>
+            {/* Centro: fecha y hora */}
+            <div className="flex-1 flex justify-center items-center">
+                <span className="font-mono text-lg">{dateTime}</span>
+            </div>
+            {/* Derecha: botones premium, admin, idioma y logout */}
+            <div className="flex items-center gap-4">
+                {user && (
+                    isPremium ? (
+                        <button
+                            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                            onClick={() => window.location.href = '/premium-nuevo'}
+                            title={t("premiumTitle")}
+                        >
+                            {t("miPremium")}
+                        </button>
+                    ) : (
+                        <button
+                            className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                            onClick={() => window.location.href = '/premium-nuevo'}
+                            title={t("haztePremiumTitle")}
+                        >
+                            {t("haztePremium")}
+                        </button>
+                    )
+                )}
+                {/* Botón Admin - Solo para PIPO68 */}
+                {user && user.nick === 'PIPO68' && (
+                    <button
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                        onClick={() => window.location.href = '/admin-premium'}
+                        title={t("adminTitle")}
+                    >
+                        {t("admin")}
+                    </button>
+                )}
+                <select
+                    aria-label={t("seleccionaIdioma")}
+                    className="border rounded px-2 py-1"
+                    value={lang}
+                    onChange={(e) => setLang(e.target.value as any)}
+                >
+                    <option value="es">{t("espanol")}</option>
+                    <option value="en">{t("ingles")}</option>
+                    <option value="fr">{t("frances")}</option>
+                    <option value="de">{t("aleman")}</option>
+                </select>
+                <button
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                    onClick={async () => {
+                        await fetch('/api/auth/logout', { method: 'POST' });
+                        window.location.href = '/';
+                    }}
+                >{t("cerrarSesion")}</button>
             </div>
             {/* Idiomas, Premium y cerrar sesión a la derecha */}
             <div className="flex items-center gap-4">
