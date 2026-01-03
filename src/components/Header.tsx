@@ -71,27 +71,22 @@ const Header: React.FC = () => {
                     <span className="ml-4 font-bold flex items-center gap-2">
                         👤 {user.nick}
                         {isPremium && (
-                            <span
-                                className="bg-gradient-to-r from-sky-100 to-blue-100 text-amber-900 text-xs px-2 py-1 rounded-full font-bold shadow-md border border-sky-300"
-                                title={t("usuarioPremium")}
+                            <button
+                                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                                onClick={() => window.location.href = '/premium-nuevo'}
+                                title={t("premiumTitle")}
                             >
-                                👑
-                            </span>
+                                {t("miPremium")}
+                            </button>
+                        ) : (
+                            <button
+                                className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-4 py-2 rounded-full font-bold text-sm hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                                onClick={() => window.location.href = '/premium-nuevo'}
+                                title={t("haztePremiumTitle")}
+                            >
+                                {t("haztePremium")}
+                            </button>
                         )}
-                    </span>
-                )}
-            </div>
-            {/* Fecha y texto premium en el centro, en línea */}
-            <div className="flex-1 flex justify-center items-center gap-4">
-                <span className="font-mono text-lg">{dateTime}</span>
-                {!isPremium && (
-                    <button
-                        className="text-yellow-300 font-bold text-base bg-transparent border-none cursor-pointer hover:underline"
-                        onClick={() => window.location.href = '/premium-nuevo'}
-                        title="Hazte premium por solo 1€ al mes"
-                    >
-                        ⭐ HAZTE PREMIUM POR SOLO €1 MES
-                    </button>
                 )}
             </div>
             {/* Idiomas, Premium y cerrar sesión a la derecha */}
