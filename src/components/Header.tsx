@@ -81,9 +81,18 @@ const Header: React.FC = () => {
                     </span>
                 )}
             </div>
-            {/* Fecha y hora en el centro */}
-            <div className="flex-1 flex justify-center">
+            {/* Fecha y texto premium en el centro, en línea */}
+            <div className="flex-1 flex justify-center items-center gap-4">
                 <span className="font-mono text-lg">{dateTime}</span>
+                {!isPremium && (
+                    <button
+                        className="text-yellow-300 font-bold text-base bg-transparent border-none cursor-pointer hover:underline"
+                        onClick={() => window.location.href = '/premium-nuevo'}
+                        title="Hazte premium por solo 1€ al mes"
+                    >
+                        ⭐ HAZTE PREMIUM POR SOLO €1 MES
+                    </button>
+                )}
             </div>
             {/* Idiomas, Premium y cerrar sesión a la derecha */}
             <div className="flex items-center gap-4">
