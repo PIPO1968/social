@@ -5,6 +5,11 @@ const cursos = [
     '1º primaria', '2º primaria', '3º primaria', '4º primaria', '5º primaria', '6º primaria'
 ];
 
+
+const colegios = [
+    "Aguere", "Angeles Bermejo", "Aregume", "Buen Consejo", "Camino La Villa", "Camino Largo", "Casa Azul", "Chamberi", "Chayofa", "Cisneros Alter", "Colegio Cervantes", "Costa Adeje I.", "Cuesta 25 de Julio", "Dominguez Alfonso", "Echeyde Arona", "Echeyde La Laguna", "El Monte", "Escuela Rural", "Escuelas Pias", "Gobierno de Canarias (Educacion)", "Hispano La Salud", "La Cuesta B.N", "La Higuerita", "La Rosa", "La Salle", "La Vega", "La Verdellada", "Los Alisios", "Los Menceyes", "Luis Alvarez Cruz", "Luther King", "Mayex", "Montessori", "Nuryana", "Punta Larga", "Pureza de Maria", "Ravelo", "Rodriguez Alberto", "Rodriguez Campos", "Saint Andrews", "Salesianas", "San Agustin", "San Fernando", "San Isidro", "San Pablo", "Santa Catalina de Siena", "Santa Cruz de California", "Santa Maria del Mar", "Santa Rosa de Lima", "Tacoronte", "Tagoror", "Teofilo Perez", "Tincer", "Virgen de Fatima", "Virgen del Mar"
+];
+
 const RegisterLoginForm: React.FC = () => {
     const [isRegister, setIsRegister] = useState(true);
 
@@ -61,7 +66,12 @@ const RegisterLoginForm: React.FC = () => {
                     <input type="text" name="nick" placeholder="Nick" className="w-full mb-2 p-2 border rounded" required />
                     <div className="flex mb-2">
                         <span className="mr-2">CEIP:</span>
-                        <input type="text" name="centro" placeholder="Nombre del centro escolar" className="flex-1 p-2 border rounded" required />
+                        <select name="centro" className="flex-1 p-2 border rounded" required>
+                            <option value="">Selecciona centro escolar</option>
+                            {colegios.map((colegio) => (
+                                <option key={colegio} value={colegio}>{colegio}</option>
+                            ))}
+                        </select>
                     </div>
                     <select name="curso" className="w-full mb-2 p-2 border rounded" required>
                         <option value="">Selecciona curso</option>
